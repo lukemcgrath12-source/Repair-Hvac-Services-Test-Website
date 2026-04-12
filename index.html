@@ -1072,6 +1072,55 @@
   </script>
 </head>
 <body>
+  <style>
+    .page-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #0e0d1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .page-loader__logo {
+      width: 160px;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: loaderLogoFade 0.6s ease forwards;
+    }
+    @keyframes loaderLogoFade {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .page-loader--fade {
+      animation: loaderFade 0.6s ease forwards;
+    }
+    @keyframes loaderFade {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+  </style>
+
+  <div class="page-loader" id="pageLoader">
+    <img class="page-loader__logo" src="BRAND_ASSETS/REP_1_SVG_-_Repair_HVAC_Services-removebg-preview.png" alt="REPAIR HVAC Services logo" />
+    <script>
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          var loader = document.getElementById('pageLoader');
+          if (!loader) return;
+          loader.classList.add('page-loader--fade');
+          setTimeout(function() {
+            if (loader.parentNode) loader.parentNode.removeChild(loader);
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
+          }, 600);
+        }, 1000);
+      });
+    </script>
+  </div>
 
   <!-- ══════════════════════ NAV ══════════════════════ -->
   <nav>
