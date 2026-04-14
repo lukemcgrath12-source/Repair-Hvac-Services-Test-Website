@@ -1256,158 +1256,173 @@
     <h2 class="section-heading">Recent <em>Projects</em></h2>
 
     <style>
-      .project-panels {
-        display: flex;
-        width: 100%;
-        height: 580px;
-        gap: 2px;
-        margin-top: 48px;
-        overflow: hidden;
-      }
-      .project-panel {
+      /* ── Image Comparison Slider ── */
+      .img-compare {
         position: relative;
-        flex: 1;
-        min-width: 72px;
-        border: 2px solid rgba(10,10,18,0.85);
-        background-size: 120%;
-        background-position: center;
-        background-repeat: no-repeat;
-        color: #fff;
-        cursor: pointer;
+        width: 100%;
+        max-width: 900px;
+        margin: 48px auto 0;
+        border-radius: 16px;
         overflow: hidden;
-        display: flex;
-        align-items: flex-end;
-        justify-content: flex-start;
-        transition:
-          flex 0.7s cubic-bezier(0.22,1,0.36,1),
-          background-size 0.7s ease,
-          border-color 0.3s ease,
-          box-shadow 0.4s ease;
-        transform: translateX(-20px);
-        opacity: 0;
+        box-shadow: 0 24px 80px rgba(0,0,0,0.32);
+        user-select: none;
+        cursor: ew-resize;
+        aspect-ratio: 16/9;
       }
-      .project-panel.enter {
-        transform: translateX(0);
-        opacity: 1;
-      }
-      .project-panel::after {
-        content: '';
+      .img-compare img {
         position: absolute;
         inset: 0;
-        background: linear-gradient(180deg, rgba(10,10,18,0.18) 0%, rgba(10,10,18,0.45) 40%, rgba(10,10,18,0.85) 100%);
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: left;
+        display: block;
+        draggable: false;
+      }
+      .img-compare__after {
+        clip-path: inset(0 50% 0 0);
+        z-index: 1;
+      }
+      .img-compare__divider {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: rgba(255,255,255,0.85);
+        left: calc(50% - 1.5px);
+        z-index: 2;
         pointer-events: none;
       }
-      .project-panel.active {
-        flex: 7;
-        border-color: rgba(255,255,255,0.95);
-        box-shadow: 0 28px 80px rgba(0,0,0,0.28);
-        background-size: 140%;
-      }
-      .project-panel .panel-badge {
+      .img-compare__handle {
         position: absolute;
-        top: 18px;
-        left: 18px;
-        width: 44px;
-        height: 44px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 48px;
+        height: 48px;
+        background: #fff;
         border-radius: 9999px;
-        background: rgba(0,0,0,0.55);
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 2;
-        box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.28);
+        z-index: 3;
+        pointer-events: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
-      .project-panel .panel-badge svg {
-        width: 20px;
-        height: 20px;
-        stroke: #fff;
-        stroke-width: 1.7;
-        fill: none;
+      .img-compare.dragging .img-compare__handle {
+        transform: translate(-50%, -50%) scale(1.1);
+        box-shadow: 0 8px 28px rgba(0,0,0,0.38);
       }
-      .project-panel .panel-copy {
-        position: relative;
-        z-index: 2;
-        padding: 24px;
-        max-width: 260px;
-        opacity: 0;
-        transform: translateY(18px);
-        transition: opacity 0.45s ease, transform 0.45s ease;
+      .img-compare__handle svg {
+        width: 24px;
+        height: 24px;
+        color: #374151;
       }
-      .project-panel.active .panel-copy {
-        opacity: 1;
-        transform: translateY(0);
+      /* ── Auto Scroll Strip ── */
+      @keyframes scroll-right {
+        0%   { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
       }
-      .project-panel .panel-title {
-        margin: 0;
-        font-family: 'DM Serif Display', serif;
-        font-size: clamp(1.35rem, 2vw, 2rem);
-        line-height: 1.05;
+      .auto-scroll-section {
+        width: 100%;
+        padding: 40px 0 0;
+        overflow: hidden;
       }
-      .project-panel .panel-subtitle {
-        margin: 10px 0 0;
-        font-size: 0.92rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: rgba(255,255,255,0.75);
+      .auto-scroll-mask {
+        mask: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
+        -webkit-mask: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
+        width: 100%;
+        overflow: hidden;
       }
-      .project-panel:not(.active) .panel-copy {
-        opacity: 0;
+      .auto-scroll-track {
+        display: flex;
+        gap: 24px;
+        width: max-content;
+        animation: scroll-right 20s linear infinite;
       }
-      .project-panel[aria-pressed] {
-        transition-delay: 0ms;
+      .auto-scroll-item {
+        flex-shrink: 0;
+        width: 192px;
+        height: 192px;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+        transition: transform 0.3s ease, filter 0.3s ease;
       }
-      @media (max-width: 960px) {
-        .project-panels {
-          flex-direction: column;
-          height: auto;
-        }
-        .project-panel {
-          min-height: 260px;
-          flex: none;
-        }
-        .project-panel.active {
-          flex: none;
-        }
+      @media (min-width: 768px) {
+        .auto-scroll-item { width: 256px; height: 256px; }
+      }
+      .auto-scroll-item:hover {
+        transform: scale(1.05);
+        filter: brightness(1.1);
+      }
+      .auto-scroll-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
       }
     </style>
 
-    <div class="project-panels">
-      <button type="button" class="project-panel active" data-index="0" aria-pressed="true" style="background-image:url('5.png');">
-        <span class="panel-badge" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.847a4.5 4.5 0 003.09 3.09L15.75 12l-2.847.813a4.5 4.5 0 00-3.09 3.09z"/></svg></span>
-        <div class="panel-copy">
-          <p class="panel-title">Ducted System Upgrade</p>
-          <p class="panel-subtitle">Actron → Daikin Inverter</p>
-        </div>
-      </button>
-      <button type="button" class="project-panel" data-index="1" aria-pressed="false" style="background-image:url('6.png');">
-        <span class="panel-badge" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"/></svg></span>
-        <div class="panel-copy">
-          <p class="panel-title">Split System Replacement</p>
-          <p class="panel-subtitle">Mitsubishi Electric Fault</p>
-        </div>
-      </button>
-      <button type="button" class="project-panel" data-index="2" aria-pressed="false" style="background-image:url('7.png');">
-        <span class="panel-badge" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg></span>
-        <div class="panel-copy">
-          <p class="panel-title">Dual-Zone Daikin Install</p>
-          <p class="panel-subtitle">Split + Ducted Multi-System</p>
-        </div>
-      </button>
-      <button type="button" class="project-panel" data-index="3" aria-pressed="false" style="background-image:url('8.png');">
-        <span class="panel-badge" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg></span>
-        <div class="panel-copy">
-          <p class="panel-title">Preventive Maintenance</p>
-          <p class="panel-subtitle">Panasonic Split System Service</p>
-        </div>
-      </button>
-      <button type="button" class="project-panel" data-index="4" aria-pressed="false" style="background-image:url('9.png');">
-        <span class="panel-badge" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg></span>
-        <div class="panel-copy">
-          <p class="panel-title">Commercial HVAC Install</p>
-          <p class="panel-subtitle">Office Multi-Split System</p>
-        </div>
-      </button>
+    <!-- Image Comparison Slider -->
+    <div class="img-compare" id="imgCompare">
+      <img class="img-compare__before" src="./Zac%20Image%201.png" alt="Before" draggable="false" />
+      <img class="img-compare__after" src="./Zac%20Image%202.png" alt="After" draggable="false" />
+      <div class="img-compare__divider" id="imgDivider"></div>
+      <div class="img-compare__handle" id="imgHandle">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="15" y1="18" x2="9" y2="12"></line>
+          <line x1="9" y1="6" x2="15" y2="12"></line>
+        </svg>
+      </div>
     </div>
+
+    <!-- Auto Image Scroll Strip -->
+    <div class="auto-scroll-section">
+      <div class="auto-scroll-mask">
+        <div class="auto-scroll-track" id="autoScrollTrack">
+          <!-- original set -->
+          <div class="auto-scroll-item"><img src="5.png" alt="Project 1" loading="lazy" /></div>
+          <div class="auto-scroll-item"><img src="6.png" alt="Project 2" loading="lazy" /></div>
+          <div class="auto-scroll-item"><img src="7.png" alt="Project 3" loading="lazy" /></div>
+          <div class="auto-scroll-item"><img src="8.png" alt="Project 4" loading="lazy" /></div>
+          <div class="auto-scroll-item"><img src="9.png" alt="Project 5" loading="lazy" /></div>
+          <!-- duplicate set for seamless loop -->
+          <div class="auto-scroll-item"><img src="5.png" alt="Project 1" loading="lazy" /></div>
+          <div class="auto-scroll-item"><img src="6.png" alt="Project 2" loading="lazy" /></div>
+          <div class="auto-scroll-item"><img src="7.png" alt="Project 3" loading="lazy" /></div>
+          <div class="auto-scroll-item"><img src="8.png" alt="Project 4" loading="lazy" /></div>
+          <div class="auto-scroll-item"><img src="9.png" alt="Project 5" loading="lazy" /></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const container = document.getElementById('imgCompare');
+        const afterImg   = container.querySelector('.img-compare__after');
+        const divider    = document.getElementById('imgDivider');
+        const handle     = document.getElementById('imgHandle');
+        let dragging = false;
+
+        function setPosition(clientX) {
+          const rect = container.getBoundingClientRect();
+          let pct = ((clientX - rect.left) / rect.width) * 100;
+          pct = Math.max(0, Math.min(100, pct));
+          afterImg.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
+          divider.style.left      = `calc(${pct}% - 1.5px)`;
+          handle.style.left       = `${pct}%`;
+        }
+
+        container.addEventListener('mousedown',  () => { dragging = true;  container.classList.add('dragging'); });
+        window.addEventListener(  'mouseup',     () => { dragging = false; container.classList.remove('dragging'); });
+        window.addEventListener(  'mousemove',   (e) => { if (dragging) setPosition(e.clientX); });
+        container.addEventListener('touchstart',  () => { dragging = true;  container.classList.add('dragging'); }, { passive: true });
+        window.addEventListener(  'touchend',    () => { dragging = false; container.classList.remove('dragging'); });
+        window.addEventListener(  'touchmove',   (e) => { if (dragging) setPosition(e.touches[0].clientX); }, { passive: true });
+      })();
+    </script>
   </section>
 
   <!-- ══════════════════════ FEATURE SPLIT — WHY US ══════════════════════ -->
