@@ -1097,48 +1097,58 @@
       position: fixed;
       inset: 0;
       z-index: 9999;
-      background: #f2ede6;
+      background: #0a0f1e;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      pointer-events: none;
     }
     .page-loader__logo {
-      width: 220px;
+      width: 260px;
       opacity: 0;
-      transform: translateY(10px);
-      animation: loaderLogoFade 0.6s ease forwards;
+      transform: scale(1);
+      transform-origin: center center;
     }
-    @keyframes loaderLogoFade {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes loaderLogoFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
     }
-    .page-loader--fade {
-      animation: loaderFade 0.6s ease forwards;
+    @keyframes loaderLogoZoom {
+      from { transform: scale(1); }
+      to   { transform: scale(2.5); }
     }
-    @keyframes loaderFade {
+    @keyframes loaderBgFadeOut {
       from { opacity: 1; }
-      to { opacity: 0; }
+      to   { opacity: 0; }
     }
   </style>
 
   <div class="page-loader" id="pageLoader">
-    <img class="page-loader__logo" src="BRAND_ASSETS/REP_1_SVG_-_Repair_HVAC_Services-removebg-preview.png" alt="REPAIR HVAC Services logo" />
+    <img class="page-loader__logo" id="pageLoaderLogo" src="BRAND_ASSETS/REP_1_SVG_-_Repair_HVAC_Services-removebg-preview.png" alt="REPAIR HVAC Services logo" />
     <script>
       document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
-      window.addEventListener('load', function() {
-        setTimeout(function() {
-          var loader = document.getElementById('pageLoader');
-          if (!loader) return;
-          loader.classList.add('page-loader--fade');
-          setTimeout(function() {
+      (function () {
+        var loader = document.getElementById('pageLoader');
+        var logo   = document.getElementById('pageLoaderLogo');
+
+        // Step 1 — fade logo in over 0.8s
+        logo.style.animation = 'loaderLogoFadeIn 0.8s ease forwards';
+
+        // Step 2 — after fade-in, zoom logo and fade background simultaneously
+        setTimeout(function () {
+          logo.style.animation   = 'loaderLogoZoom 1s ease forwards';
+          loader.style.animation = 'loaderBgFadeOut 0.5s ease forwards';
+
+          // Step 3 — remove overlay after bg fade completes
+          setTimeout(function () {
             if (loader.parentNode) loader.parentNode.removeChild(loader);
             document.documentElement.style.overflow = '';
             document.body.style.overflow = '';
-          }, 600);
-        }, 1000);
-      });
+          }, 500);
+        }, 900); // slight overlap — starts just after fade-in finishes
+      })();
     </script>
   </div>
 
