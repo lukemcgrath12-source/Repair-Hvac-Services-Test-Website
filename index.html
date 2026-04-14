@@ -573,16 +573,36 @@
       background: #141220;
     }
 
-    .team-card img {
+    .team-img-wrap {
+      position: relative;
       width: 100%;
       aspect-ratio: 3/4;
+    }
+
+    .team-img-wrap img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
       display: block;
       filter: grayscale(20%) brightness(0.8);
-      transition: transform 0.5s cubic-bezier(0.4,0,0.2,1), filter 0.4s;
+      transition: transform 0.5s cubic-bezier(0.4,0,0.2,1), filter 0.4s, opacity 0.3s ease;
     }
 
-    .team-card:hover img {
+    .team-img-wrap img.team-img-hover {
+      opacity: 0;
+    }
+
+    .team-card:hover .team-img-wrap img.team-img-default {
+      opacity: 0;
+    }
+
+    .team-card:hover .team-img-wrap img.team-img-hover {
+      opacity: 1;
+    }
+
+    .team-card:hover .team-img-wrap img {
       transform: scale(1.04);
       filter: grayscale(0%) brightness(0.9);
     }
@@ -1426,7 +1446,10 @@
     <div class="team-grid">
       <!-- To add a photo: replace the placehold.co src with a real image path -->
       <div class="team-card">
-        <img src="https://placehold.co/400x533/111020/1a1828" alt="Zac Kennedy" loading="lazy" width="400" height="533" />
+        <div class="team-img-wrap">
+          <img class="team-img-default" src="BRAND_ASSETS/Zac Image 1.png" alt="Zac Kennedy" />
+          <img class="team-img-hover" src="BRAND_ASSETS/Zac Image 2.png" alt="Zac Kennedy" />
+        </div>
         <div class="team-info">
           <div class="team-name">Zac Kennedy</div>
           <div class="team-role">Founder</div>
@@ -1434,7 +1457,10 @@
         </div>
       </div>
       <div class="team-card">
-        <img src="https://placehold.co/400x533/0f0e1c/141220" alt="Jack Shuetrim" loading="lazy" width="400" height="533" />
+        <div class="team-img-wrap">
+          <img class="team-img-default" src="BRAND_ASSETS/Jack Image 1.png" alt="Jack Shuetrim" />
+          <img class="team-img-hover" src="BRAND_ASSETS/Jack Image 2.png" alt="Jack Shuetrim" />
+        </div>
         <div class="team-info">
           <div class="team-name">Jack Shuetrim</div>
           <div class="team-role">Founder</div>
