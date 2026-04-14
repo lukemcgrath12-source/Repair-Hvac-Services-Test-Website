@@ -1251,7 +1251,7 @@
   </section>
 
   <!-- ══════════════════════ GALLERY ══════════════════════ -->
-  <section id="projects" style="padding: 0;">
+  <section id="projects" style="padding-top: 0; padding-left: 0; padding-right: 0;">
     <div style="padding: 8rem 48px 0;">
       <div class="eyebrow">Our Work</div>
       <h2 class="section-heading">Recent <em>Projects</em></h2>
@@ -1259,24 +1259,16 @@
 
     <style>
       /* ── Image Comparison Slider ── */
-      .img-compare-wrap {
-        position: sticky;
-        top: 0;
-        width: 100vw;
-        height: 100vh;
-        z-index: 10;
-        margin-top: 48px;
-      }
       .img-compare {
         position: relative;
         width: 100%;
-        height: 100%;
-        margin: 0;
+        margin: 48px 0 0;
         border-radius: 0;
         overflow: hidden;
-        box-shadow: none;
+        box-shadow: 0 24px 80px rgba(0,0,0,0.32);
         user-select: none;
         cursor: ew-resize;
+        aspect-ratio: 16/9;
       }
       .img-compare img {
         position: absolute;
@@ -1375,7 +1367,6 @@
     </style>
 
     <!-- Image Comparison Slider -->
-    <div class="img-compare-wrap">
     <div class="img-compare" id="imgCompare">
       <img class="img-compare__before" src="./New%20Aircon%20Image.png" alt="Before" draggable="false" />
       <img class="img-compare__after" src="./Old%20Aircon%20Image.png" alt="After" draggable="false" />
@@ -1386,7 +1377,6 @@
           <line x1="9" y1="6" x2="15" y2="12"></line>
         </svg>
       </div>
-    </div>
     </div>
 
     <!-- Auto Image Scroll Strip -->
