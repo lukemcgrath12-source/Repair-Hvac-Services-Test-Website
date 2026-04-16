@@ -635,7 +635,7 @@
     .team-bio {
       font-size: 14px;
       line-height: 1.7;
-      color: rgba(30,27,75,0.65);
+      color: #3a3760;
       margin-top: 8px;
     }
 
@@ -1054,11 +1054,12 @@
       .nav-drawer { display: block; }
 
       /* ── General spacing ── */
+      html, body { overflow-x: hidden; max-width: 100%; }
       section { padding: 3rem 20px; }
-      * { max-width: 100%; box-sizing: border-box; }
+      * { box-sizing: border-box; }
 
       /* ── Hero ── */
-      .hero { padding: 80px 20px 48px; min-height: 0; height: auto; align-items: center; text-align: center; }
+      .hero { padding: 80px 20px 48px; min-height: 100svh; height: auto; align-items: center; text-align: center; box-sizing: border-box; }
       .hero-content { max-width: 100%; }
       .hero-eyebrow { justify-content: center; }
       .hero-eyebrow::before { display: none; }
@@ -1073,8 +1074,8 @@
       .stat-item:nth-child(2n) { border-right: none; }
 
       /* ── Services ── */
-      .services-grid { grid-template-columns: 1fr; }
-      .service-card { padding: 24px; width: 100%; overflow: hidden; }
+      .services-grid { grid-template-columns: 1fr; width: 100%; overflow: hidden; }
+      .service-card { padding: 24px; width: 100%; max-width: 100%; overflow: hidden; }
       .service-title { word-break: break-word; }
       .service-desc { word-break: break-word; }
 
@@ -1333,7 +1334,7 @@
         Reliable HVAC<br /><em>Services</em>
       </h1>
       <div class="hero-actions">
-        <a href="#contact" class="btn-primary">Get Honest Advice</a>
+        <a href="#contact" class="btn-primary">Get a Free Quote</a>
         <a href="tel:+61466825476" class="btn-ghost">Call or Text Us</a>
       </div>
     </div>
