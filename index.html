@@ -1500,9 +1500,27 @@
         0%   { transform: translateX(0); }
         100% { transform: translateX(-50%); }
       }
-      .auto-scroll-section {
+      @keyframes scroll-right {
+        0%   { transform: translateX(-50%); }
+        100% { transform: translateX(0); }
+      }
+      .auto-scroll-row {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
         width: 100%;
         padding: 40px 0 0;
+        box-sizing: border-box;
+      }
+      @media (max-width: 768px) {
+        .auto-scroll-row {
+          flex-direction: column;
+          gap: 12px;
+        }
+      }
+      .auto-scroll-section {
+        flex: 1 1 0;
+        min-width: 0;
         overflow: hidden;
       }
       .auto-scroll-mask {
@@ -1519,13 +1537,17 @@
         animation: scroll-left 28s linear infinite;
         will-change: transform;
       }
+      .auto-scroll-track--reverse {
+        animation-name: scroll-right;
+        animation-duration: 32s;
+      }
       .auto-scroll-mask:hover .auto-scroll-track {
         animation-play-state: paused;
       }
       .auto-scroll-item {
         flex: 0 0 auto;
-        width: 380px;
-        height: 320px;
+        width: 280px;
+        height: 240px;
         overflow: hidden;
         box-shadow: 0 8px 32px rgba(0,0,0,0.14);
       }
@@ -1557,24 +1579,46 @@
       </div>
     </div>
 
-    <!-- Auto Image Scroll Strip -->
-    <div class="auto-scroll-section">
-      <div class="auto-scroll-mask">
-        <div class="auto-scroll-track" id="autoScrollTrack">
-          <!-- original set -->
-          <div class="auto-scroll-item"><img src="5.png" alt="Project 1" loading="lazy" /></div>
-          <div class="auto-scroll-item"><img src="6.png" alt="Project 2" loading="lazy" /></div>
-          <div class="auto-scroll-item"><img src="7.png" alt="Project 2" loading="lazy" /></div>
-          <div class="auto-scroll-item"><img src="8.png" alt="Project 3" loading="lazy" /></div>
-          <div class="auto-scroll-item"><img src="9.png" alt="Project 4" loading="lazy" /></div>
-          <div class="auto-scroll-item"><img src="10.png" alt="Project 5" loading="lazy" /></div>
-          <!-- duplicate set for seamless loop -->
-          <div class="auto-scroll-item"><img src="5.png" alt="Project 1" loading="lazy" /></div>
-          <div class="auto-scroll-item"><img src="6.png" alt="Project 2" loading="lazy" /></div>
-          <div class="auto-scroll-item"><img src="7.png" alt="Project 2" loading="lazy" /></div>
-          <div class="auto-scroll-item"><img src="8.png" alt="Project 3" loading="lazy" /></div>
-          <div class="auto-scroll-item"><img src="9.png" alt="Project 4" loading="lazy" /></div>
-          <div class="auto-scroll-item"><img src="10.png" alt="Project 5" loading="lazy" /></div>
+    <!-- Auto Image Scroll Strips — side by side -->
+    <div class="auto-scroll-row">
+      <!-- Slider 1: scrolls left -->
+      <div class="auto-scroll-section">
+        <div class="auto-scroll-mask">
+          <div class="auto-scroll-track" id="autoScrollTrack">
+            <div class="auto-scroll-item"><img src="5.png" alt="Project 1" loading="lazy" /></div>
+            <div class="auto-scroll-item"><img src="6.png" alt="Project 2" loading="lazy" /></div>
+            <div class="auto-scroll-item"><img src="7.png" alt="Project 3" loading="lazy" /></div>
+            <div class="auto-scroll-item"><img src="8.png" alt="Project 4" loading="lazy" /></div>
+            <div class="auto-scroll-item"><img src="9.png" alt="Project 5" loading="lazy" /></div>
+            <div class="auto-scroll-item"><img src="10.png" alt="Project 6" loading="lazy" /></div>
+            <!-- duplicate for seamless loop -->
+            <div class="auto-scroll-item"><img src="5.png" alt="Project 1" loading="lazy" /></div>
+            <div class="auto-scroll-item"><img src="6.png" alt="Project 2" loading="lazy" /></div>
+            <div class="auto-scroll-item"><img src="7.png" alt="Project 3" loading="lazy" /></div>
+            <div class="auto-scroll-item"><img src="8.png" alt="Project 4" loading="lazy" /></div>
+            <div class="auto-scroll-item"><img src="9.png" alt="Project 5" loading="lazy" /></div>
+            <div class="auto-scroll-item"><img src="10.png" alt="Project 6" loading="lazy" /></div>
+          </div>
+        </div>
+      </div>
+      <!-- Slider 2: scrolls right (reversed order for visual contrast) -->
+      <div class="auto-scroll-section">
+        <div class="auto-scroll-mask">
+          <div class="auto-scroll-track auto-scroll-track--reverse" id="autoScrollTrack2">
+            <div class="auto-scroll-item"><img src="10.png" alt="Project 6" loading="lazy" /></div>
+            <div class="auto-scroll-item"><img src="9.png" alt="Project 5" loading="lazy" /></div>
+            <div class="auto-scroll-item"><img src="8.png" alt="Project 4" loading="lazy" /></div>
+            <div class="auto-scroll-item"><img src="7.png" alt="Project 3" loading="lazy" /></div>
+            <div class="auto-scroll-item"><img src="6.png" alt="Project 2" loading="lazy" /></div>
+            <div class="auto-scroll-item"><img src="5.png" alt="Project 1" loading="lazy" /></div>
+            <!-- duplicate for seamless loop -->
+            <div class="auto-scroll-item"><img src="10.png" alt="Project 6" loading="lazy" /></div>
+            <div class="auto-scroll-item"><img src="9.png" alt="Project 5" loading="lazy" /></div>
+            <div class="auto-scroll-item"><img src="8.png" alt="Project 4" loading="lazy" /></div>
+            <div class="auto-scroll-item"><img src="7.png" alt="Project 3" loading="lazy" /></div>
+            <div class="auto-scroll-item"><img src="6.png" alt="Project 2" loading="lazy" /></div>
+            <div class="auto-scroll-item"><img src="5.png" alt="Project 1" loading="lazy" /></div>
+          </div>
         </div>
       </div>
     </div>
