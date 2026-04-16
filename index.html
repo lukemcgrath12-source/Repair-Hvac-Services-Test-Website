@@ -980,8 +980,11 @@
       margin-top: 0;
       padding: 24px 0;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
+      gap: 6px;
+      text-align: center;
     }
 
     .footer-copy {
@@ -1128,7 +1131,7 @@
       footer { padding: 48px 20px 0; }
       .footer-top { grid-template-columns: 1fr; gap: 32px; text-align: center; }
       .footer-tagline { max-width: 100%; margin: 0 auto; }
-      .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+      .footer-bottom { gap: 8px; }
     }
     /* ══ LIGHT MODE OVERRIDES ══ */
     body { background: #ffffff; }
@@ -1870,7 +1873,6 @@
     <div class="footer-top">
       <div class="footer-brand">
         <p class="footer-tagline">A/C installation, repairs, and maintenance. Serving the Greater Sydney area with honest, quality work.</p>
-        <p style="font-size: 11px; letter-spacing: 0.1em; color: rgba(242,237,230,0.35); margin-top: 12px;">ABN 41 694 442 521</p>
       </div>
       <div>
         <div class="footer-col-title">Services</div>
@@ -1899,12 +1901,12 @@
           <li><a href="tel:+61449622010">Jack: 0449 622 010</a></li>
           <li><a href="mailto:repairhvacs@gmail.com">repairhvacs@gmail.com</a></li>
           <li style="color: rgba(30,27,75,0.45); font-size: 14px; line-height: 1.5;">Greater Sydney &amp;<br />Surrounding Suburbs</li>
-          <li style="color: rgba(30,27,75,0.35); font-size: 12px; letter-spacing: 0.08em; margin-top: 4px;">ABN 41 694 442 521</li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
       <p class="footer-copy">© 2026 RepAIR HVAC Services. All rights reserved.</p>
+      <p class="footer-copy" style="letter-spacing: 0.08em;">ABN 41 694 442 521 | RTA AU068831 | LIC 492196C</p>
     </div>
   </footer>
 
