@@ -757,6 +757,80 @@
       line-height: 1.6;
     }
 
+    /* ── FAQ Accordion ── */
+    .faq-section {
+      background: #f4f4f8;
+      padding: 8rem 48px;
+    }
+    .faq-section .eyebrow { color: var(--teal); }
+    .faq-section .eyebrow::before { background: var(--teal); }
+    .faq-section .section-heading { color: #1E1B4B; }
+    .faq-section .section-heading em { color: var(--teal); font-style: italic; }
+    .faq-list {
+      margin-top: 3rem;
+      max-width: 860px;
+    }
+    .faq-item {
+      border-bottom: 1px solid rgba(30,27,75,0.12);
+    }
+    .faq-item:first-child {
+      border-top: 1px solid rgba(30,27,75,0.12);
+    }
+    .faq-btn {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 1.4rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+      cursor: pointer;
+      text-align: left;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: #1E1B4B;
+      line-height: 1.4;
+    }
+    .faq-btn:hover { color: var(--teal); }
+    .faq-icon {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      color: #0D7A7A;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .faq-item.open .faq-icon {
+      transform: rotate(45deg);
+    }
+    .faq-body {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.35s ease;
+    }
+    .faq-item.open .faq-body {
+      grid-template-rows: 1fr;
+    }
+    .faq-body-inner {
+      overflow: hidden;
+    }
+    .faq-answer {
+      padding: 0 0 1.4rem 0;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      line-height: 1.75;
+      color: rgba(30,27,75,0.75);
+    }
+    .faq-answer ul {
+      margin: 0.75rem 0 0 0;
+      padding-left: 1.25rem;
+      list-style: disc;
+    }
+    .faq-answer ul li {
+      margin-bottom: 0.35rem;
+    }
+
     /* ── Contact ── */
     .contact-wrap {
       display: grid;
@@ -1509,6 +1583,88 @@
     </div>
   </div>
 
+  <!-- ══════════════════════ FAQ ══════════════════════ -->
+  <section class="faq-section">
+    <div class="eyebrow">Got Questions</div>
+    <h2 class="section-heading">Frequently Asked <em>Questions</em></h2>
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <button class="faq-btn" aria-expanded="false">
+          Why is my split system leaking water?
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-body"><div class="faq-body-inner">
+          <p class="faq-answer">Most of the time, it's caused by a blocked drain. When your system gets dirty — like blocked filters or a dusty coil — airflow is reduced and it can cause the system to produce water excessively. This can overflow the drain pan or block the drain, leading to leaks. Regular servicing helps prevent this. If you'd like your system maintained by RepAIR HVAC Services, don't hesitate to get in touch.</p>
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-btn" aria-expanded="false">
+          What is a room temperature set point and what should I set mine to?
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-body"><div class="faq-body-inner">
+          <p class="faq-answer">A room temperature set point is the temperature you'd like your system to achieve before it either cycles off or continues to fan without a refrigerating effect. We recommend keeping it between 21°C and 23°C for efficient operation. The further you set it from ambient temperature, the harder and longer your system has to work to get there.</p>
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-btn" aria-expanded="false">
+          Should I repair or replace my air conditioner?
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-body"><div class="faq-body-inner">
+          <p class="faq-answer">It depends on the age and condition of your system. If it's over 15 years old, parts can be hard to source, so replacement is often the better option. If you've already spent a lot on repairs, it may be more cost-effective to replace rather than keep fixing. RepAIR HVAC Services will always provide both repair and replacement options so you can make the right call.</p>
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-btn" aria-expanded="false">
+          How often should I service my air conditioner — and what does a service include?
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-body"><div class="faq-body-inner">
+          <div class="faq-answer">
+            <p>A good rule of thumb is once every 12 months, depending on how often you run the system. In between, you can clean your return air filter as needed — our technicians can show you how when we attend.</p>
+            <p style="margin-top:0.75rem;">A general service by RepAIR HVAC Services includes:</p>
+            <ul>
+              <li>Test system operation on full load and ensure adequate airflow</li>
+              <li>Record temperatures to determine correct refrigerant levels</li>
+              <li>Chemically clean return air filters, coils, grilles and fascia covers (if applicable)</li>
+              <li>Inspect condition of all electrical components</li>
+              <li>Tighten power and interconnect electrical connections</li>
+              <li>Flush condensate drains</li>
+              <li>Test zone motor operation (if applicable)</li>
+            </ul>
+            <p style="margin-top:0.75rem;">Regular maintenance extends system lifespan, improves energy efficiency and reduces the risk of breakdowns.</p>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-btn" aria-expanded="false">
+          Does RepAIR HVAC Services provide free installation quotes?
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-body"><div class="faq-body-inner">
+          <p class="faq-answer">Yes. We're happy to attend site and gather all necessary details to provide a free quote. Any information you can provide upfront — such as floor plans — is encouraged. Free installation quotes are valid for one month.</p>
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-btn" aria-expanded="false">
+          How much experience does RepAIR HVAC Services have? Are you licensed?
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-body"><div class="faq-body-inner">
+          <p class="faq-answer">Our directors have a combined 18+ years of experience across residential and commercial HVAC. We are licensed with the RTA and Building Commission NSW, so we're equipped to handle whatever you throw at us.</p>
+        </div></div>
+      </div>
+
+    </div>
+  </section>
+
   <!-- ══════════════════════ CONTACT ══════════════════════ -->
   <section id="contact" style="background: #ffffff; border-top: 1px solid rgba(30,27,75,0.08);">
     <div class="contact-wrap">
@@ -1681,6 +1837,28 @@
       });
 
       activatePanel(0);
+    })();
+  </script>
+
+  <script>
+    (function () {
+      var items = document.querySelectorAll('.faq-item');
+      items.forEach(function (item) {
+        var btn = item.querySelector('.faq-btn');
+        btn.addEventListener('click', function () {
+          var isOpen = item.classList.contains('open');
+          // Close all
+          items.forEach(function (el) {
+            el.classList.remove('open');
+            el.querySelector('.faq-btn').setAttribute('aria-expanded', 'false');
+          });
+          // Open clicked if it was closed
+          if (!isOpen) {
+            item.classList.add('open');
+            btn.setAttribute('aria-expanded', 'true');
+          }
+        });
+      });
     })();
   </script>
 </body>
