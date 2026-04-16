@@ -1433,17 +1433,26 @@
 
     <style>
       /* ── Image Comparison Slider ── */
+      .img-compare-wrap {
+        width: 100%;
+        max-width: 960px;
+        margin: 48px auto 80px;
+        padding: 0 24px;
+        box-sizing: border-box;
+      }
       .img-compare {
         position: relative;
         width: 100%;
-        max-width: 800px;
-        height: 400px;
-        margin: 48px auto 0;
-        border-radius: 0;
+        aspect-ratio: 16 / 9;
         overflow: hidden;
-        box-shadow: 0 24px 80px rgba(0,0,0,0.32);
+        border-radius: 16px;
+        box-shadow:
+          0 2px 4px rgba(0,0,0,0.08),
+          0 8px 24px rgba(0,0,0,0.14),
+          0 32px 80px rgba(0,0,0,0.22);
         user-select: none;
         cursor: ew-resize;
+        touch-action: none;
       }
       .img-compare img {
         position: absolute;
@@ -1451,9 +1460,9 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        object-position: left;
+        object-position: center;
         display: block;
-        draggable: false;
+        pointer-events: none;
       }
       .img-compare__after {
         clip-path: inset(0 50% 0 0);
@@ -1463,145 +1472,120 @@
         position: absolute;
         top: 0;
         bottom: 0;
-        width: 3px;
-        background: rgba(255,255,255,0.85);
-        left: calc(50% - 1.5px);
+        width: 2px;
+        background: rgba(255,255,255,0.9);
+        left: calc(50% - 1px);
         z-index: 2;
         pointer-events: none;
+        box-shadow: 0 0 12px rgba(0,0,0,0.4);
       }
       .img-compare__handle {
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 48px;
-        height: 48px;
+        width: 52px;
+        height: 52px;
         background: #fff;
         border-radius: 9999px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.28);
+        box-shadow:
+          0 2px 8px rgba(0,0,0,0.18),
+          0 8px 24px rgba(0,0,0,0.22);
         z-index: 3;
         pointer-events: none;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.15s ease;
       }
       .img-compare.dragging .img-compare__handle {
-        transform: translate(-50%, -50%) scale(1.1);
-        box-shadow: 0 8px 28px rgba(0,0,0,0.38);
+        transform: translate(-50%, -50%) scale(1.15);
+        box-shadow:
+          0 4px 12px rgba(0,0,0,0.22),
+          0 12px 36px rgba(0,0,0,0.3);
       }
-      .img-compare__handle svg {
-        width: 24px;
-        height: 24px;
-        color: #374151;
+      /* Before / After labels */
+      .img-compare__label {
+        position: absolute;
+        top: 16px;
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #fff;
+        background: rgba(0,0,0,0.45);
+        backdrop-filter: blur(6px);
+        z-index: 4;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
       }
-      /* ── Auto Scroll Strip ── */
-      @keyframes scroll-left {
-        0%   { transform: translateX(0); }
-        100% { transform: translateX(-50%); }
-      }
-      .auto-scroll-section {
-        width: 100%;
-        padding: 40px 0 0;
-        overflow: hidden;
-      }
-      .auto-scroll-mask {
-        width: 100%;
-        overflow: hidden;
-        mask: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
-        -webkit-mask: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
-      }
-      .auto-scroll-track {
-        display: flex;
-        flex-wrap: nowrap;
-        gap: 16px;
-        width: max-content;
-        animation: scroll-left 28s linear infinite;
-        will-change: transform;
-      }
-      .auto-scroll-mask:hover .auto-scroll-track {
-        animation-play-state: paused;
-      }
-      .auto-scroll-item {
-        flex: 0 0 auto;
-        width: 380px;
-        height: 320px;
-        overflow: hidden;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.14);
-      }
-      @media (max-width: 768px) {
-        .auto-scroll-item { width: 260px; height: 220px; }
-      }
-      .auto-scroll-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-        transition: transform 0.4s ease;
-      }
-      .auto-scroll-item:hover img {
-        transform: scale(1.04);
+      .img-compare__label--before { left: 16px; }
+      .img-compare__label--after  { right: 16px; z-index: 4; }
+      @media (max-width: 600px) {
+        .img-compare-wrap { padding: 0 12px; }
+        .img-compare__handle { width: 44px; height: 44px; }
+        .img-compare__label { font-size: 10px; padding: 4px 10px; }
       }
     </style>
 
     <!-- Image Comparison Slider -->
-    <div class="img-compare" id="imgCompare">
-      <img class="img-compare__before" src="./New%20Aircon%20Image.png" alt="Before" draggable="false" />
-      <img class="img-compare__after" src="./Old%20Aircon%20Image.png" alt="After" draggable="false" />
-      <div class="img-compare__divider" id="imgDivider"></div>
-      <div class="img-compare__handle" id="imgHandle">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="15" y1="18" x2="9" y2="12"></line>
-          <line x1="9" y1="6" x2="15" y2="12"></line>
-        </svg>
-      </div>
-    </div>
-
-    <!-- Auto Image Scroll Strip -->
-    <div class="auto-scroll-section">
-      <div class="auto-scroll-mask">
-        <div class="auto-scroll-track" id="autoScrollTrack">
-          <!-- original set -->
-          <div class="auto-scroll-item"><img src="5.png" alt="Project 1" loading="lazy" /></div>
-          <div class="auto-scroll-item"><img src="6.png" alt="Project 2" loading="lazy" /></div>
-          <div class="auto-scroll-item"><img src="7.png" alt="Project 2" loading="lazy" /></div>
-          <div class="auto-scroll-item"><img src="8.png" alt="Project 3" loading="lazy" /></div>
-          <div class="auto-scroll-item"><img src="9.png" alt="Project 4" loading="lazy" /></div>
-          <div class="auto-scroll-item"><img src="10.png" alt="Project 5" loading="lazy" /></div>
-          <!-- duplicate set for seamless loop -->
-          <div class="auto-scroll-item"><img src="5.png" alt="Project 1" loading="lazy" /></div>
-          <div class="auto-scroll-item"><img src="6.png" alt="Project 2" loading="lazy" /></div>
-          <div class="auto-scroll-item"><img src="7.png" alt="Project 2" loading="lazy" /></div>
-          <div class="auto-scroll-item"><img src="8.png" alt="Project 3" loading="lazy" /></div>
-          <div class="auto-scroll-item"><img src="9.png" alt="Project 4" loading="lazy" /></div>
-          <div class="auto-scroll-item"><img src="10.png" alt="Project 5" loading="lazy" /></div>
+    <div class="img-compare-wrap">
+      <div class="img-compare" id="imgCompare">
+        <img class="img-compare__before" src="./New%20Aircon%20Image.png" alt="After installation" draggable="false" />
+        <img class="img-compare__after"  src="./Old%20Aircon%20Image.png" alt="Before installation" draggable="false" />
+        <div class="img-compare__divider" id="imgDivider"></div>
+        <div class="img-compare__handle" id="imgHandle">
+          <!-- bidirectional arrows -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+            <polyline points="9 18 3 12 9 6"></polyline>
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:-6px">
+            <polyline points="9 18 15 12 9 6"></polyline>
+            <polyline points="15 18 21 12 15 6"></polyline>
+          </svg>
         </div>
+        <span class="img-compare__label img-compare__label--before">After</span>
+        <span class="img-compare__label img-compare__label--after">Before</span>
       </div>
     </div>
 
     <script>
       (function () {
         const container = document.getElementById('imgCompare');
-        const afterImg   = container.querySelector('.img-compare__after');
-        const divider    = document.getElementById('imgDivider');
-        const handle     = document.getElementById('imgHandle');
+        const afterImg  = container.querySelector('.img-compare__after');
+        const divider   = document.getElementById('imgDivider');
+        const handle    = document.getElementById('imgHandle');
         let dragging = false;
+        let pct = 50;
 
         function setPosition(clientX) {
           const rect = container.getBoundingClientRect();
-          let pct = ((clientX - rect.left) / rect.width) * 100;
-          pct = Math.max(0, Math.min(100, pct));
-          afterImg.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
-          divider.style.left      = `calc(${pct}% - 1.5px)`;
-          handle.style.left       = `${pct}%`;
+          pct = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
+          afterImg.style.clipPath  = `inset(0 ${100 - pct}% 0 0)`;
+          divider.style.left       = `calc(${pct}% - 1px)`;
+          handle.style.left        = `${pct}%`;
         }
 
-        container.addEventListener('mousedown',  () => { dragging = true;  container.classList.add('dragging'); });
-        window.addEventListener(  'mouseup',     () => { dragging = false; container.classList.remove('dragging'); });
-        window.addEventListener(  'mousemove',   (e) => { if (dragging) setPosition(e.clientX); });
-        container.addEventListener('touchstart',  () => { dragging = true;  container.classList.add('dragging'); }, { passive: true });
-        window.addEventListener(  'touchend',    () => { dragging = false; container.classList.remove('dragging'); });
-        window.addEventListener(  'touchmove',   (e) => { if (dragging) setPosition(e.touches[0].clientX); }, { passive: true });
+        // Mouse
+        container.addEventListener('mousedown', (e) => {
+          dragging = true;
+          container.classList.add('dragging');
+          setPosition(e.clientX);
+        });
+        window.addEventListener('mouseup',   () => { dragging = false; container.classList.remove('dragging'); });
+        window.addEventListener('mousemove', (e) => { if (dragging) setPosition(e.clientX); });
+
+        // Touch
+        container.addEventListener('touchstart', (e) => {
+          dragging = true;
+          container.classList.add('dragging');
+          setPosition(e.touches[0].clientX);
+        }, { passive: true });
+        window.addEventListener('touchend',  () => { dragging = false; container.classList.remove('dragging'); });
+        window.addEventListener('touchmove', (e) => { if (dragging) setPosition(e.touches[0].clientX); }, { passive: false });
       })();
     </script>
   </section>
