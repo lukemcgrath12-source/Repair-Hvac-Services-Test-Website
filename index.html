@@ -928,9 +928,8 @@
 
     /* ── Footer ── */
     footer {
-      background: #080710;
-      border-top: 1px solid rgba(242,237,230,0.06);
-      padding: 64px 48px 36px;
+      background: #1E1B4B;
+      padding: 64px 48px 0;
     }
 
     .footer-top {
@@ -938,26 +937,23 @@
       grid-template-columns: 2fr 1fr 1fr 1fr;
       gap: 48px;
       padding-bottom: 48px;
-      border-bottom: 1px solid rgba(242,237,230,0.06);
     }
 
     .footer-brand img {
-      height: 40px;
-      width: auto;
-      margin-bottom: 20px;
+      display: none;
     }
 
     .footer-tagline {
       font-size: 14px;
       line-height: 1.7;
-      color: rgba(242,237,230,0.45);
+      color: rgba(242,237,230,0.7);
       max-width: 280px;
     }
 
     .footer-col-title {
       font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0.2em;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
       color: rgba(242,237,230,0.4);
       margin-bottom: 20px;
@@ -972,23 +968,26 @@
 
     .footer-links a {
       font-size: 14px;
-      color: rgba(242,237,230,0.55);
+      color: rgba(242,237,230,0.7);
       text-decoration: none;
       transition: color 0.2s;
     }
 
-    .footer-links a:hover { color: var(--offwhite); }
+    .footer-links a:hover { color: #ffffff; }
 
     .footer-bottom {
+      border-top: 1px solid rgba(242,237,230,0.1);
+      margin-top: 0;
+      padding: 24px 0;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      padding-top: 32px;
     }
 
     .footer-copy {
       font-size: 12px;
-      color: rgba(242,237,230,0.3);
+      color: rgba(242,237,230,0.4);
+      text-align: center;
     }
 
     /* ── Mobile nav drawer ── */
@@ -1126,9 +1125,9 @@
       .cta-banner { padding: 3rem 20px; }
 
       /* ── Footer ── */
-      footer { padding: 40px 20px 24px; }
-      .footer-top { grid-template-columns: 1fr; gap: 24px; text-align: center; }
-      .footer-desc { max-width: 100%; }
+      footer { padding: 48px 20px 0; }
+      .footer-top { grid-template-columns: 1fr; gap: 32px; text-align: center; }
+      .footer-tagline { max-width: 100%; margin: 0 auto; }
       .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
     }
     /* ══ LIGHT MODE OVERRIDES ══ */
@@ -1191,13 +1190,12 @@
     .contact-info-value { color: #1E1B4B; }
 
     /* Footer */
-    footer { background: #f0f0f5; border-color: rgba(30,27,75,0.08); }
-    .footer-top { border-color: rgba(30,27,75,0.08); }
-    .footer-tagline { color: rgba(30,27,75,0.5); }
-    .footer-col-title { color: rgba(30,27,75,0.45); }
-    .footer-links a { color: rgba(30,27,75,0.6); }
-    .footer-links a:hover { color: #1E1B4B; }
-    .footer-copy { color: rgba(30,27,75,0.35); }
+    footer { background: #1E1B4B; }
+    .footer-tagline { color: rgba(242,237,230,0.7); }
+    .footer-col-title { color: rgba(242,237,230,0.4); }
+    .footer-links a { color: rgba(242,237,230,0.7); }
+    .footer-links a:hover { color: #ffffff; }
+    .footer-copy { color: rgba(242,237,230,0.4); }
 
     /* Hero — keep light text on dark image background */
     .hero-heading { color: #f2ede6; }
@@ -1866,9 +1864,8 @@
   <footer>
     <div class="footer-top">
       <div class="footer-brand">
-        <img src="BRAND_ASSETS/REP_1_SVG_-_Repair_HVAC_Services-removebg-preview.png" alt="REPAIR HVAC Services" loading="lazy" width="160" height="40" />
         <p class="footer-tagline">A/C installation, repairs, and maintenance. Serving the Greater Sydney area with honest, quality work.</p>
-        <p style="font-size: 11px; letter-spacing: 0.1em; color: rgba(30,27,75,0.35); margin-top: 12px;">ABN 41 694 442 521</p>
+        <p style="font-size: 11px; letter-spacing: 0.1em; color: rgba(242,237,230,0.35); margin-top: 12px;">ABN 41 694 442 521</p>
       </div>
       <div>
         <div class="footer-col-title">Services</div>
@@ -1902,15 +1899,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p class="footer-copy">© 2026 REPAIR HVAC SERVICES. All rights reserved.</p>
-      <div style="display: flex; align-items: center; gap: 24px;">
-        <a href="https://www.instagram.com/repairhvacs?igsh=MWMyYmE5NHUxOWYy" target="_blank" rel="noopener noreferrer" aria-label="REPAIR on Instagram" style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: rgba(30,27,75,0.45); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#0D7A7A'" onmouseout="this.style.color='rgba(30,27,75,0.45)'">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg>
-          @repairhvacs
-        </a>
-        <a href="#" style="font-size: 12px; color: rgba(242,237,230,0.3); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='rgba(242,237,230,0.7)'" onmouseout="this.style.color='rgba(242,237,230,0.3)'">Privacy Policy</a>
-        <a href="#" style="font-size: 12px; color: rgba(242,237,230,0.3); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='rgba(242,237,230,0.7)'" onmouseout="this.style.color='rgba(242,237,230,0.3)'">Terms of Service</a>
-      </div>
+      <p class="footer-copy">© 2026 RepAIR HVAC Services. All rights reserved.</p>
     </div>
   </footer>
 
