@@ -1544,18 +1544,80 @@
       }
     </style>
 
-    <!-- Image Comparison Slider -->
-    <div class="img-compare" id="imgCompare">
-      <img class="img-compare__before" src="./New%20Aircon%20Image.png" alt="Before" draggable="false" />
-      <img class="img-compare__after" src="./Old%20Aircon%20Image.png" alt="After" draggable="false" />
-      <div class="img-compare__divider" id="imgDivider"></div>
-      <div class="img-compare__handle" id="imgHandle">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="15" y1="18" x2="9" y2="12"></line>
-          <line x1="9" y1="6" x2="15" y2="12"></line>
-        </svg>
+    <style>
+      /* ── Slider grid ── */
+      .img-compare-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        padding: 0 48px;
+        max-width: 1600px;
+        margin: 0 auto;
+        box-sizing: border-box;
+      }
+      @media (max-width: 768px) {
+        .img-compare-grid { grid-template-columns: 1fr; padding: 0 16px; }
+      }
+      /* override the standalone centering when inside the grid */
+      .img-compare-grid .img-compare { max-width: 100%; margin: 48px 0 0; }
+    </style>
+
+    <!-- Image Comparison Sliders – 2-column grid -->
+    <div class="img-compare-grid">
+
+      <!-- Slider 1 -->
+      <div class="img-compare" id="imgCompare">
+        <img class="img-compare__before" src="./New%20Aircon%20Image.png" alt="Before" draggable="false" />
+        <img class="img-compare__after" src="./Old%20Aircon%20Image.png" alt="After" draggable="false" />
+        <div class="img-compare__divider" id="imgDivider"></div>
+        <div class="img-compare__handle" id="imgHandle">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="15" y1="18" x2="9" y2="12"></line>
+            <line x1="9" y1="6" x2="15" y2="12"></line>
+          </svg>
+        </div>
       </div>
+
+      <!-- Slider 2 -->
+      <div class="img-compare" id="imgCompare2">
+        <img class="img-compare__before" src="./IMG_0732%20Large.jpeg" alt="Before" draggable="false" />
+        <img class="img-compare__after" src="./IMG_0731.jpeg" alt="After" draggable="false" />
+        <div class="img-compare__divider" id="imgDivider2"></div>
+        <div class="img-compare__handle" id="imgHandle2">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="15" y1="18" x2="9" y2="12"></line>
+            <line x1="9" y1="6" x2="15" y2="12"></line>
+          </svg>
+        </div>
+      </div>
+
     </div>
+
+    <script>
+      (function () {
+        const container = document.getElementById('imgCompare2');
+        const afterImg  = container.querySelector('.img-compare__after');
+        const divider   = document.getElementById('imgDivider2');
+        const handle    = document.getElementById('imgHandle2');
+        let dragging = false;
+
+        function setPosition(clientX) {
+          const rect = container.getBoundingClientRect();
+          let pct = ((clientX - rect.left) / rect.width) * 100;
+          pct = Math.max(0, Math.min(100, pct));
+          afterImg.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
+          divider.style.left      = `calc(${pct}% - 1.5px)`;
+          handle.style.left       = `${pct}%`;
+        }
+
+        container.addEventListener('mousedown',  () => { dragging = true;  container.classList.add('dragging'); });
+        window.addEventListener(  'mouseup',     () => { dragging = false; container.classList.remove('dragging'); });
+        window.addEventListener(  'mousemove',   (e) => { if (dragging) setPosition(e.clientX); });
+        container.addEventListener('touchstart',  () => { dragging = true;  container.classList.add('dragging'); }, { passive: true });
+        window.addEventListener(  'touchend',    () => { dragging = false; container.classList.remove('dragging'); });
+        window.addEventListener(  'touchmove',   (e) => { if (dragging) setPosition(e.touches[0].clientX); }, { passive: true });
+      })();
+    </script>
 
     <!-- Auto Image Scroll Strip -->
     <div class="auto-scroll-section">
