@@ -988,6 +988,47 @@
       color: rgba(242,237,230,0.3);
     }
 
+    /* ── Mobile nav drawer ── */
+    .nav-drawer {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 998;
+      background: rgba(14,13,26,0.97);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 80px 32px 40px;
+      transform: translateY(-100%);
+      opacity: 0;
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease;
+      border-bottom: 1px solid rgba(242,237,230,0.08);
+    }
+    .nav-drawer.open {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .nav-drawer ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .nav-drawer ul li a {
+      display: block;
+      padding: 16px 0;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: rgba(242,237,230,0.85);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(242,237,230,0.07);
+      transition: color 0.2s ease;
+    }
+    .nav-drawer ul li:last-child a { border-bottom: none; }
+    .nav-drawer ul li a:hover { color: var(--teal-light); }
+
     /* ── Mobile hamburger ── */
     .nav-mobile-toggle {
       display: none;
@@ -1015,9 +1056,10 @@
       nav { padding: 0 24px; }
       .nav-links, .nav-cta { display: none; }
       .nav-mobile-toggle { display: flex; }
+      .nav-drawer { display: block; }
 
       section { padding: 4rem 24px; }
-      .hero { padding: 0 24px 60px; }
+      .hero { padding: 0 24px 48px; min-height: 0; height: 100svh; align-items: center; }
       .hero-heading { font-size: clamp(36px, 10vw, 56px); }
 
       .stats-bar {
@@ -1230,10 +1272,21 @@
       <li><a href="#team">Team</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
-    <div class="nav-mobile-toggle" aria-label="Menu">
+    <div class="nav-mobile-toggle" id="navToggle" aria-label="Menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </div>
   </nav>
+
+  <!-- Mobile nav drawer -->
+  <div class="nav-drawer" id="navDrawer" aria-hidden="true">
+    <ul>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#team">Team</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
 
   <!-- ══════════════════════ HERO ══════════════════════ -->
   <div class="hero">
@@ -1839,6 +1892,34 @@
       });
 
       activatePanel(0);
+    })();
+  </script>
+
+  <script>
+    // Mobile nav drawer
+    (function () {
+      var toggle = document.getElementById('navToggle');
+      var drawer = document.getElementById('navDrawer');
+      if (!toggle || !drawer) return;
+
+      function openDrawer() {
+        drawer.classList.add('open');
+        toggle.setAttribute('aria-expanded', 'true');
+        drawer.setAttribute('aria-hidden', 'false');
+      }
+      function closeDrawer() {
+        drawer.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+        drawer.setAttribute('aria-hidden', 'true');
+      }
+
+      toggle.addEventListener('click', function () {
+        drawer.classList.contains('open') ? closeDrawer() : openDrawer();
+      });
+
+      drawer.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', closeDrawer);
+      });
     })();
   </script>
 
