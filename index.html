@@ -613,10 +613,15 @@
     }
 
     .team-info {
-      padding: 40px;
+      padding: 28px 32px;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      background: #ffffff;
+      color: #1E1B4B;
+      position: static;
+      z-index: auto;
+      opacity: 1;
     }
 
     .team-name {
@@ -1095,7 +1100,7 @@
       .team-grid { grid-template-columns: 1fr; max-width: 100%; gap: 24px; }
       .team-card { grid-template-columns: 1fr; width: 100%; }
       .team-img-wrap { min-height: 0; height: 320px; }
-      .team-info { padding: 24px; }
+      .team-info { padding: 24px 20px; }
 
       /* ── Process ── */
       .process-row { grid-template-columns: 1fr 1fr; }
@@ -1195,15 +1200,13 @@
     .footer-links a:hover { color: #1E1B4B; }
     .footer-copy { color: rgba(30,27,75,0.35); }
 
-    /* Team bio — stays readable on dark card overlay */
-    .team-bio { color: rgba(242,237,230,0.6); }
-
     /* Hero — keep light text on dark image background */
     .hero-heading { color: #f2ede6; }
     .hero-sub { color: rgba(242,237,230,0.8); }
     .hero .btn-ghost { color: rgba(242,237,230,0.75); }
     .hero .btn-ghost:hover { color: #f2ede6; }
-    .team-name { color: #f2ede6; }
+    .team-name { color: #1E1B4B; }
+    .team-bio { color: rgba(30,27,75,0.8); }
 
     /* Hero — centred */
     .hero {
