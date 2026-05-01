@@ -1,0 +1,39 @@
+name: Deploy to GoDaddy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /public_html/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.DS_Store
+            **/temporary screenshots/**
+            **/BRAND_ASSETS/**
+            README.md
+            QUICK_START.md
+            PROJECT_SUMMARY.md
+            capture_screenshot.py
+            screenshot.mjs
+            serve.mjs
+            package.json
+            package-lock.json
+            tailwind.config.js
+            src/**
