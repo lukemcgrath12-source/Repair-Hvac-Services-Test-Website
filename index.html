@@ -41,11 +41,11 @@
   <meta property="og:title" content="A/C Installation, Repairs & Maintenance Sydney | REPAIR HVAC SERVICES" />
   <meta property="og:description" content="Expert A/C installation, repairs, and maintenance across Greater Sydney. Get a free quote." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://repairhvac.com.au/" />
+  <meta property="og:url" content="https://repairhvacs.com.au/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="A/C Installation, Repairs & Maintenance Sydney | REPAIR HVAC SERVICES" />
   <meta name="twitter:description" content="Expert A/C installation, repairs & maintenance in Greater Sydney. Call Zac: 0466 825 476." />
-  <link rel="canonical" href="https://repairhvac.com.au/" />
+  <link rel="canonical" href="https://repairhvacs.com.au/" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
@@ -1239,7 +1239,7 @@
   "@context": "https://schema.org",
   "@type": "HVACBusiness",
   "name": "REPAIR HVAC SERVICES",
-  "url": "https://repairhvac.com.au",
+  "url": "https://repairhvacs.com.au",
   "telephone": "+61466825476",
   "email": "hello@repairhvac.com.au",
   "address": {
@@ -1441,7 +1441,7 @@
         position: relative;
         width: 100%;
         max-width: 800px;
-        height: 400px;
+        aspect-ratio: 4 / 3;
         margin: 48px auto 0;
         border-radius: 0;
         overflow: hidden;
@@ -1451,13 +1451,14 @@
       }
       .img-compare img {
         position: absolute;
-        inset: 0;
+        left: 0;
+        top: 50%;
         width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: left;
+        height: auto;
+        transform: translateY(-50%);
+        object-fit: contain;
+        object-position: center;
         display: block;
-        draggable: false;
       }
       .img-compare__after {
         clip-path: inset(0 50% 0 0);
@@ -1628,14 +1629,14 @@
       <div class="auto-scroll-mask">
         <div class="auto-scroll-track" id="autoScrollTrack">
           <!-- original set -->
-          <div class="auto-scroll-item"><img src="5.png" alt="Split system air conditioning installation Sydney" loading="lazy" /></div>
+          <div class="auto-scroll-item"><img src="5.png" alt="Split system air conditioning installation Sydney" loading="lazy" style="object-position: 0% center;" /></div>
           <div class="auto-scroll-item"><img src="6.png" alt="Ducted AC unit repair Greater Sydney" loading="lazy" /></div>
           <div class="auto-scroll-item"><img src="7.png" alt="Air conditioner servicing and maintenance Sydney" loading="lazy" /></div>
           <div class="auto-scroll-item"><img src="8.png" alt="Commercial air conditioning installation Sydney" loading="lazy" /></div>
           <div class="auto-scroll-item"><img src="9.png" alt="Mitsubishi Electric split system installation Sydney" loading="lazy" /></div>
           <div class="auto-scroll-item"><img src="10.png" alt="Air conditioning installation and repairs Sydney" loading="lazy" /></div>
           <!-- duplicate set for seamless loop -->
-          <div class="auto-scroll-item"><img src="5.png" alt="Split system air conditioning installation Sydney" loading="lazy" /></div>
+          <div class="auto-scroll-item"><img src="5.png" alt="Split system air conditioning installation Sydney" loading="lazy" style="object-position: 0% center;" /></div>
           <div class="auto-scroll-item"><img src="6.png" alt="Ducted AC unit repair Greater Sydney" loading="lazy" /></div>
           <div class="auto-scroll-item"><img src="7.png" alt="Air conditioner servicing and maintenance Sydney" loading="lazy" /></div>
           <div class="auto-scroll-item"><img src="8.png" alt="Commercial air conditioning installation Sydney" loading="lazy" /></div>
