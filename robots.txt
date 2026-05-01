@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
 
+User-agent: facebookexternalhit
+Disallow:
+
 Sitemap: https://www.repairhvacs.com.au/sitemap.xml
