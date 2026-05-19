@@ -3,3 +3,4 @@
 temporary screenshots/
 *.log
 *.swp
+node_modules/
