@@ -5,14 +5,31 @@ const {
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./src/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
-    "./pages/**/*.{ts,tsx}",
+    "./*.html",
   ],
   darkMode: "class",
   theme: {
     extend: {
+      colors: {
+        brand: {
+          navy:     '#0e0d1a',
+          navyMid:  '#1a1828',
+          navyCard: '#141220',
+          teal:     '#0D7A7A',
+          tealMid:  '#1a9090',
+          tealLight:'#5bbaba',
+          offwhite: '#f2ede6',
+          muted:    'rgba(242,237,230,0.55)',
+          border:   'rgba(242,237,230,0.1)',
+        }
+      },
+      fontFamily: {
+        serif: ['"DM Serif Display"', 'Georgia', 'serif'],
+        sans:  ['"DM Sans"', 'system-ui', 'sans-serif'],
+      },
+      letterSpacing: {
+        widest2: '0.25em',
+      },
       animation: {
         aurora: "aurora 60s linear infinite",
       },
