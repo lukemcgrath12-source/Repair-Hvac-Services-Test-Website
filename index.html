@@ -943,17 +943,46 @@
       grid-template-columns: 2fr 1fr 1fr 1fr;
       gap: 48px;
       padding-bottom: 48px;
+      border-bottom: 1px solid rgba(242,237,230,0.1);
     }
 
     .footer-brand img {
-      display: none;
+      height: 52px;
+      width: auto;
+      display: block;
+      margin-bottom: 14px;
+      opacity: 0.9;
     }
 
     .footer-tagline {
       font-size: 14px;
       line-height: 1.7;
-      color: rgba(242,237,230,0.7);
-      max-width: 280px;
+      color: rgba(242,237,230,0.55);
+      max-width: 260px;
+      margin-bottom: 20px;
+    }
+
+    .footer-socials {
+      display: flex;
+      gap: 12px;
+    }
+
+    .footer-socials a {
+      width: 36px;
+      height: 36px;
+      border-radius: 4px;
+      background: rgba(242,237,230,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(242,237,230,0.55);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .footer-socials a:hover {
+      background: #0D7A7A;
+      color: #fff;
     }
 
     .footer-col-title {
@@ -961,7 +990,7 @@
       font-weight: 600;
       letter-spacing: 0.15em;
       text-transform: uppercase;
-      color: rgba(242,237,230,0.4);
+      color: rgba(242,237,230,0.35);
       margin-bottom: 20px;
     }
 
@@ -974,29 +1003,52 @@
 
     .footer-links a {
       font-size: 14px;
-      color: rgba(242,237,230,0.7);
+      color: rgba(242,237,230,0.65);
       text-decoration: none;
       transition: color 0.2s;
     }
 
     .footer-links a:hover { color: #ffffff; }
 
+    .footer-links .footer-note {
+      font-size: 13px;
+      color: rgba(242,237,230,0.35);
+      line-height: 1.5;
+    }
+
     .footer-bottom {
-      border-top: 1px solid rgba(242,237,230,0.1);
-      margin-top: 0;
-      padding: 24px 0;
+      padding: 22px 0;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      gap: 6px;
-      text-align: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .footer-bottom-left,
+    .footer-bottom-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
     }
 
     .footer-copy {
       font-size: 12px;
-      color: rgba(242,237,230,0.4);
-      text-align: center;
+      color: rgba(242,237,230,0.35);
+    }
+
+    .footer-copy a {
+      color: rgba(242,237,230,0.35);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-copy a:hover { color: rgba(242,237,230,0.75); }
+
+    .footer-divider {
+      color: rgba(242,237,230,0.2);
+      font-size: 12px;
     }
 
     /* ── Mobile nav drawer ── */
@@ -1060,7 +1112,7 @@
     /* ── Responsive ── */
     @media (max-width: 1024px) {
       .services-grid { grid-template-columns: 1fr 1fr; }
-      .footer-top { grid-template-columns: 1fr 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
     }
 
     @media (max-width: 768px) {
@@ -1135,9 +1187,12 @@
 
       /* ── Footer ── */
       footer { padding: 48px 20px 0; }
-      .footer-top { grid-template-columns: 1fr; gap: 32px; text-align: center; }
-      .footer-tagline { max-width: 100%; margin: 0 auto; }
-      .footer-bottom { gap: 8px; }
+      .footer-top { grid-template-columns: 1fr; gap: 28px; text-align: center; }
+      .footer-tagline { max-width: 100%; margin: 0 auto 16px; }
+      .footer-socials { justify-content: center; }
+      .footer-brand img { margin: 0 auto 14px; }
+      .footer-bottom { flex-direction: column; gap: 6px; text-align: center; }
+      .footer-bottom-left, .footer-bottom-right { justify-content: center; }
     }
     /* ══ LIGHT MODE OVERRIDES ══ */
     body { background: #ffffff; }
@@ -1200,11 +1255,11 @@
 
     /* Footer */
     footer { background: #1E1B4B; }
-    .footer-tagline { color: rgba(242,237,230,0.7); }
-    .footer-col-title { color: rgba(242,237,230,0.4); }
-    .footer-links a { color: rgba(242,237,230,0.7); }
+    .footer-tagline { color: rgba(242,237,230,0.55); }
+    .footer-col-title { color: rgba(242,237,230,0.35); }
+    .footer-links a { color: rgba(242,237,230,0.65); }
     .footer-links a:hover { color: #ffffff; }
-    .footer-copy { color: rgba(242,237,230,0.4); }
+    .footer-copy { color: rgba(242,237,230,0.35); }
 
     /* Hero — keep light text on dark image background */
     .hero-heading { color: #f2ede6; }
@@ -2000,43 +2055,73 @@
   <!-- ══════════════════════ FOOTER ══════════════════════ -->
   <footer>
     <div class="footer-top">
+
+      <!-- Col 1: Brand + socials -->
       <div class="footer-brand">
+        <img src="BRAND_ASSETS/REP_1_SVG_-_Repair_HVAC_Services-removebg-preview.png" alt="REPAIR HVAC Services" />
         <p class="footer-tagline">A/C installation, repairs, and maintenance. Serving the Greater Sydney area with honest, quality work.</p>
+        <div class="footer-socials">
+          <a href="https://www.instagram.com/repairhvacs?igsh=MWMyYmE5NHUxOWYy" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61572339281361" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.884v2.27h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+          </a>
+        </div>
       </div>
+
+      <!-- Col 2: Services -->
       <div>
         <div class="footer-col-title">Services</div>
         <ul class="footer-links">
           <li><a href="#services">System Installation</a></li>
-          <li><a href="#services">Repair & Diagnostics</a></li>
+          <li><a href="#services">Repair &amp; Diagnostics</a></li>
           <li><a href="#services">Preventive Maintenance</a></li>
           <li><a href="#services">Emergency 24/7</a></li>
           <li><a href="#services">Commercial HVAC</a></li>
           <li><a href="#services">Indoor Air Quality</a></li>
         </ul>
       </div>
+
+      <!-- Col 3: Get to Know Us -->
       <div>
-        <div class="footer-col-title">Company</div>
+        <div class="footer-col-title">Get to Know Us</div>
         <ul class="footer-links">
           <li><a href="#about">About Us</a></li>
           <li><a href="#team">Our Team</a></li>
-          <li><a href="#projects">Projects</a></li>
-          <li><a href="#contact">Contact</a></li>
+          <li><a href="#projects">Recent Projects</a></li>
+          <li><a href="#contact">Contact Us</a></li>
+          <li><a href="#faq">FAQ</a></li>
         </ul>
       </div>
+
+      <!-- Col 4: Contact & Hours -->
       <div>
-        <div class="footer-col-title">Contact</div>
+        <div class="footer-col-title">Contact &amp; Hours</div>
         <ul class="footer-links">
-          <li><a href="tel:+61466825476">Zac: 0466 825 476</a></li>
-          <li><a href="tel:+61449622010">Jack: 0449 622 010</a></li>
+          <li><a href="tel:+61466825476">Zac — 0466 825 476</a></li>
+          <li><a href="tel:+61449622010">Jack — 0449 622 010</a></li>
           <li><a href="mailto:info@repairhvacs.com.au">info@repairhvacs.com.au</a></li>
-          <li style="color: rgba(30,27,75,0.45); font-size: 14px; line-height: 1.5;">Greater Sydney &amp;<br />Surrounding Suburbs</li>
+          <li class="footer-note">Greater Sydney &amp; Surrounding Suburbs</li>
+          <li class="footer-note" style="margin-top:6px;">Available after hours &amp; weekends</li>
         </ul>
       </div>
+
     </div>
+
     <div class="footer-bottom">
-      <p class="footer-copy">© 2026 REPAIR HVAC Services. All rights reserved.</p>
-      <p class="footer-copy" style="letter-spacing: 0.08em;">ABN 41 694 442 521 | RTA AU068831 | LIC 492196C</p>
-      <p class="footer-copy">Website by <a href="https://www.latitude-marketing.com/" target="_blank" rel="noopener noreferrer" style="color:rgba(242,237,230,0.4);text-decoration:none;border-bottom:1px solid rgba(242,237,230,0.2);padding-bottom:1px;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='rgba(242,237,230,0.8)';this.style.borderColor='rgba(242,237,230,0.5)';" onmouseout="this.style.color='rgba(242,237,230,0.4)';this.style.borderColor='rgba(242,237,230,0.2)';">Latitude Marketing</a></p>
+      <div class="footer-bottom-left">
+        <span class="footer-copy">ABN 41 694 442 521 <span class="footer-divider">·</span> RTA AU068831 <span class="footer-divider">·</span> LIC 492196C</span>
+        <span class="footer-divider">|</span>
+        <span class="footer-copy">Website by <a href="https://www.latitude-marketing.com/" target="_blank" rel="noopener noreferrer">Latitude Marketing</a></span>
+      </div>
+      <div class="footer-bottom-right">
+        <span class="footer-copy">© 2026 REPAIR HVAC Services. All rights reserved.</span>
+        <span class="footer-divider">·</span>
+        <span class="footer-copy"><a href="#privacy">Privacy</a></span>
+        <span class="footer-divider">·</span>
+        <span class="footer-copy"><a href="#terms">Terms</a></span>
+      </div>
     </div>
   </footer>
 
