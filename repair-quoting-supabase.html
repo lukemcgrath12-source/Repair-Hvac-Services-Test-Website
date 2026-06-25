@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>REPAIR HVAC SERVICES — Quoting System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --navy:#1E1B4B;--teal:#0D7A7A;--teal-l:#0fa8a8;--teal-50:#e6f7f7;--teal-100:#d0f0f0;--teal-200:#a0e0e0;
+  --slate-800:#1e293b;--slate-700:#334155;--slate-600:#475569;--slate-500:#64748b;--slate-400:#94a3b8;
+  --slate-300:#cbd5e1;--slate-200:#e2e8f0;--slate-100:#f1f5f9;--slate-50:#f8fafc;
+  --green:#22c55e;--green-100:#dcfce7;--green-700:#15803d;
+  --red:#ef4444;--red-100:#fee2e2;
+  --amber:#f59e0b;--amber-100:#fef3c7;
+  --r:12px;--sh:0 1px 3px rgba(0,0,0,.08),0 4px 12px rgba(0,0,0,.06);--sh-lg:0 8px 32px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--slate-50);color:var(--slate-800);min-height:100vh;font-size:14px;}
+#app{display:flex;min-height:100vh;}
+#sidebar{width:220px;min-height:100vh;background:#0d0b2e;position:fixed;left:0;top:0;bottom:0;display:flex;flex-direction:column;z-index:100;}
+#main{margin-left:220px;flex:1;padding:32px;overflow-y:auto;}
+.sb-logo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.08);}
+.sb-logo-text{color:white;font-size:19px;font-weight:900;letter-spacing:-.5px;}
+.sb-logo-text span{color:var(--teal);}
+.sb-sub{color:var(--teal);font-size:10px;text-transform:uppercase;letter-spacing:2px;margin-top:2px;}
+.sb-nav{padding:14px 12px;flex:1;}
+.sb-btn{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border-radius:10px;border:none;background:none;color:var(--slate-400);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;text-align:left;font-family:'DM Sans',sans-serif;}
+.sb-btn:hover{background:rgba(255,255,255,.06);color:white;}
+.sb-btn.active{background:var(--teal);color:white;}
+.card{background:white;border-radius:var(--r);border:1px solid var(--slate-200);box-shadow:var(--sh);}
+.card-pad{padding:20px;}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
+.stat-card{background:white;border-radius:var(--r);border:1px solid var(--slate-200);padding:18px;}
+.stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--slate-400);margin-bottom:6px;}
+.stat-val{font-size:26px;font-weight:900;color:var(--teal);}
+.table-wrap{background:white;border-radius:var(--r);border:1px solid var(--slate-200);overflow:hidden;}
+.table-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--slate-100);}
+.search-wrap{position:relative;}
+.search-wrap input{padding:7px 12px 7px 32px;border:1px solid var(--slate-200);border-radius:9px;font-size:12px;outline:none;width:200px;font-family:'DM Sans',sans-serif;transition:border-color .15s;}
+.search-wrap input:focus{border-color:var(--teal);}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:var(--slate-50);border-bottom:1px solid var(--slate-200);}
+th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--slate-400);}
+tbody tr{border-bottom:1px solid var(--slate-50);transition:background .1s;}
+tbody tr:hover{background:var(--teal-50);}
+td{padding:11px 14px;font-size:13px;}
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-size:10px;font-weight:700;}
+.badge.draft{background:var(--slate-100);color:var(--slate-600);}
+.badge.sent{background:var(--teal-100);color:var(--teal);}
+.badge.accepted{background:var(--green-100);color:var(--green-700);}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px;}
+.page-title{font-size:22px;font-weight:900;color:var(--slate-800);letter-spacing:-.5px;}
+.page-sub{font-size:13px;color:var(--slate-400);margin-top:3px;}
+.btn-primary{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;background:var(--teal);color:white;border:none;border-radius:9px;font-weight:700;font-size:13px;cursor:pointer;transition:background .15s;font-family:'DM Sans',sans-serif;}
+.btn-primary:hover{background:var(--teal-l);}
+.btn-secondary{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;background:white;color:var(--slate-700);border:1px solid var(--slate-200);border-radius:9px;font-weight:600;font-size:13px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
+.btn-secondary:hover{background:var(--slate-50);border-color:var(--slate-300);}
+.btn-ghost{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;background:var(--teal-50);color:var(--teal);border:1px solid var(--teal-100);border-radius:9px;font-weight:600;font-size:13px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
+.btn-ghost:hover{background:var(--teal-100);}
+.form-group{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.form-group.full{grid-template-columns:1fr;}
+.form-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--slate-500);margin-bottom:5px;display:block;}
+.form-input,.form-textarea,.form-select{width:100%;padding:8px 11px;border:1px solid var(--slate-200);border-radius:7px;font-size:12px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s;}
+.form-input:focus,.form-textarea:focus,.form-select:focus{border-color:var(--teal);}
+.form-textarea{resize:vertical;min-height:80px;}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;}
+.modal.show{display:flex;}
+.modal-content{background:white;border-radius:var(--r);padding:28px;width:90%;max-width:500px;box-shadow:var(--sh-lg);}
+.modal-header{font-size:16px;font-weight:900;margin-bottom:18px;}
+.modal-footer{display:flex;gap:9px;justify-content:flex-end;margin-top:22px;}
+#toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:white;padding:12px 18px;border-radius:8px;font-size:13px;font-weight:600;opacity:0;transition:opacity .3s;z-index:300;}
+#toast.show{opacity:1;}
+#view-form{display:none;}#view-settings{display:none;}#view-clients{display:none;}#view-products{display:none;}#view-dashboard{display:block;}
+.icon-btn{padding:5px;border-radius:7px;border:none;background:none;cursor:pointer;color:var(--slate-400);transition:all .15s;}
+.icon-btn:hover{background:var(--red-100);color:var(--red);}
+.rev-strip{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px;}
+.rev-card{border-radius:var(--r);padding:20px;color:white;}
+.rev-card.pipeline{background:linear-gradient(135deg,var(--navy),var(--teal));}
+.rev-card.won{background:linear-gradient(135deg,#059669,#0d9488);}
+.rev-card-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;opacity:.7;margin-bottom:5px;}
+.rev-card-val{font-size:26px;font-weight:900;}
+</style>
+</head>
+<body>
+
+<div id="auth-gate" class="modal show">
+  <div class="modal-content" style="max-width:400px;">
+    <div class="modal-header" style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:16px;font-weight:900;color:var(--navy);">REPAIR<span style="color:var(--teal);">.</span></div>
+      <div style="font-size:11px;color:var(--slate-400);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Quoting System</div>
+    </div>
+    <div style="margin-bottom:18px;">
+      <label class="form-label" style="text-align:center;display:block;">Password</label>
+      <input type="password" id="password-input" class="form-input" placeholder="Enter password" style="text-align:center;font-size:14px;"/>
+    </div>
+    <button class="btn-primary" style="width:100%;justify-content:center;" onclick="checkPassword()">Access System</button>
+    <div style="font-size:11px;color:var(--slate-400);text-align:center;margin-top:12px;">Internal use only</div>
+  </div>
+</div>
+
+<div id="app" style="display:none;">
+  <div id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-text">REPAIR<span>.</span></div>
+      <div class="sb-sub">Quoting</div>
+    </div>
+    <div class="sb-nav">
+      <button class="sb-btn active" onclick="switchView('dashboard')">📊 Dashboard</button>
+      <button class="sb-btn" onclick="switchView('form')">✏️ New Quote</button>
+      <button class="sb-btn" onclick="switchView('clients')">👥 Clients</button>
+      <button class="sb-btn" onclick="switchView('products')">📦 Materials</button>
+      <button class="sb-btn" onclick="switchView('settings')">⚙️ Settings</button>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="view-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Dashboard</div>
+          <div class="page-sub">Overview of your quoting activity</div>
+        </div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Quotes</div>
+          <div class="stat-val" id="stat-total">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Draft</div>
+          <div class="stat-val" id="stat-draft">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Sent</div>
+          <div class="stat-val" id="stat-sent">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Accepted</div>
+          <div class="stat-val" id="stat-accepted">0</div>
+        </div>
+      </div>
+      <div class="rev-strip">
+        <div class="rev-card pipeline">
+          <div class="rev-card-label">Pipeline Value</div>
+          <div class="rev-card-val">$0</div>
+        </div>
+        <div class="rev-card won">
+          <div class="rev-card-label">Accepted Value</div>
+          <div class="rev-card-val">$0</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div>Recent Quotes</div>
+          <div class="search-wrap">
+            <input type="text" placeholder="Search..." id="quote-search" onkeyup="renderQuotesTable()"/>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Quote #</th>
+              <th>Client</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th style="text-align:right;"></th>
+            </tr>
+          </thead>
+          <tbody id="quotes-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="view-form">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Create Quote</div>
+        </div>
+        <div style="display:flex;gap:9px;">
+          <button class="btn-secondary" onclick="switchView('dashboard')">Cancel</button>
+          <button class="btn-primary" onclick="saveQuote()">Save Quote</button>
+        </div>
+      </div>
+      
+      <div class="card card-pad">
+        <div style="font-size:13px;font-weight:700;margin-bottom:16px;">Client Details</div>
+        <div class="form-group">
+          <div>
+            <label class="form-label">Select Client</label>
+            <select id="f-client-select" class="form-select" onchange="loadClientFromSelect(this.value)">
+              <option value="">— Select or create new —</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <div>
+            <label class="form-label">Name *</label>
+            <input type="text" id="f-name" class="form-input" placeholder="Client name"/>
+          </div>
+          <div>
+            <label class="form-label">Phone</label>
+            <input type="tel" id="f-phone" class="form-input" placeholder="0400 000 000"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <div>
+            <label class="form-label">Email</label>
+            <input type="email" id="f-email" class="form-input" placeholder="client@example.com"/>
+          </div>
+          <div>
+            <label class="form-label">Address</label>
+            <input type="text" id="f-address" class="form-input" placeholder="123 Main St, Sydney"/>
+          </div>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Notes</label>
+          <textarea id="f-notes" class="form-textarea" placeholder="Any special notes..."></textarea>
+        </div>
+        <button class="btn-ghost" onclick="saveCurrentClientFromForm()" style="margin-top:8px;">Save Client to Directory</button>
+      </div>
+
+      <div class="card card-pad" style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <div style="font-size:13px;font-weight:700;">Materials & Labor</div>
+          <button class="btn-ghost" onclick="openAddItemModal()">+ Add Item</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Cost</th>
+              <th>Qty</th>
+              <th>Total</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="quote-items-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="card card-pad" style="margin-top:18px;">
+        <div style="display:grid;grid-template-columns:1fr 200px;gap:20px;">
+          <div></div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:12px;">
+              <div>Subtotal:</div>
+              <div id="subtotal">$0.00</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:12px;">
+              <div>Markup (%):</div>
+              <input type="number" id="f-markup" class="form-input" style="width:50px;padding:4px;text-align:right;" value="40" onchange="recalc()"/>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:12px;padding-bottom:12px;border-bottom:1px solid var(--slate-200);">
+              <div>After Markup:</div>
+              <div id="after-markup">$0.00</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:12px;">
+              <div>GST (10%):</div>
+              <div id="gst-amt">$0.00</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-weight:700;font-size:14px;">
+              <div>Total:</div>
+              <div id="total">$0.00</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-clients">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Client Directory</div>
+          <div class="page-sub">Manage saved clients</div>
+        </div>
+        <button class="btn-primary" onclick="openNewClientModal()">+ Add Client</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>Address</th>
+              <th style="text-align:right;"></th>
+            </tr>
+          </thead>
+          <tbody id="clients-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="view-products">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Materials & Labor</div>
+          <div class="page-sub">Manage your materials database</div>
+        </div>
+        <button class="btn-primary" onclick="openProductModal()">+ Add Item</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Model</th>
+              <th>Cost</th>
+              <th>Status</th>
+              <th style="text-align:right;"></th>
+            </tr>
+          </thead>
+          <tbody id="pm-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="view-settings">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Settings</div>
+          <div class="page-sub">Company information & defaults</div>
+        </div>
+      </div>
+      <div class="card card-pad">
+        <div class="form-group">
+          <div>
+            <label class="form-label">Company Name</label>
+            <input type="text" id="s-company" class="form-input"/>
+          </div>
+          <div>
+            <label class="form-label">Phone</label>
+            <input type="tel" id="s-phone" class="form-input"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <div>
+            <label class="form-label">Email</label>
+            <input type="email" id="s-email" class="form-input"/>
+          </div>
+          <div>
+            <label class="form-label">Website</label>
+            <input type="url" id="s-website" class="form-input"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <div>
+            <label class="form-label">Address</label>
+            <input type="text" id="s-address" class="form-input"/>
+          </div>
+          <div>
+            <label class="form-label">License</label>
+            <input type="text" id="s-license" class="form-input"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <div>
+            <label class="form-label">Default Markup %</label>
+            <input type="number" id="s-markup" class="form-input" value="40"/>
+          </div>
+          <div>
+            <label class="form-label">GST %</label>
+            <input type="number" id="s-gst" class="form-input" value="10"/>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="saveSettings()" style="margin-top:18px;">Save Settings</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="product-modal">
+  <div class="modal-content">
+    <div class="modal-header" id="pm-modal-title">Add Material</div>
+    <div class="form-group full">
+      <label class="form-label">Name *</label>
+      <input type="text" id="pmod-name" class="form-input" placeholder="e.g. Split System Unit"/>
+    </div>
+    <div class="form-group">
+      <div>
+        <label class="form-label">Category</label>
+        <input type="text" id="pmod-cat" class="form-input" placeholder="e.g. HVAC Units"/>
+      </div>
+      <div>
+        <label class="form-label">Model</label>
+        <input type="text" id="pmod-model" class="form-input" placeholder="e.g. 2.5kW"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <div>
+        <label class="form-label">Cost $</label>
+        <input type="number" id="pmod-cost" class="form-input" placeholder="0.00" step="0.01"/>
+      </div>
+      <div>
+        <label class="form-label">Status</label>
+        <select id="pmod-status" class="form-select">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+    </div>
+    <input type="hidden" id="pmod-id"/>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeProductModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveProductFromModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="client-modal">
+  <div class="modal-content">
+    <div class="modal-header">Add Client</div>
+    <div class="form-group full">
+      <label class="form-label">Name *</label>
+      <input type="text" id="cmod-name" class="form-input" placeholder="Client name"/>
+    </div>
+    <div class="form-group">
+      <div>
+        <label class="form-label">Phone</label>
+        <input type="tel" id="cmod-phone" class="form-input" placeholder="0400 000 000"/>
+      </div>
+      <div>
+        <label class="form-label">Email</label>
+        <input type="email" id="cmod-email" class="form-input" placeholder="client@example.com"/>
+      </div>
+    </div>
+    <div class="form-group full">
+      <label class="form-label">Address</label>
+      <input type="text" id="cmod-address" class="form-input" placeholder="123 Main St"/>
+    </div>
+    <input type="hidden" id="cmod-id"/>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeClientModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveClientFromModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="item-modal">
+  <div class="modal-content">
+    <div class="modal-header">Add Material / Labor</div>
+    <div class="form-group full">
+      <label class="form-label">Select from saved materials or create new</label>
+      <select id="item-product" class="form-select" onchange="populateItemFromProduct(this.value)">
+        <option value="">— Create custom item —</option>
+      </select>
+    </div>
+    <div class="form-group full">
+      <label class="form-label">Description *</label>
+      <input type="text" id="item-name" class="form-input" placeholder="e.g. 2.5kW Split System Installation"/>
+    </div>
+    <div class="form-group">
+      <div>
+        <label class="form-label">Cost $</label>
+        <input type="number" id="item-cost" class="form-input" placeholder="0.00" step="0.01" onchange="recalc()"/>
+      </div>
+      <div>
+        <label class="form-label">Qty</label>
+        <input type="number" id="item-qty" class="form-input" value="1" step="0.1" onchange="recalc()"/>
+      </div>
+    </div>
+    <input type="hidden" id="item-id"/>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeItemModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveItemFromModal()">Add to Quote</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const QUOTING_PASSWORD = 'RepAIR2024';
+const SUPABASE_URL = 'https://gyhemsaxriyvvggsffjh.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_xd8AMjH-MdnkMpVW6cyIsA_Sm6__Mnq';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function checkPassword(){
+  const pwd = document.getElementById('password-input').value;
+  if(pwd === QUOTING_PASSWORD){
+    sessionStorage.setItem('quoting-auth', 'true');
+    document.getElementById('auth-gate').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    init();
+  }else{
+    alert('Incorrect password');
+    document.getElementById('password-input').value = '';
+  }
+}
+
+document.getElementById('password-input').addEventListener('keypress', (e)=>{
+  if(e.key === 'Enter') checkPassword();
+});
+
+// Check if already authenticated this session
+if(sessionStorage.getItem('quoting-auth') === 'true'){
+  document.getElementById('auth-gate').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  setTimeout(init, 100);
+}
+
+let clients = [];
+let customProducts = [];
+let settings = {};
+let currentQuoteItems = [];
+let quotes = [];
+
+async function init(){
+  try{
+    const [clientsData, productsData, quotesData, settingsData] = await Promise.all([
+      supabase.from('clients').select('*').order('name'),
+      supabase.from('custom_products').select('*').order('name'),
+      supabase.from('quotes').select('*').order('created_at', {ascending: false}),
+      supabase.from('settings').select('*').limit(1)
+    ]);
+    
+    if(clientsData.data) clients = clientsData.data;
+    if(productsData.data) customProducts = productsData.data;
+    if(quotesData.data) quotes = quotesData.data;
+    if(settingsData.data && settingsData.data.length) settings = settingsData.data[0];
+    
+    populateClientSelect();
+    renderProductTable();
+    renderDashboard();
+    loadSettingsForm();
+    setupRealtime();
+  }catch(e){
+    toast('Error loading data');
+  }
+}
+
+function setupRealtime(){
+  supabase.channel('db').on('postgres_changes', {event: '*', schema: 'public'}, ()=>init()).subscribe();
+}
+
+function switchView(view){
+  document.querySelectorAll('[id^="view-"]').forEach(v=>v.style.display='none');
+  document.getElementById('view-'+view).style.display='block';
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  if(view==='form'){newQuote();document.getElementById('f-markup').value=settings.markup||40;}
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+async function renderDashboard(){
+  const draft=quotes.filter(q=>q.status==='draft').length;
+  const sent=quotes.filter(q=>q.status==='sent').length;
+  const accepted=quotes.filter(q=>q.status==='accepted').length;
+  document.getElementById('stat-total').textContent=quotes.length;
+  document.getElementById('stat-draft').textContent=draft;
+  document.getElementById('stat-sent').textContent=sent;
+  document.getElementById('stat-accepted').textContent=accepted;
+  renderQuotesTable();
+}
+
+function renderQuotesTable(){
+  const tbody=document.getElementById('quotes-tbody');
+  const search=document.getElementById('quote-search').value.toLowerCase();
+  tbody.innerHTML='';
+  const filtered=quotes.filter(q=>(q.client_name||'').toLowerCase().includes(search)||(q.quote_number||'').toLowerCase().includes(search));
+  for(const q of filtered.slice(0,20)){
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="font-weight:800;color:var(--teal);">${q.quote_number||q.id.slice(0,8)}</td><td>${q.client_name||'—'}</td><td><span class="badge ${q.status||'draft'}">${(q.status||'draft')}</span></td><td>${new Date(q.created_at).toLocaleDateString()}</td><td style="text-align:right;"><button class="icon-btn" onclick="deleteQuote('${q.id}')" title="Delete">🗑️</button></td>`;
+    tbody.appendChild(tr);
+  }
+  if(!filtered.length)tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--slate-400);">No quotes yet</td></tr>';
+}
+
+function newQuote(){
+  currentQuoteItems=[];
+  document.getElementById('f-name').value='';
+  document.getElementById('f-phone').value='';
+  document.getElementById('f-email').value='';
+  document.getElementById('f-address').value='';
+  document.getElementById('f-notes').value='';
+  document.getElementById('f-client-select').value='';
+  renderQuoteItems();
+  recalc();
+}
+
+async function saveQuote(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){toast('Enter client name');return;}
+  if(currentQuoteItems.length===0){toast('Add at least one item');return;}
+  const quoteNum='Q'+Math.random().toString(36).slice(-6).toUpperCase();
+  const {data,error}=await supabase.from('quotes').insert({quote_number:quoteNum,client_name:name,client_phone:document.getElementById('f-phone').value,client_email:document.getElementById('f-email').value,client_address:document.getElementById('f-address').value,client_notes:document.getElementById('f-notes').value,status:'draft'}).select().single();
+  if(error){toast('Error: '+error.message);return;}
+  for(const item of currentQuoteItems){await supabase.from('quote_items').insert({quote_id:data.id,product_name:item.name,cost:item.cost,quantity:item.qty,notes:item.notes});}
+  init();
+  newQuote();
+  switchView('dashboard');
+  toast('Quote saved ✓');
+}
+
+async function deleteQuote(id){
+  if(!confirm('Delete this quote?'))return;
+  await supabase.from('quote_items').delete().eq('quote_id',id);
+  await supabase.from('quotes').delete().eq('id',id);
+  init();
+  toast('Quote deleted');
+}
+
+function renderQuoteItems(){
+  const tbody=document.getElementById('quote-items-tbody');
+  tbody.innerHTML='';
+  for(let i=0;i<currentQuoteItems.length;i++){
+    const item=currentQuoteItems[i];
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${item.name}</td><td>$${item.cost.toFixed(2)}</td><td>${item.qty}</td><td>$${(item.cost*item.qty).toFixed(2)}</td><td><button class="icon-btn" onclick="removeQuoteItem(${i})">🗑️</button></td>`;
+    tbody.appendChild(tr);
+  }
+}
+
+function removeQuoteItem(idx){
+  currentQuoteItems.splice(idx,1);
+  renderQuoteItems();
+  recalc();
+}
+
+function openAddItemModal(){
+  document.getElementById('item-name').value='';
+  document.getElementById('item-cost').value='';
+  document.getElementById('item-qty').value='1';
+  document.getElementById('item-product').value='';
+  document.getElementById('item-modal').classList.add('show');
+  populateItemProductSelect();
+}
+
+function closeItemModal(){
+  document.getElementById('item-modal').classList.remove('show');
+}
+
+function populateItemProductSelect(){
+  const sel=document.getElementById('item-product');
+  sel.innerHTML='<option value="">— Create custom —</option>';
+  customProducts.forEach(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.name+(p.model?' · '+p.model:'');sel.appendChild(o);});
+}
+
+function populateItemFromProduct(id){
+  if(!id)return;
+  const p=customProducts.find(x=>x.id===id);
+  if(p){document.getElementById('item-name').value=p.name;document.getElementById('item-cost').value=p.cost||0;}
+}
+
+function saveItemFromModal(){
+  const name=document.getElementById('item-name').value.trim();
+  const cost=parseFloat(document.getElementById('item-cost').value)||0;
+  const qty=parseFloat(document.getElementById('item-qty').value)||1;
+  if(!name){toast('Enter item name');return;}
+  currentQuoteItems.push({name,cost,qty,notes:''});
+  renderQuoteItems();
+  recalc();
+  closeItemModal();
+  toast('Item added');
+}
+
+function recalc(){
+  const subtotal=currentQuoteItems.reduce((s,i)=>(i.cost||0)*(i.qty||1)+s,0);
+  const markup=parseFloat(document.getElementById('f-markup').value)||40;
+  const afterMarkup=subtotal*(1+markup/100);
+  const gst=afterMarkup*0.1;
+  const total=afterMarkup+gst;
+  document.getElementById('subtotal').textContent='$'+subtotal.toFixed(2);
+  document.getElementById('after-markup').textContent='$'+afterMarkup.toFixed(2);
+  document.getElementById('gst-amt').textContent='$'+gst.toFixed(2);
+  document.getElementById('total').textContent='$'+total.toFixed(2);
+}
+
+function populateClientSelect(){
+  const sel=document.getElementById('f-client-select');
+  sel.innerHTML='<option value="">— Select or create new —</option>';
+  clients.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.name+(c.address?' · '+c.address:'');sel.appendChild(o);});
+  renderClientsTable();
+}
+
+function renderClientsTable(){
+  const tbody=document.getElementById('clients-tbody');
+  tbody.innerHTML='';
+  clients.forEach(c=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${c.name}</td><td>${c.phone||'—'}</td><td>${c.email||'—'}</td><td>${c.address||'—'}</td><td style="text-align:right;"><button class="icon-btn" onclick="deleteClient('${c.id}')">🗑️</button></td>`;tbody.appendChild(tr);});
+}
+
+function openNewClientModal(){
+  document.getElementById('cmod-id').value='';
+  document.getElementById('cmod-name').value='';
+  document.getElementById('cmod-phone').value='';
+  document.getElementById('cmod-email').value='';
+  document.getElementById('cmod-address').value='';
+  document.getElementById('client-modal').classList.add('show');
+}
+
+function closeClientModal(){
+  document.getElementById('client-modal').classList.remove('show');
+}
+
+async function saveClientFromModal(){
+  const name=document.getElementById('cmod-name').value.trim();
+  if(!name){toast('Enter client name');return;}
+  const {error}=await supabase.from('clients').insert({name,phone:document.getElementById('cmod-phone').value,email:document.getElementById('cmod-email').value,address:document.getElementById('cmod-address').value});
+  if(error){toast('Error: '+error.message);return;}
+  init();
+  closeClientModal();
+  toast('Client saved ✓');
+}
+
+async function saveCurrentClientFromForm(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){toast('Enter client name first');return;}
+  const exists=clients.find(c=>c.name===name);
+  if(exists){toast('Client already saved');return;}
+  const {error}=await supabase.from('clients').insert({name,phone:document.getElementById('f-phone').value,email:document.getElementById('f-email').value,address:document.getElementById('f-address').value});
+  if(error){toast('Error: '+error.message);return;}
+  init();
+  toast('Client saved ✓');
+}
+
+async function deleteClient(id){
+  if(!confirm('Delete this client?'))return;
+  await supabase.from('clients').delete().eq('id',id);
+  init();
+  toast('Client deleted');
+}
+
+function loadClientFromSelect(id){
+  if(!id)return;
+  const c=clients.find(x=>x.id===id);
+  if(!c)return;
+  document.getElementById('f-name').value=c.name||'';
+  document.getElementById('f-phone').value=c.phone||'';
+  document.getElementById('f-email').value=c.email||'';
+  document.getElementById('f-address').value=c.address||'';
+  toast('Client loaded');
+}
+
+function renderProductTable(){
+  const tbody=document.getElementById('pm-tbody');
+  tbody.innerHTML='';
+  if(!customProducts.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--slate-400);">No materials added yet</td></tr>';return;}
+  customProducts.forEach(p=>{const tr=document.createElement('tr');tr.innerHTML=`<td style="font-weight:700;">${p.name}</td><td style="color:var(--slate-500);font-size:12px;">${p.category||'—'}</td><td style="color:var(--slate-400);font-size:12px;">${p.model||'—'}</td><td style="font-weight:700;">$${(p.cost||0).toFixed(2)}</td><td><span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:${p.status==='active'?'#22c55e':'#cbd5e1'};"></span>${p.status==='active'?'Active':'Inactive'}</span></td><td style="text-align:right;"><button class="icon-btn" onclick="deleteProduct('${p.id}')">🗑️</button></td>`;tbody.appendChild(tr);});
+}
+
+function openProductModal(){
+  document.getElementById('pm-modal-title').textContent='Add Material';
+  document.getElementById('pmod-id').value='';
+  document.getElementById('pmod-name').value='';
+  document.getElementById('pmod-cat').value='';
+  document.getElementById('pmod-model').value='';
+  document.getElementById('pmod-cost').value='';
+  document.getElementById('pmod-status').value='active';
+  document.getElementById('product-modal').classList.add('show');
+}
+
+function closeProductModal(){
+  document.getElementById('product-modal').classList.remove('show');
+}
+
+async function saveProductFromModal(){
+  const name=document.getElementById('pmod-name').value.trim();
+  if(!name){toast('Enter name');return;}
+  const {error}=await supabase.from('custom_products').insert({name,category:document.getElementById('pmod-cat').value,model:document.getElementById('pmod-model').value,cost:parseFloat(document.getElementById('pmod-cost').value)||0,status:document.getElementById('pmod-status').value});
+  if(error){toast('Error: '+error.message);return;}
+  init();
+  closeProductModal();
+  toast('Material saved ✓');
+}
+
+async function deleteProduct(id){
+  if(!confirm('Delete this material?'))return;
+  await supabase.from('custom_products').delete().eq('id',id);
+  init();
+  toast('Material deleted');
+}
+
+function loadSettingsForm(){
+  document.getElementById('s-company').value=settings.company||'REPAIR HVAC SERVICES';
+  document.getElementById('s-phone').value=settings.phone||'';
+  document.getElementById('s-email').value=settings.email||'';
+  document.getElementById('s-address').value=settings.address||'';
+  document.getElementById('s-license').value=settings.license||'';
+  document.getElementById('s-website').value=settings.website||'';
+  document.getElementById('s-markup').value=settings.markup||40;
+  document.getElementById('s-gst').value=settings.gst||10;
+}
+
+async function saveSettings(){
+  const {error}=await supabase.from('settings').update({company:document.getElementById('s-company').value,phone:document.getElementById('s-phone').value,email:document.getElementById('s-email').value,address:document.getElementById('s-address').value,license:document.getElementById('s-license').value,website:document.getElementById('s-website').value,markup:parseFloat(document.getElementById('s-markup').value)||40,gst:parseFloat(document.getElementById('s-gst').value)||10}).eq('id',settings.id);
+  if(error){toast('Error: '+error.message);return;}
+  init();
+  toast('Settings saved ✓');
+}
+
+init();
+</script>
+</body>
+</html>
