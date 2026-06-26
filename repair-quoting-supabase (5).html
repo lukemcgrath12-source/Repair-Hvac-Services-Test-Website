@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>REPAIR HVAC SERVICES — Quoting System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+#auth-gate {
+  position: fixed;
+  inset: 0;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.gate-box {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 400px;
+}
+.gate-logo {
+  font-size: 28px;
+  font-weight: 900;
+  margin-bottom: 8px;
+  font-family: 'DM Sans', sans-serif;
+}
+.gate-sub {
+  font-size: 12px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 30px;
+}
+.gate-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  margin-bottom: 20px;
+}
+.gate-input:focus {
+  outline: none;
+  border-color: #0D7A7A;
+}
+.gate-btn {
+  width: 100%;
+  padding: 12px;
+  background: #0D7A7A;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s;
+}
+.gate-btn:hover {
+  background: #0a5d5d;
+}
+.gate-note {
+  font-size: 11px;
+  color: #999;
+  margin-top: 16px;
+}
+#app {
+  display: none;
+}
+
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>REPAIR HVAC SERVICES — Quoting System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#1E1B4B;--teal:#0D7A7A;--teal-l:#0fa8a8;--teal-50:#e6f7f7;--teal-100:#d0f0f0;--teal-200:#a0e0e0;
+  --slate-800:#1e293b;--slate-700:#334155;--slate-600:#475569;--slate-500:#64748b;--slate-400:#94a3b8;
+  --slate-300:#cbd5e1;--slate-200:#e2e8f0;--slate-100:#f1f5f9;--slate-50:#f8fafc;
+  --green:#22c55e;--green-100:#dcfce7;--green-700:#15803d;
+  --red:#ef4444;--red-100:#fee2e2;
+  --amber:#f59e0b;--amber-100:#fef3c7;
+  --r:12px;--sh:0 1px 3px rgba(0,0,0,.08),0 4px 12px rgba(0,0,0,.06);--sh-lg:0 8px 32px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--slate-50);color:var(--slate-800);min-height:100vh;font-size:14px;}
+#app{display:flex;min-height:100vh;}
+/* SIDEBAR */
+#sidebar{width:220px;min-height:100vh;background:#0d0b2e;position:fixed;left:0;top:0;bottom:0;display:flex;flex-direction:column;z-index:100;}
+#main{margin-left:220px;flex:1;padding:32px;}
+.sb-logo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.08);}
+.sb-logo-text{color:white;font-size:19px;font-weight:900;letter-spacing:-.5px;}
+.sb-logo-text span{color:var(--teal);}
+.sb-sub{color:var(--teal);font-size:10px;text-transform:uppercase;letter-spacing:2px;margin-top:2px;}
+.sb-nav{padding:14px 12px;flex:1;}
+.sb-btn{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border-radius:10px;border:none;background:none;color:var(--slate-400);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;text-align:left;font-family:'DM Sans',sans-serif;}
+.sb-btn:hover{background:rgba(255,255,255,.06);color:white;}
+.sb-btn.active{background:var(--teal);color:white;}
+.sb-new{margin:0 12px 20px;padding:11px;background:var(--teal);color:white;border:none;border-radius:10px;width:calc(100% - 24px);font-weight:700;font-size:13px;cursor:pointer;transition:background .15s;font-family:'DM Sans',sans-serif;}
+.sb-new:hover{background:var(--teal-l);}
+/* CARDS */
+.card{background:white;border-radius:var(--r);border:1px solid var(--slate-200);box-shadow:var(--sh);}
+.card-pad{padding:20px;}
+/* STATS */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
+.stat-card{background:white;border-radius:var(--r);border:1px solid var(--slate-200);padding:18px;}
+.stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--slate-400);margin-bottom:6px;}
+.stat-val{font-size:26px;font-weight:900;}
+.stat-val.teal{color:var(--teal);}.stat-val.amber{color:var(--amber);}.stat-val.green{color:var(--green);}.stat-val.red{color:var(--red);}
+/* REVENUE */
+.rev-strip{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px;}
+.rev-card{border-radius:var(--r);padding:20px;color:white;}
+.rev-card.pipeline{background:linear-gradient(135deg,var(--navy),var(--teal));}
+.rev-card.won{background:linear-gradient(135deg,#059669,#0d9488);}
+.rev-card-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;opacity:.7;margin-bottom:5px;}
+.rev-card-val{font-size:26px;font-weight:900;}
+.rev-card-sub{font-size:12px;opacity:.6;margin-top:3px;}
+/* CHARTS */
+.charts-strip{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px;}
+.chart-card{background:white;border-radius:var(--r);border:1px solid var(--slate-200);padding:18px;}
+.chart-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--slate-500);margin-bottom:14px;}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:80px;}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.bar{width:100%;border-radius:4px 4px 0 0;transition:height .3s;min-height:2px;background:var(--teal);opacity:.85;}
+.bar-label{font-size:9px;color:var(--slate-400);font-weight:600;}
+.bar-val{font-size:9px;color:var(--slate-500);font-weight:700;}
+/* TABLE */
+.table-wrap{background:white;border-radius:var(--r);border:1px solid var(--slate-200);overflow:hidden;}
+.table-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--slate-100);}
+.filter-tabs{display:flex;gap:3px;flex-wrap:wrap;}
+.ftab{padding:5px 11px;border-radius:7px;border:none;background:none;font-size:11px;font-weight:700;color:var(--slate-400);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
+.ftab:hover{color:var(--slate-700);}
+.ftab.active{background:var(--teal);color:white;}
+.search-wrap{position:relative;}
+.search-wrap input{padding:7px 12px 7px 32px;border:1px solid var(--slate-200);border-radius:9px;font-size:12px;outline:none;width:190px;font-family:'DM Sans',sans-serif;transition:border-color .15s;}
+.search-wrap input:focus{border-color:var(--teal);}
+.search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--slate-400);}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:var(--slate-50);border-bottom:1px solid var(--slate-200);}
+th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--slate-400);}
+tbody tr{border-bottom:1px solid var(--slate-50);transition:background .1s;cursor:pointer;}
+tbody tr:hover{background:var(--teal-50);}
+tbody tr:last-child{border-bottom:none;}
+td{padding:11px 14px;font-size:13px;}
+.q-num{font-weight:800;color:var(--teal);}
+.q-client{font-weight:700;color:var(--slate-800);}
+.q-sub{font-size:11px;color:var(--slate-400);margin-top:2px;}
+.row-actions{display:flex;gap:3px;opacity:0;transition:opacity .15s;}
+tbody tr:hover .row-actions{opacity:1;}
+.icon-btn{padding:5px;border-radius:7px;border:none;background:none;cursor:pointer;color:var(--slate-400);transition:all .15s;}
+.icon-btn:hover.edit{background:var(--teal-50);color:var(--teal);}
+.icon-btn:hover.dup{background:var(--slate-100);color:var(--slate-700);}
+.icon-btn:hover.del{background:var(--red-100);color:var(--red);}
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-size:10px;font-weight:700;}
+.badge.draft{background:var(--slate-100);color:var(--slate-600);}
+.badge.internal-review{background:#fef3c7;color:#92400e;}
+.badge.ready-to-send{background:#e0e7ff;color:#3730a3;}
+.badge.sent{background:var(--teal-100);color:var(--teal);}
+.badge.accepted{background:var(--green-100);color:var(--green-700);}
+.badge.declined{background:var(--red-100);color:var(--red);}
+.badge.expired{background:var(--slate-200);color:var(--slate-500);}
+.badge.rejected{background:var(--red-100);color:var(--red);}
+/* BUTTONS */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px;}
+.page-title{font-size:22px;font-weight:900;color:var(--slate-800);letter-spacing:-.5px;}
+.page-sub{font-size:13px;color:var(--slate-400);margin-top:3px;}
+.btn-primary{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;background:var(--teal);color:white;border:none;border-radius:9px;font-weight:700;font-size:13px;cursor:pointer;transition:background .15s;font-family:'DM Sans',sans-serif;}
+.btn-primary:hover{background:var(--teal-l);}
+.btn-secondary{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;background:white;color:var(--slate-700);border:1px solid var(--slate-200);border-radius:9px;font-weight:600;font-size:13px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
+.btn-secondary:hover{background:var(--slate-50);border-color:var(--slate-300);}
+.btn-ghost{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;background:var(--teal-50);color:var(--teal);border:1px solid var(--teal-100);border-radius:9px;font-weight:600;font-size:13px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
+.btn-ghost:hover{background:var(--teal-100);}
+.btn-danger{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;background:var(--red-100);color:var(--red);border:1px solid #fecaca;border-radius:9px;font-weight:600;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+/* FORM */
+#view-form{display:none;}#view-settings{display:none;}#view-dashboard{display:block;}#view-clients{display:none;}
+.form-topbar{background:white;border-bottom:1px solid var(--slate-200);position:sticky;top:0;z-index:50;margin:-32px -32px 32px;padding:0 32px;}
+.form-topbar-inner{display:flex;align-items:center;justify-content:space-between;padding:12px 0;}
+.back-btn{display:flex;align-items:center;gap:6px;color:var(--slate-500);border:none;background:none;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.back-btn:hover{color:var(--slate-800);}
+.topbar-right{display:flex;gap:7px;align-items:center;}
+.step-tabs{display:flex;}
+.step-tab{padding:10px 14px;border:none;background:none;font-size:12px;font-weight:600;color:var(--slate-400);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:5px;font-family:'DM Sans',sans-serif;}
+.step-tab.active{color:var(--teal);border-bottom-color:var(--teal);}
+.step-tab.done{color:var(--green);border-bottom-color:transparent;}
+.step-num{width:18px;height:18px;border-radius:50%;background:var(--slate-200);color:var(--slate-500);font-size:9px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step-tab.active .step-num{background:var(--teal);color:white;}
+.step-tab.done .step-num{background:var(--green);color:white;}
+/* FORM WITH SIDEBAR */
+.form-with-sidebar{display:grid;grid-template-columns:1fr 260px;gap:20px;align-items:start;}
+/* PROFIT SIDEBAR */
+.profit-sidebar{position:sticky;top:80px;background:white;border-radius:var(--r);border:1px solid var(--slate-200);overflow:hidden;}
+.ps-header{padding:14px 16px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:white;background:var(--navy);}
+.ps-body{padding:16px;}
+.ps-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--slate-100);font-size:12px;}
+.ps-row:last-child{border-bottom:none;}
+.ps-label{color:var(--slate-500);}
+.ps-val{font-weight:700;color:var(--slate-800);}
+.ps-grand{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-top:2px solid var(--slate-200);}
+.ps-grand-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--slate-600);}
+.ps-grand-val{font-size:20px;font-weight:900;color:var(--navy);}
+.ps-margin{padding:12px 16px;text-align:center;border-radius:0 0 var(--r) var(--r);}
+.ps-margin.green{background:var(--green-100);}
+.ps-margin.amber{background:var(--amber-100);}
+.ps-margin.red{background:var(--red-100);}
+.ps-margin-pct{font-size:28px;font-weight:900;}
+.ps-margin.green .ps-margin-pct{color:var(--green-700);}
+.ps-margin.amber .ps-margin-pct{color:#92400e;}
+.ps-margin.red .ps-margin-pct{color:var(--red);}
+.ps-margin-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;opacity:.6;margin-top:2px;}
+/* FORM FIELDS */
+.form-grid{display:grid;gap:14px;}
+.form-grid.cols2{grid-template-columns:1fr 1fr;}
+.form-grid.cols3{grid-template-columns:1fr 1fr 1fr;}
+.full{grid-column:1/-1;}
+label{display:block;font-size:11px;font-weight:700;color:var(--slate-600);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
+input[type=text],input[type=tel],input[type=email],input[type=date],input[type=number],select,textarea{width:100%;padding:9px 12px;border:1px solid var(--slate-200);border-radius:9px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s,box-shadow .15s;background:white;color:var(--slate-800);}
+input:focus,select:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,122,122,.1);}
+textarea{resize:vertical;}
+.input-prefix{position:relative;}
+.input-prefix span{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--slate-400);font-weight:700;font-size:13px;pointer-events:none;}
+.input-prefix input{padding-left:24px;}
+.step-content{display:none;}
+.step-content.active{display:block;}
+.step-actions{display:flex;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--slate-100);}
+/* ITEM TABLES */
+.item-table{width:100%;border-collapse:collapse;margin-top:4px;}
+.item-table th{padding:7px 10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--slate-400);background:var(--slate-50);border-bottom:1px solid var(--slate-200);}
+.item-table td{padding:6px 10px;border-bottom:1px solid var(--slate-100);vertical-align:top;}
+.item-table tfoot td{padding:9px 10px;border-top:2px solid var(--slate-200);background:var(--slate-50);font-weight:800;color:var(--teal);}
+.item-table input[type=text],.item-table input[type=number]{border:1px solid var(--slate-200);border-radius:6px;padding:4px 7px;font-size:12px;font-family:'DM Sans',sans-serif;width:100%;}
+.item-table input:focus{border-color:var(--teal);outline:none;}
+.w-qty{width:55px;}.w-cost{width:95px;}.w-total{width:95px;font-weight:700;}.w-del{width:32px;text-align:center;}
+.line-note{font-size:11px;color:var(--slate-400);margin-top:3px;}
+.line-note input{font-size:11px;padding:3px 6px;color:var(--slate-500);border-color:var(--slate-100);}
+/* EMPTY */
+.empty-state{text-align:center;padding:40px 20px;color:var(--slate-400);}
+.empty-icon{font-size:32px;margin-bottom:10px;opacity:.3;}
+.empty-text{font-weight:600;margin-bottom:3px;}.empty-sub{font-size:12px;}
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.breakdown-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--slate-100);font-size:13px;}
+.breakdown-row:last-child{border-bottom:none;}
+.breakdown-row.total{font-weight:800;font-size:14px;padding-top:10px;border-top:2px solid var(--slate-200);border-bottom:none;margin-top:3px;}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(4px);}
+.modal-overlay.hidden{display:none;}
+.modal{background:white;border-radius:14px;box-shadow:var(--sh-lg);width:100%;max-width:680px;max-height:82vh;display:flex;flex-direction:column;margin:16px;}
+.modal-lg{max-width:760px;}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--slate-100);}
+.modal-title{font-weight:800;font-size:15px;}
+.modal-body{flex:1;overflow-y:auto;padding:6px;}
+.modal-close{padding:5px;border:none;background:none;cursor:pointer;border-radius:6px;color:var(--slate-500);}
+.modal-close:hover{background:var(--slate-100);}
+.picker-search{padding:10px;border-bottom:1px solid var(--slate-100);position:relative;}
+.picker-search input{width:100%;padding:8px 10px 8px 32px;border:1px solid var(--slate-200);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;}
+.picker-search input:focus{border-color:var(--teal);}
+.picker-cats{padding:8px 10px;display:flex;flex-wrap:wrap;gap:5px;border-bottom:1px solid var(--slate-100);}
+.cat-chip{padding:3px 10px;border-radius:999px;border:none;font-size:11px;font-weight:700;background:var(--slate-100);color:var(--slate-600);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.cat-chip:hover{background:var(--slate-200);}
+.cat-chip.active{background:var(--teal);color:white;}
+.picker-item{display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:9px;cursor:pointer;transition:background .12s;}
+.picker-item:hover{background:var(--teal-50);}
+.picker-item-name{font-weight:700;font-size:13px;color:var(--slate-800);}
+.picker-item-meta{font-size:11px;color:var(--slate-400);margin-top:1px;}
+.picker-item-price{font-weight:800;color:var(--slate-700);margin-right:10px;}
+.picker-add-btn{width:26px;height:26px;border-radius:50%;background:var(--teal);color:white;border:none;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;}
+.picker-item:hover .picker-add-btn{opacity:1;}
+/* TOAST */
+#toast{position:fixed;bottom:22px;right:22px;background:var(--slate-800);color:white;padding:10px 18px;border-radius:9px;font-size:13px;font-weight:600;opacity:0;transform:translateY(6px);transition:all .3s;pointer-events:none;z-index:9999;}
+#toast.show{opacity:1;transform:translateY(0);}
+/* PDF */
+#pdf-frame{width:100%;height:580px;border:none;border-radius:9px;}
+.pdf-preview-wrap{background:var(--slate-100);padding:14px;border-radius:11px;}
+/* SECTION TITLE */
+.section-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--teal);margin-bottom:12px;padding-bottom:7px;border-bottom:2px solid var(--slate-100);}
+/* UTILS */
+.flex{display:flex;}.gap8{gap:8px;}.gap12{gap:12px;}.items-center{align-items:center;}.justify-between{justify-content:space-between;}
+.mb16{margin-bottom:16px;}.mb20{margin-bottom:20px;}.mb8{margin-bottom:8px;}.mt12{margin-top:12px;}.mt16{margin-top:16px;}
+/* CLIENTS VIEW */
+.client-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.client-card{background:white;border-radius:var(--r);border:1px solid var(--slate-200);padding:16px;cursor:pointer;transition:all .15s;}
+.client-card:hover{border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,122,122,.08);}
+.client-name{font-weight:800;color:var(--slate-800);margin-bottom:4px;}
+.client-detail{font-size:12px;color:var(--slate-500);line-height:1.6;}
+/* SETTINGS TABS */
+.settings-tabs{display:flex;gap:3px;margin-bottom:20px;background:var(--slate-100);padding:4px;border-radius:10px;width:fit-content;}
+.stab{padding:7px 16px;border-radius:7px;border:none;background:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;color:var(--slate-500);}
+.stab.active{background:white;color:var(--slate-800);box-shadow:var(--sh);}
+.settings-panel{display:none;}
+.settings-panel.active{display:block;}
+/* PRODUCT MANAGER TABLE */
+.pm-table{width:100%;border-collapse:collapse;}
+.pm-table th{padding:9px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--slate-400);background:var(--slate-50);border-bottom:1px solid var(--slate-200);}
+.pm-table td{padding:9px 12px;border-bottom:1px solid var(--slate-100);font-size:13px;vertical-align:middle;}
+.pm-table tr:last-child td{border-bottom:none;}
+.pm-table tr:hover td{background:var(--teal-50);}
+.pm-inactive{opacity:.5;}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;}
+.status-dot.active{background:var(--green);}
+.status-dot.inactive{background:var(--slate-300);}
+.hidden{display:none!important;}
+</style>
+
+</style>
+</head>
+<body>
+
+<div id="auth-gate">
+  <div class="gate-box">
+    <div class="gate-logo">REPAIR<span style="color:#0D7A7A;">.</span></div>
+    <div class="gate-sub">Quoting System</div>
+    <input type="password" id="pwd-gate" class="gate-input" placeholder="Password" autocomplete="off"/>
+    <button class="gate-btn" onclick="checkAuth()">Access System</button>
+    <div class="gate-note">Internal use only</div>
+  </div>
+</div>
+
+<div id="app">
+
+<div id="app">
+<div id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-text">REP<span>AIR</span> HVAC</div>
+    <div class="sb-sub">Quoting System</div>
+  </div>
+  <div class="sb-nav">
+    <button class="sb-btn active" onclick="showView('dashboard')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
+    </button>
+    <button class="sb-btn" onclick="showView('dashboard')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>All Quotes
+    </button>
+    <button class="sb-btn" onclick="showView('clients')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Clients
+    </button>
+    <button class="sb-btn" onclick="showView('settings')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings
+    </button>
+  </div>
+  <button class="sb-new" onclick="newQuote()">+ New Quote</button>
+</div>
+
+<div id="main">
+
+<!-- DASHBOARD -->
+<div id="view-dashboard">
+  <div class="page-header">
+    <div><div class="page-title">Dashboard</div><div class="page-sub" id="dash-date"></div></div>
+    <button class="btn-primary" onclick="newQuote()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>New Quote</button>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Total Quotes</div><div class="stat-val teal" id="stat-total">0</div></div>
+    <div class="stat-card"><div class="stat-label">Drafts</div><div class="stat-val amber" id="stat-draft">0</div></div>
+    <div class="stat-card"><div class="stat-label">Accepted</div><div class="stat-val green" id="stat-accepted">0</div></div>
+    <div class="stat-card"><div class="stat-label">Declined</div><div class="stat-val red" id="stat-declined">0</div></div>
+  </div>
+  <div class="rev-strip">
+    <div class="rev-card pipeline"><div class="rev-card-label">Pipeline Value</div><div class="rev-card-val" id="stat-pipeline">$0</div><div class="rev-card-sub">Active quotes inc. GST</div></div>
+    <div class="rev-card won"><div class="rev-card-label">Revenue Won</div><div class="rev-card-val" id="stat-revenue">$0</div><div class="rev-card-sub">Accepted quotes inc. GST</div></div>
+  </div>
+  <div class="charts-strip">
+    <div class="chart-card"><div class="chart-title">Quotes by Month</div><div class="bar-chart" id="chart-quotes"></div></div>
+    <div class="chart-card"><div class="chart-title">Revenue by Month</div><div class="bar-chart" id="chart-revenue"></div></div>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header">
+      <div class="filter-tabs">
+        <button class="ftab active" onclick="filterQuotes('all',this)">All</button>
+        <button class="ftab" onclick="filterQuotes('draft',this)">Draft</button>
+        <button class="ftab" onclick="filterQuotes('internal-review',this)">Review</button>
+        <button class="ftab" onclick="filterQuotes('ready-to-send',this)">Ready</button>
+        <button class="ftab" onclick="filterQuotes('sent',this)">Sent</button>
+        <button class="ftab" onclick="filterQuotes('accepted',this)">Accepted</button>
+        <button class="ftab" onclick="filterQuotes('declined',this)">Declined</button>
+        <button class="ftab" onclick="filterQuotes('expired',this)">Expired</button>
+      </div>
+      <div class="search-wrap">
+        <svg class="search-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search quotes..." oninput="searchQuotes(this.value)"/>
+      </div>
+    </div>
+    <table><thead><tr><th>Quote #</th><th>Client</th><th>Address</th><th>Total (inc GST)</th><th>Margin</th><th>Status</th><th>Date</th><th></th></tr></thead>
+    <tbody id="quotes-tbody"></tbody></table>
+    <div id="empty-dash" class="empty-state hidden"><div class="empty-icon">📋</div><div class="empty-text">No quotes found</div><div class="empty-sub">Create a new quote to get started</div></div>
+  </div>
+</div>
+
+<!-- CLIENTS -->
+<div id="view-clients">
+  <div class="page-header">
+    <div><div class="page-title">Client Directory</div><div class="page-sub">Saved client details for quick reuse</div></div>
+    <button class="btn-primary" onclick="openClientModal(null)"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add Client</button>
+  </div>
+  <div class="client-grid" id="client-grid"></div>
+  <div id="empty-clients" class="empty-state hidden"><div class="empty-icon">👥</div><div class="empty-text">No clients saved yet</div><div class="empty-sub">Add clients to quickly fill in quote details</div></div>
+</div>
+
+<!-- FORM -->
+<div id="view-form">
+  <div class="form-topbar">
+    <div class="form-topbar-inner">
+      <button class="back-btn" onclick="showView('dashboard')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>All Quotes</button>
+      <div class="step-tabs" id="step-tabs"></div>
+      <div class="topbar-right">
+        <button class="btn-secondary" onclick="previewPDF()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Preview PDF</button>
+        <button class="btn-ghost" onclick="saveQuote('draft')">Save Draft</button>
+        <button class="btn-primary" onclick="saveQuote('sent')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Finalise</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 1 -->
+  <div class="step-content active" id="step-1">
+    <div class="form-with-sidebar">
+      <div>
+        <div class="section-title">Client Details</div>
+        <div style="margin-bottom:12px;">
+          <label>Load Saved Client</label>
+          <select id="f-client-select" onchange="loadClientFromSelect(this.value)"><option value="">— Select saved client or fill in below —</option></select>
+        </div>
+        <div class="form-grid cols2">
+          <div><label>Client Name</label><input type="text" id="f-name" placeholder="e.g. Sarah Thompson" oninput="sidebarRecalc()"/></div>
+          <div><label>Phone</label><input type="tel" id="f-phone" placeholder="0400 000 000"/></div>
+          <div class="full"><label>Email</label><input type="email" id="f-email" placeholder="client@email.com"/></div>
+          <div class="full"><label>Property Address</label><input type="text" id="f-address" placeholder="14 Example St, Suburb NSW 2000"/></div>
+          <div><label>Site Visit Date</label><input type="date" id="f-sitevisit"/></div>
+          <div><label>Salesperson</label><input type="text" id="f-salesperson" placeholder="Your name"/></div>
+          <div class="full"><label>Job Notes</label><textarea id="f-notes" rows="3" placeholder="Scope, access requirements, special conditions..."></textarea></div>
+        </div>
+        <div style="margin-top:12px;"><label style="margin-bottom:6px;display:block;">Save as Client</label><button class="btn-secondary" onclick="saveCurrentClientFromForm()" style="font-size:12px;padding:7px 12px;">+ Save to Client Directory</button></div>
+      </div>
+      <div id="profit-sidebar-1"></div>
+    </div>
+    <div class="step-actions"><span></span><button class="btn-primary" onclick="gotoStep(2)">Next: Equipment →</button></div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step-content" id="step-2">
+    <div class="form-with-sidebar">
+      <div>
+        <div class="flex justify-between items-center mb16">
+          <div class="section-title" style="margin-bottom:0">Equipment Selection</div>
+          <button class="btn-primary" onclick="openPicker('equipment')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add Equipment</button>
+        </div>
+        <div class="card">
+          <div id="eq-empty" class="empty-state"><div class="empty-icon">⚡</div><div class="empty-text">No equipment added</div><div class="empty-sub">Search the product database</div></div>
+          <table class="item-table" id="eq-table" style="display:none;">
+            <thead><tr><th>Product</th><th>Model</th><th class="w-cost">Unit Cost</th><th class="w-qty">Qty</th><th class="w-total">Total</th><th class="w-del"></th></tr></thead>
+            <tbody id="eq-tbody"></tbody>
+            <tfoot><tr><td colspan="4" style="text-align:right;font-weight:800;color:var(--slate-600);">Equipment Total</td><td id="eq-total-cell"></td><td></td></tr></tfoot>
+          </table>
+        </div>
+      </div>
+      <div id="profit-sidebar-2"></div>
+    </div>
+    <div class="step-actions"><button class="btn-secondary" onclick="gotoStep(1)">← Previous</button><button class="btn-primary" onclick="gotoStep(3)">Next: Materials →</button></div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="step-content" id="step-3">
+    <div class="form-with-sidebar">
+      <div>
+        <div class="flex justify-between items-center mb16">
+          <div class="section-title" style="margin-bottom:0">Installation Materials</div>
+          <div class="flex gap8">
+            <button class="btn-secondary" onclick="openPicker('materials')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>From Database</button>
+            <button class="btn-primary" onclick="addCustomMaterial()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add Custom</button>
+          </div>
+        </div>
+        <div class="card">
+          <div id="mat-empty" class="empty-state"><div class="empty-icon">🔧</div><div class="empty-text">No materials added</div></div>
+          <table class="item-table" id="mat-table" style="display:none;">
+            <thead><tr><th>Description</th><th class="w-cost">Unit Cost</th><th class="w-qty">Qty</th><th class="w-total">Total</th><th class="w-del"></th></tr></thead>
+            <tbody id="mat-tbody"></tbody>
+            <tfoot><tr><td style="text-align:right;font-weight:800;color:var(--slate-600);" colspan="3">Materials Total</td><td id="mat-total-cell"></td><td></td></tr></tfoot>
+          </table>
+        </div>
+      </div>
+      <div id="profit-sidebar-3"></div>
+    </div>
+    <div class="step-actions"><button class="btn-secondary" onclick="gotoStep(2)">← Previous</button><button class="btn-primary" onclick="gotoStep(4)">Next: Labour →</button></div>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="step-content" id="step-4">
+    <div class="form-with-sidebar">
+      <div>
+        <div class="section-title">Labour & Services</div>
+        <div class="card card-pad">
+          <div class="form-grid cols2">
+            <div><label>Installation Labour</label><div class="input-prefix"><span>$</span><input type="number" id="l-install" value="0" min="0" step="50" oninput="recalc()"/></div></div>
+            <div><label>Electrical Labour</label><div class="input-prefix"><span>$</span><input type="number" id="l-electrical" value="0" min="0" step="50" oninput="recalc()"/></div></div>
+            <div><label>Crane Hire</label><div class="input-prefix"><span>$</span><input type="number" id="l-crane" value="0" min="0" step="50" oninput="recalc()"/></div></div>
+            <div><label>Scissor Lift</label><div class="input-prefix"><span>$</span><input type="number" id="l-scissor" value="0" min="0" step="50" oninput="recalc()"/></div></div>
+            <div><label>Additional Description</label><input type="text" id="l-otherdesc" placeholder="e.g. Travel, Permit fee"/></div>
+            <div><label>Additional Charges</label><div class="input-prefix"><span>$</span><input type="number" id="l-other" value="0" min="0" step="50" oninput="recalc()"/></div></div>
+          </div>
+        </div>
+      </div>
+      <div id="profit-sidebar-4"></div>
+    </div>
+    <div class="step-actions"><button class="btn-secondary" onclick="gotoStep(3)">← Previous</button><button class="btn-primary" onclick="gotoStep(5)">Next: Pricing →</button></div>
+  </div>
+
+  <!-- Step 5 -->
+  <div class="step-content" id="step-5">
+    <div class="form-with-sidebar">
+      <div>
+        <div class="section-title">Pricing Engine</div>
+        <div class="form-grid cols3 mb20">
+          <div class="card card-pad"><label>Markup %</label><input type="number" id="f-markup" value="40" min="0" max="300" style="font-size:20px;font-weight:900;text-align:center;" oninput="recalc()"/></div>
+          <div class="card card-pad"><label>GST Rate %</label><input type="number" id="f-gst" value="10" min="0" max="30" style="font-size:20px;font-weight:900;text-align:center;" oninput="recalc()"/></div>
+          <div class="card card-pad"><label>Quote Status</label>
+            <select id="f-status" style="font-size:13px;font-weight:700;">
+              <option value="draft">Draft</option>
+              <option value="internal-review">Internal Review</option>
+              <option value="ready-to-send">Ready to Send</option>
+              <option value="sent">Sent</option>
+              <option value="accepted">Accepted</option>
+              <option value="declined">Declined</option>
+              <option value="expired">Expired</option>
+            </select>
+          </div>
+        </div>
+        <div class="pricing-grid">
+          <div class="card card-pad">
+            <div class="section-title">Cost Breakdown</div>
+            <div class="breakdown-row"><span>Equipment</span><span id="p-eq">$0.00</span></div>
+            <div class="breakdown-row"><span>Materials</span><span id="p-mat">$0.00</span></div>
+            <div class="breakdown-row"><span>Labour</span><span id="p-lab">$0.00</span></div>
+            <div class="breakdown-row total"><span>Cost of Job</span><span id="p-cost">$0.00</span></div>
+          </div>
+          <div class="card card-pad">
+            <div class="section-title">Quote Totals</div>
+            <div class="breakdown-row"><span>Selling Price (ex GST)</span><span id="p-sell" style="color:var(--teal);font-weight:700;">$0.00</span></div>
+            <div class="breakdown-row"><span id="p-gst-label">GST (10%)</span><span id="p-gst">$0.00</span></div>
+            <div class="breakdown-row total"><span>Grand Total</span><span id="p-grand">$0.00</span></div>
+          </div>
+        </div>
+      </div>
+      <div id="profit-sidebar-5"></div>
+    </div>
+    <div class="step-actions"><button class="btn-secondary" onclick="gotoStep(4)">← Previous</button><button class="btn-primary" onclick="gotoStep(6)">Next: Preview →</button></div>
+  </div>
+
+  <!-- Step 6 -->
+  <div class="step-content" id="step-6">
+    <div class="section-title">Quote Preview & PDF</div>
+    <div class="card card-pad" style="max-width:480px;margin:0 auto;">
+      <div style="text-align:center;padding:16px 0 10px;">
+        <div style="width:52px;height:52px;background:var(--teal-50);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">
+          <svg width="26" height="26" fill="none" stroke="var(--teal)" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div id="prev-qnum" style="font-size:17px;font-weight:900;color:var(--slate-800);"></div>
+        <div id="prev-client" style="font-size:13px;color:var(--slate-500);margin-top:3px;"></div>
+        <div id="prev-address" style="font-size:12px;color:var(--slate-400);margin-top:2px;"></div>
+      </div>
+      <div style="background:var(--slate-50);border-radius:9px;padding:14px;margin-bottom:14px;">
+        <div class="breakdown-row"><span>Equipment Total</span><span id="prev-eq" style="font-weight:700;"></span></div>
+        <div class="breakdown-row"><span>Materials Total</span><span id="prev-mat" style="font-weight:700;"></span></div>
+        <div class="breakdown-row"><span>Labour Total</span><span id="prev-lab" style="font-weight:700;"></span></div>
+        <div class="breakdown-row"><span>Selling Price (ex GST)</span><span id="prev-sell" style="font-weight:700;color:var(--teal);"></span></div>
+        <div class="breakdown-row"><span>GST</span><span id="prev-gst" style="font-weight:700;"></span></div>
+        <div class="breakdown-row total"><span>Grand Total (inc GST)</span><span id="prev-grand" style="color:var(--navy);"></span></div>
+      </div>
+      <div class="flex gap8">
+        <button class="btn-secondary" style="flex:1;justify-content:center;" onclick="previewPDF()">Preview PDF</button>
+        <button class="btn-primary" style="flex:1;justify-content:center;" onclick="saveQuote('sent')">Save & Finalise</button>
+      </div>
+    </div>
+    <div class="step-actions" style="max-width:480px;margin:12px auto 0;"><button class="btn-secondary" onclick="gotoStep(5)">← Previous</button></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div id="view-settings">
+  <div class="page-header">
+    <div><div class="page-title">Settings</div><div class="page-sub">Company details, pricing defaults and product database</div></div>
+    <button class="btn-primary" onclick="saveSettings()">Save Settings</button>
+  </div>
+  <div class="settings-tabs">
+    <button class="stab active" onclick="switchSettingsTab('company',this)">Company</button>
+    <button class="stab" onclick="switchSettingsTab('pricing',this)">Pricing</button>
+    <button class="stab" onclick="switchSettingsTab('products',this)">Products</button>
+  </div>
+  <!-- Company tab -->
+  <div class="settings-panel active" id="stab-company" style="max-width:600px;">
+    <div class="card card-pad mb20">
+      <div class="section-title">Company Details</div>
+      <div class="form-grid cols2">
+        <div class="full"><label>Company Name</label><input type="text" id="s-company" value="REPAIR HVAC SERVICES"/></div>
+        <div><label>Phone</label><input type="tel" id="s-phone" placeholder="02 9XXX XXXX"/></div>
+        <div><label>Email</label><input type="email" id="s-email" placeholder="repairhvacs@gmail.com"/></div>
+        <div class="full"><label>Address</label><input type="text" id="s-address" placeholder="Sydney, NSW"/></div>
+        <div><label>Licence Number</label><input type="text" id="s-license" placeholder="Lic. No. XXXXX"/></div>
+        <div><label>Website</label><input type="text" id="s-website" placeholder="www.repairhvacs.com.au"/></div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="saveSettings()" style="width:100%;justify-content:center;padding:12px;">Save</button>
+  </div>
+  <!-- Pricing tab -->
+  <div class="settings-panel" id="stab-pricing" style="max-width:400px;">
+    <div class="card card-pad mb20">
+      <div class="section-title">Default Pricing</div>
+      <div class="form-grid cols2">
+        <div><label>Default Markup %</label><input type="number" id="s-markup" value="40" min="0" max="300"/></div>
+        <div><label>GST Rate %</label><input type="number" id="s-gst" value="10" min="0" max="30"/></div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="saveSettings()" style="width:100%;justify-content:center;padding:12px;">Save</button>
+  </div>
+  <!-- Products tab -->
+  <div class="settings-panel" id="stab-products">
+    <div class="flex justify-between items-center mb16">
+      <div style="font-size:13px;color:var(--slate-500);">Manage your product database</div>
+      <button class="btn-primary" onclick="openProductModal(null)"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add Product</button>
+    </div>
+    <div class="table-wrap">
+      <table class="pm-table" id="pm-table">
+        <thead><tr><th>Name</th><th>Category</th><th>Model</th><th>Cost</th><th>Status</th><th></th></tr></thead>
+        <tbody id="pm-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- PICKER MODAL -->
+<div class="modal-overlay hidden" id="picker-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="picker-title">Add Equipment</div><button class="modal-close" onclick="closePicker()"><svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="picker-search"><svg style="position:absolute;left:20px;top:50%;transform:translateY(-50%);color:var(--slate-400);" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="picker-search-input" placeholder="Search products or models..." oninput="renderPickerList()"/></div>
+    <div class="picker-cats" id="picker-cats"></div>
+    <div class="modal-body"><div id="picker-list" style="padding:4px;"></div></div>
+  </div>
+</div>
+
+<!-- PDF MODAL -->
+<div class="modal-overlay hidden" id="pdf-modal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title">Quote Preview</div>
+      <div class="flex gap8 items-center">
+        <button class="btn-primary" onclick="printPDF()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print / Save PDF</button>
+        <button class="modal-close" onclick="closePDFModal()"><svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+    </div>
+    <div class="modal-body" style="padding:14px;"><div class="pdf-preview-wrap"><iframe id="pdf-frame"></iframe></div></div>
+  </div>
+</div>
+
+<!-- CLIENT MODAL -->
+<div class="modal-overlay hidden" id="client-modal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header"><div class="modal-title" id="client-modal-title">Add Client</div><button class="modal-close" onclick="closeClientModal()"><svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body" style="padding:16px;">
+      <input type="hidden" id="cm-id"/>
+      <div class="form-grid cols2">
+        <div class="full"><label>Client Name</label><input type="text" id="cm-name"/></div>
+        <div><label>Phone</label><input type="tel" id="cm-phone"/></div>
+        <div><label>Email</label><input type="email" id="cm-email"/></div>
+        <div class="full"><label>Address</label><input type="text" id="cm-address"/></div>
+        <div class="full"><label>Notes</label><textarea id="cm-notes" rows="2"></textarea></div>
+      </div>
+      <div class="flex gap8" style="margin-top:16px;justify-content:flex-end;">
+        <button class="btn-secondary" onclick="closeClientModal()">Cancel</button>
+        <button class="btn-primary" onclick="saveClientFromModal()">Save Client</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="modal-overlay hidden" id="product-modal">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-header"><div class="modal-title" id="pm-modal-title">Add Product</div><button class="modal-close" onclick="closeProductModal()"><svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body" style="padding:16px;">
+      <input type="hidden" id="pmod-id"/>
+      <div class="form-grid cols2">
+        <div class="full"><label>Product Name</label><input type="text" id="pmod-name"/></div>
+        <div><label>Category</label><input type="text" id="pmod-cat" placeholder="e.g. Mitsubishi Electric Split Systems"/></div>
+        <div><label>Model Number</label><input type="text" id="pmod-model"/></div>
+        <div><label>Supplier Cost ($)</label><div class="input-prefix"><span>$</span><input type="number" id="pmod-cost" min="0" step="0.01"/></div></div>
+        <div class="full"><label>Description / Notes</label><textarea id="pmod-notes" rows="2"></textarea></div>
+        <div><label>Status</label><select id="pmod-status"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+      </div>
+      <div class="flex gap8" style="margin-top:16px;justify-content:flex-end;">
+        <button class="btn-secondary" onclick="closeProductModal()">Cancel</button>
+        <button class="btn-primary" onclick="saveProductFromModal()">Save Product</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════ BASE DB ══════
+const BASE_DB = {
+  "Mitsubishi Electric Split Systems":[{id:"me-ss-1",name:"2.5kW Indoor Head",model:"MSZ-AP25VGKD2",cost:299.25},{id:"me-ss-2",name:"2.5kW Split System",model:"MSZ-AP25VGKD2 / MUZ-AP25VD2",cost:738.35},{id:"me-ss-3",name:"3.5kW Split System",model:"MSZ-AP35VGKD2 / MUZ-AP35VD2",cost:970},{id:"me-ss-4",name:"5.0kW Split System",model:"MSZ-AP50VGKD2 / MUZ-AP50VGD2",cost:1203.29},{id:"me-ss-5",name:"6.0kW Split System",model:"MSZ-AP60VGKD2 / MUZ-AP60VGD2",cost:1411.30},{id:"me-ss-6",name:"8.0kW Split System",model:"MSZAP80VGKD2 / MUZ-AP80VGD2",cost:1835.60}],
+  "Daikin Split Systems":[{id:"dk-ss-1",name:"Cora 6.0kW",model:"FTXV60WVMA / RXV60WVMA",cost:1435},{id:"dk-ss-2",name:"Cora 7.1kW",model:"FTXV71WVMA / RXV71WVMA",cost:1453.90}],
+  "Mitsubishi Electric Ducted Systems":[{id:"me-ds-1",name:"12.5kW Ducted",model:"PEA-M125HAA / PUZ-M125VKA",cost:3201.02},{id:"me-ds-2",name:"14kW Single Phase",model:"PUZ-M140VKA",cost:4225},{id:"me-ds-3",name:"14kW 3 Phase",model:"PUZ-ZM140YKA",cost:4950}],
+  "Daikin Ducted Systems":[{id:"dk-ds-1",name:"8.5kW 240V Ducted",model:"FDYAN85AV1 / RXV85C2V1",cost:2661.84},{id:"dk-ds-2",name:"14kW Single Phase Ducted",model:"FDYAN140AV1",cost:4315},{id:"dk-ds-3",name:"14kW 3 Phase Ducted",model:"FDYAN140AV3",cost:4610}],
+  "Airtouch Components":[{id:"at-1",name:"Gateway",model:"AirTouch Gateway",cost:162.73},{id:"at-2",name:"Main Control Module",model:"AirTouch MCM",cost:350.75},{id:"at-3",name:"Console",model:"AirTouch Console",cost:373.75},{id:"at-4",name:"Console Lead Data Cable Blue",model:"AirTouch Data Cable",cost:11.70},{id:"at-5",name:"Transformer 24V",model:"AirTouch Transformer",cost:26}],
+  "Airtouch Accessories":[{id:"ata-1",name:"Wireless Sensor AirTouch 5",model:"AT5-WS",cost:78.20}],
+  "Electrical":[{id:"el-1",name:"1.5mm 3C+E Orange Circular",model:"—",cost:195},{id:"el-2",name:"1.5mm Twin & Earth TPS",model:"—",cost:105},{id:"el-3",name:"4.0mm Twin & Earth TPS",model:"—",cost:315},{id:"el-4",name:"1 Pair Data Cable",model:"—",cost:105},{id:"el-5",name:"Data Cable",model:"—",cost:10},{id:"el-6",name:"Clipsal SP 20A RCBO",model:"—",cost:26},{id:"el-7",name:"Clipsal SP 32A RCBO",model:"—",cost:27},{id:"el-8",name:"Clipsal SP 10A RCBO",model:"—",cost:26},{id:"el-9",name:"1 Pole 20A Isolator",model:"—",cost:12},{id:"el-10",name:"1 Pole 32A Isolator",model:"—",cost:14}],
+  "Conduit":[{id:"co-1",name:"20mm Electrical",model:"—",cost:4.15},{id:"co-2",name:"20mm Coupling",model:"—",cost:0.50},{id:"co-3",name:"20mm Elbow",model:"—",cost:1},{id:"co-4",name:"20mm Tee",model:"—",cost:1.20},{id:"co-5",name:"20mm Corrugated Grey",model:"—",cost:26.55},{id:"co-6",name:"25mm Corrugated Grey",model:"—",cost:36.75},{id:"co-7",name:"20mm Screw Adaptor",model:"—",cost:1},{id:"co-8",name:"25mm Screw Adaptor",model:"—",cost:1.30}],
+  "Drainage":[{id:"dr-1",name:"20mm Pressure Pipe",model:"—",cost:9.50},{id:"dr-2",name:"20mm Pressure Elbow",model:"—",cost:1.55},{id:"dr-3",name:"20mm Pressure Joiner",model:"—",cost:1.25},{id:"dr-4",name:"20mm Pressure Tee",model:"—",cost:2}],
+  "Pair Coil":[{id:"pc-1",name:"1/4 x 3/8 Pair Coil",model:"—",cost:169.25},{id:"pc-2",name:"3/8 x 5/8 Pair Coil",model:"—",cost:341.02},{id:"pc-3",name:"1/4 x 1/2 Pair Coil",model:"—",cost:205},{id:"pc-4",name:"1/4 x 5/8 Pair Coil",model:"—",cost:305.62}],
+  "Duct":[{id:"du-1",name:"10 inch Flex Duct",model:"—",cost:27.22},{id:"du-2",name:"14 inch Flex Duct",model:"—",cost:41.16},{id:"du-3",name:"16 inch Flex Duct",model:"—",cost:46.72}],
+  "Diffusers":[{id:"di-1",name:"10 inch Circular Diffuser",model:"—",cost:14.72}],
+  "Return Air":[{id:"ra-1",name:"RA Egg Crate 900x500",model:"—",cost:58.80},{id:"ra-2",name:"600x400 Return Air + Grille & Filter",model:"—",cost:94.61}],
+  "BDOs":[{id:"bd-1",name:"BDO 14-10-10",model:"—",cost:26},{id:"bd-2",name:"BDO 14-14-10",model:"—",cost:29.50},{id:"bd-3",name:"BDO 16-16-12",model:"—",cost:31}],
+  "Zones":[{id:"zo-1",name:"Polyaire 250mm + Cable",model:"Zone Damper",cost:57.16},{id:"zo-2",name:"Polyaire 350mm + Cable",model:"Zone Damper",cost:57.16}],
+  "Fixings":[{id:"fi-1",name:"100x BP Connectors",model:"—",cost:15.50},{id:"fi-2",name:"100x Ramset Wallmates",model:"—",cost:35},{id:"fi-3",name:"100x Knock Ins",model:"—",cost:10.50},{id:"fi-4",name:"100x Green Plugs",model:"—",cost:8},{id:"fi-5",name:"100x 20mm Half Saddles",model:"—",cost:16},{id:"fi-6",name:"100x 25mm Half Saddles",model:"—",cost:28},{id:"fi-7",name:"100x Timber Screws",model:"—",cost:40},{id:"fi-8",name:"100x Button Heads",model:"—",cost:30}],
+  "Miscellaneous":[{id:"mi-1",name:"Metal Strap",model:"—",cost:10},{id:"mi-2",name:"Adjustable Feet",model:"—",cost:13.50},{id:"mi-3",name:"P Trap",model:"—",cost:25},{id:"mi-4",name:"Black Strap",model:"—",cost:5},{id:"mi-5",name:"Silver Tape 72mm",model:"—",cost:25},{id:"mi-6",name:"3M Electrical Tape",model:"—",cost:1.20},{id:"mi-7",name:"Duct Tape",model:"—",cost:2.50},{id:"mi-8",name:"100x Cable Tie",model:"—",cost:8},{id:"mi-9",name:"PVC Glue",model:"—",cost:8},{id:"mi-10",name:"Top Bull Cream Bracket Small",model:"—",cost:26},{id:"mi-11",name:"Bostik Silicone",model:"—",cost:8},{id:"mi-12",name:"Colourbond Trunking",model:"—",cost:25},{id:"mi-13",name:"Daikin Wall Controller",model:"—",cost:110}],
+  "Trunking":[{id:"tr-1",name:"80mm Aussieduct Ivory 2000/L",model:"—",cost:28.90},{id:"tr-2",name:"80mm Aussieduct Wall Cap",model:"—",cost:13.90},{id:"tr-3",name:"80mm Aussieduct Ceiling Cap",model:"—",cost:13.90},{id:"tr-4",name:"100mm Aussieduct Ivory 2000/L",model:"—",cost:39.42},{id:"tr-5",name:"100mm Aussieduct Wall Cap",model:"—",cost:17.32},{id:"tr-6",name:"100mm Aussieduct Ceiling Cap",model:"—",cost:17.32}]
+};
+
+// ══════ STATE ══════
+let quotes=[],clients=[],customProducts=[],currentQuote=null,currentStep=1,pickerTarget='equipment',filterState='all',searchState='',pickerCat='All',settings={company:'REPAIR HVAC SERVICES',phone:'',email:'',address:'',license:'',website:'',markup:40,gst:10};
+
+function uid(){return Math.random().toString(36).slice(2,9);}
+function qNum(){return 'RPR-'+new Date().getFullYear()+'-'+String(Math.floor(Math.random()*9000)+1000);}
+function todayStr(){return new Date().toISOString().split('T')[0];}
+function fmt(n){return '$'+(+n||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
+function allProducts(){
+  const base=Object.entries(BASE_DB).flatMap(([cat,items])=>items.map(i=>({...i,category:cat,_custom:false})));
+  const custom=customProducts.filter(p=>p.status==='active');
+  return [...base,...custom];
+}
+
+function load(){
+  const sq=localStorage.getItem('rpr_quotes'),ss=localStorage.getItem('rpr_settings'),sc=localStorage.getItem('rpr_clients'),sp=localStorage.getItem('rpr_products');
+  if(sq) quotes=JSON.parse(sq);
+  else{
+    quotes=[
+      {id:uid(),quoteNumber:'RPR-2024-0042',status:'accepted',client:{name:'Sarah Thompson',phone:'0412 345 678',email:'sarah.t@email.com',address:'14 Harbour View Rd, Balmain NSW 2041',notes:'2 storey, existing ducted replacement',siteVisit:'2024-05-15',salesperson:'Zac'},equipment:[{id:uid(),name:'14kW Single Phase Ducted',model:'PUZ-M140VKA',cost:4225,qty:1,total:4225,note:''}],materials:[{id:uid(),description:'4.0mm Twin & Earth TPS',cost:315,qty:2,total:630,note:''},{id:uid(),description:'Polyaire 250mm Zone Damper',cost:57.16,qty:8,total:457.28,note:''}],labour:{install:1200,electrical:800,crane:0,scissor:0,other:0,otherdesc:''},markup:40,gst:10,createdAt:'2024-05-16',updatedAt:'2024-05-16'},
+      {id:uid(),quoteNumber:'RPR-2024-0051',status:'draft',client:{name:'Marcus Chen',phone:'0455 887 221',email:'mchen@business.com',address:'Lot 7, 22 Commerce St, Alexandria NSW 2015',notes:'Commercial office fit-out, 3 zones required',siteVisit:'2024-06-01',salesperson:'Jack'},equipment:[{id:uid(),name:'14kW Single Phase Ducted',model:'FDYAN140AV1',cost:4315,qty:1,total:4315,note:''},{id:uid(),name:'Main Control Module',model:'AirTouch MCM',cost:350.75,qty:1,total:350.75,note:''}],materials:[{id:uid(),description:'3/8 x 5/8 Pair Coil',cost:341.02,qty:1,total:341.02,note:''}],labour:{install:2400,electrical:1200,crane:350,scissor:0,other:0,otherdesc:''},markup:40,gst:10,createdAt:'2024-06-02',updatedAt:'2024-06-02'},
+      {id:uid(),quoteNumber:'RPR-2024-0038',status:'declined',client:{name:'Tony Nguyen',phone:'0401 223 445',email:'tnguyen@email.com',address:'8 Rosebay Cres, Randwick NSW 2031',notes:'Single split system bedroom',siteVisit:'2024-04-20',salesperson:'Zac'},equipment:[{id:uid(),name:'5.0kW Split System',model:'MSZ-AP50VGKD2 / MUZ-AP50VGD2',cost:1203.29,qty:1,total:1203.29,note:''}],materials:[{id:uid(),description:'1/4 x 3/8 Pair Coil',cost:169.25,qty:1,total:169.25,note:''},{id:uid(),description:'20mm Corrugated Grey Conduit',cost:26.55,qty:1,total:26.55,note:''}],labour:{install:380,electrical:200,crane:0,scissor:0,other:0,otherdesc:''},markup:40,gst:10,createdAt:'2024-04-21',updatedAt:'2024-04-21'}
+    ];
+    persist();
+  }
+  if(ss) settings=JSON.parse(ss);
+  if(sc) clients=JSON.parse(sc);
+  if(sp) customProducts=JSON.parse(sp);
+  loadSettingsForm();
+}
+function persist(){localStorage.setItem('rpr_quotes',JSON.stringify(quotes));}
+function persistSettings(){localStorage.setItem('rpr_settings',JSON.stringify(settings));}
+function persistClients(){localStorage.setItem('rpr_clients',JSON.stringify(clients));}
+function persistProducts(){localStorage.setItem('rpr_products',JSON.stringify(customProducts));}
+
+function calcTotals(q){
+  const eq=(q.equipment||[]).reduce((s,i)=>s+(i.total||0),0);
+  const mat=(q.materials||[]).reduce((s,i)=>s+(i.total||0),0);
+  const l=q.labour||{};
+  const lab=(+l.install||0)+(+l.electrical||0)+(+l.crane||0)+(+l.scissor||0)+(+l.other||0);
+  const cost=eq+mat+lab;
+  const mk=(q.markup||40)/100;
+  const sell=cost*(1+mk);
+  const gstR=(q.gst||10)/100;
+  const gstAmt=sell*gstR;
+  const grand=sell+gstAmt;
+  const profit=sell-cost;
+  const margin=sell>0?(profit/sell)*100:0;
+  return{eq,mat,lab,cost,sell,gstAmt,grand,profit,margin};
+}
+
+// ══════ PROFIT SIDEBAR ══════
+function buildProfitSidebar(){
+  if(!currentQuote) return '';
+  readFormToQuote();
+  const t=calcTotals(currentQuote);
+  const mc=t.margin>=40?'green':t.margin>=30?'amber':'red';
+  return `<div class="profit-sidebar">
+    <div class="ps-header">Live Profitability</div>
+    <div class="ps-body">
+      <div class="ps-row"><span class="ps-label">Equipment</span><span class="ps-val">${fmt(t.eq)}</span></div>
+      <div class="ps-row"><span class="ps-label">Materials</span><span class="ps-val">${fmt(t.mat)}</span></div>
+      <div class="ps-row"><span class="ps-label">Labour</span><span class="ps-val">${fmt(t.lab)}</span></div>
+      <div class="ps-row"><span class="ps-label">Cost of Job</span><span class="ps-val">${fmt(t.cost)}</span></div>
+      <div class="ps-row"><span class="ps-label">Sell Price (ex GST)</span><span class="ps-val" style="color:var(--teal);">${fmt(t.sell)}</span></div>
+      <div class="ps-row"><span class="ps-label">GST</span><span class="ps-val">${fmt(t.gstAmt)}</span></div>
+    </div>
+    <div class="ps-grand"><span class="ps-grand-label">Total inc GST</span><span class="ps-grand-val">${fmt(t.grand)}</span></div>
+    <div class="ps-margin ${mc}">
+      <div class="ps-margin-pct">${t.margin.toFixed(1)}%</div>
+      <div class="ps-margin-label">Gross Margin · ${fmt(t.profit)} profit</div>
+    </div>
+  </div>`;
+}
+function refreshSidebars(){
+  ['1','2','3','4','5'].forEach(n=>{
+    const el=document.getElementById('profit-sidebar-'+n);
+    if(el) el.innerHTML=buildProfitSidebar();
+  });
+}
+function sidebarRecalc(){recalc();}
+
+// ══════ VIEWS ══════
+function showView(v){
+  ['dashboard','form','settings','clients'].forEach(x=>document.getElementById('view-'+x).style.display='none');
+  document.getElementById('view-'+v).style.display='block';
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
+  const map={dashboard:0,clients:2,settings:3};
+  if(map[v]!==undefined) document.querySelectorAll('.sb-btn')[map[v]].classList.add('active');
+  if(v==='dashboard') renderDashboard();
+  if(v==='clients') renderClients();
+  if(v==='settings') renderProductTable();
+}
+
+// ══════ DASHBOARD ══════
+function renderDashboard(){
+  document.getElementById('dash-date').textContent=new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const tot=quotes.length;
+  const draft=quotes.filter(q=>['draft','internal-review','ready-to-send'].includes(q.status)).length;
+  const accepted=quotes.filter(q=>q.status==='accepted').length;
+  const declined=quotes.filter(q=>['declined','rejected'].includes(q.status)).length;
+  const pipeline=quotes.filter(q=>!['accepted','declined','rejected','expired'].includes(q.status)).reduce((s,q)=>s+calcTotals(q).grand,0);
+  const revenue=quotes.filter(q=>q.status==='accepted').reduce((s,q)=>s+calcTotals(q).grand,0);
+  document.getElementById('stat-total').textContent=tot;
+  document.getElementById('stat-draft').textContent=draft;
+  document.getElementById('stat-accepted').textContent=accepted;
+  document.getElementById('stat-declined').textContent=declined;
+  document.getElementById('stat-pipeline').textContent=fmt(pipeline);
+  document.getElementById('stat-revenue').textContent=fmt(revenue);
+  renderCharts();
+  renderTable();
+}
+
+function renderCharts(){
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const now=new Date();
+  const last6=[];
+  for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);last6.push({m:d.getMonth(),y:d.getFullYear(),label:months[d.getMonth()]});}
+  const qCounts=last6.map(({m,y})=>quotes.filter(q=>{const d=new Date(q.createdAt);return d.getMonth()===m&&d.getFullYear()===y;}).length);
+  const rTotals=last6.map(({m,y})=>quotes.filter(q=>{const d=new Date(q.createdAt);return d.getMonth()===m&&d.getFullYear()===y&&q.status==='accepted';}).reduce((s,q)=>s+calcTotals(q).grand,0));
+  const maxQ=Math.max(...qCounts,1);
+  const maxR=Math.max(...rTotals,1);
+  const qEl=document.getElementById('chart-quotes');
+  const rEl=document.getElementById('chart-revenue');
+  qEl.innerHTML=last6.map((x,i)=>`<div class="bar-wrap"><div class="bar-val">${qCounts[i]}</div><div class="bar" style="height:${Math.max((qCounts[i]/maxQ)*70,2)}px;background:var(--teal);"></div><div class="bar-label">${x.label}</div></div>`).join('');
+  rEl.innerHTML=last6.map((x,i)=>`<div class="bar-wrap"><div class="bar-val" style="font-size:8px;">${rTotals[i]>0?'$'+Math.round(rTotals[i]/1000)+'k':''}</div><div class="bar" style="height:${Math.max((rTotals[i]/maxR)*70,2)}px;background:var(--navy);"></div><div class="bar-label">${x.label}</div></div>`).join('');
+}
+
+function renderTable(){
+  const tbody=document.getElementById('quotes-tbody');
+  const filtered=quotes.filter(q=>{
+    const ms=filterState==='all'||q.status===filterState||(filterState==='declined'&&q.status==='rejected');
+    const sq=searchState.toLowerCase();
+    const mm=!sq||(q.client.name||'').toLowerCase().includes(sq)||q.quoteNumber.toLowerCase().includes(sq)||(q.client.address||'').toLowerCase().includes(sq);
+    return ms&&mm;
+  });
+  tbody.innerHTML='';
+  const empty=document.getElementById('empty-dash');
+  if(!filtered.length){empty.classList.remove('hidden');return;}
+  empty.classList.add('hidden');
+  filtered.forEach(q=>{
+    const t=calcTotals(q);
+    const mc=t.margin>=40?'var(--green-700)':t.margin>=30?'#92400e':'var(--red)';
+    const tr=document.createElement('tr');
+    const statusLabel={draft:'Draft','internal-review':'In Review','ready-to-send':'Ready to Send',sent:'Sent',accepted:'Accepted',declined:'Declined',rejected:'Declined',expired:'Expired'}[q.status]||q.status;
+    tr.innerHTML=`
+      <td><span class="q-num">${q.quoteNumber}</span></td>
+      <td><div class="q-client">${q.client.name||'—'}</div><div class="q-sub">${q.client.salesperson?'by '+q.client.salesperson:''}</div></td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--slate-500);font-size:12px;">${q.client.address||'—'}</td>
+      <td style="font-weight:800;">${fmt(t.grand)}</td>
+      <td style="font-weight:700;color:${mc};font-size:12px;">${t.margin.toFixed(1)}%</td>
+      <td><span class="badge ${q.status==='rejected'?'declined':q.status}">${statusLabel}</span></td>
+      <td style="color:var(--slate-400);font-size:11px;">${new Date(q.createdAt).toLocaleDateString('en-AU')}</td>
+      <td><div class="row-actions">
+        <button class="icon-btn edit" title="Edit" onclick="editQuote('${q.id}');event.stopPropagation();"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="icon-btn dup" title="Duplicate" onclick="dupQuote('${q.id}');event.stopPropagation();"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
+        <button class="icon-btn del" title="Delete" onclick="delQuote('${q.id}');event.stopPropagation();"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+      </div></td>`;
+    tr.addEventListener('click',()=>editQuote(q.id));
+    tbody.appendChild(tr);
+  });
+}
+function filterQuotes(f,btn){filterState=f;document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTable();}
+function searchQuotes(v){searchState=v;renderTable();}
+function delQuote(id){if(confirm('Delete this quote?')){quotes=quotes.filter(q=>q.id!==id);persist();renderDashboard();toast('Quote deleted');}}
+function dupQuote(id){const o=quotes.find(q=>q.id===id);if(!o)return;const c=JSON.parse(JSON.stringify(o));c.id=uid();c.quoteNumber=qNum();c.status='draft';c.createdAt=todayStr();c.updatedAt=todayStr();quotes.unshift(c);persist();renderDashboard();toast('Quote duplicated');}
+
+// ══════ FORM ══════
+const STEPS=['Client','Equipment','Materials','Labour','Pricing','Preview'];
+function buildStepTabs(){
+  const c=document.getElementById('step-tabs');c.innerHTML='';
+  STEPS.forEach((s,i)=>{const b=document.createElement('button');b.className='step-tab'+(i+1===currentStep?' active':i+1<currentStep?' done':'');b.innerHTML=`<span class="step-num">${i+1<currentStep?'✓':i+1}</span>${s}`;b.onclick=()=>gotoStep(i+1);c.appendChild(b);});
+}
+function gotoStep(n){
+  document.querySelectorAll('.step-content').forEach(el=>el.classList.remove('active'));
+  document.getElementById('step-'+n).classList.add('active');
+  currentStep=n;buildStepTabs();
+  recalc();
+  if(n===6)fillPreview();
+}
+function newQuote(){
+  currentQuote={id:uid(),quoteNumber:qNum(),status:'draft',client:{name:'',phone:'',email:'',address:'',notes:'',siteVisit:todayStr(),salesperson:''},equipment:[],materials:[],labour:{install:0,electrical:0,crane:0,scissor:0,other:0,otherdesc:''},markup:settings.markup||40,gst:settings.gst||10,createdAt:todayStr(),updatedAt:todayStr()};
+  loadFormFromQuote();showView('form');gotoStep(1);
+}
+function editQuote(id){currentQuote=JSON.parse(JSON.stringify(quotes.find(q=>q.id===id)));if(!currentQuote)return;loadFormFromQuote();showView('form');gotoStep(1);}
+function loadFormFromQuote(){
+  const q=currentQuote,c=q.client;
+  document.getElementById('f-name').value=c.name||'';
+  document.getElementById('f-phone').value=c.phone||'';
+  document.getElementById('f-email').value=c.email||'';
+  document.getElementById('f-address').value=c.address||'';
+  document.getElementById('f-sitevisit').value=c.siteVisit||'';
+  document.getElementById('f-salesperson').value=c.salesperson||'';
+  document.getElementById('f-notes').value=c.notes||'';
+  document.getElementById('f-markup').value=q.markup||40;
+  document.getElementById('f-gst').value=q.gst||10;
+  document.getElementById('f-status').value=q.status||'draft';
+  document.getElementById('l-install').value=q.labour.install||0;
+  document.getElementById('l-electrical').value=q.labour.electrical||0;
+  document.getElementById('l-crane').value=q.labour.crane||0;
+  document.getElementById('l-scissor').value=q.labour.scissor||0;
+  document.getElementById('l-other').value=q.labour.other||0;
+  document.getElementById('l-otherdesc').value=q.labour.otherdesc||'';
+  populateClientSelect();
+  renderEqTable();renderMatTable();refreshSidebars();
+}
+function readFormToQuote(){
+  if(!currentQuote)return;
+  currentQuote.client.name=document.getElementById('f-name').value;
+  currentQuote.client.phone=document.getElementById('f-phone').value;
+  currentQuote.client.email=document.getElementById('f-email').value;
+  currentQuote.client.address=document.getElementById('f-address').value;
+  currentQuote.client.siteVisit=document.getElementById('f-sitevisit').value;
+  currentQuote.client.salesperson=document.getElementById('f-salesperson').value;
+  currentQuote.client.notes=document.getElementById('f-notes').value;
+  currentQuote.markup=+document.getElementById('f-markup').value||40;
+  currentQuote.gst=+document.getElementById('f-gst').value||10;
+  currentQuote.status=document.getElementById('f-status').value;
+  currentQuote.labour.install=+document.getElementById('l-install').value||0;
+  currentQuote.labour.electrical=+document.getElementById('l-electrical').value||0;
+  currentQuote.labour.crane=+document.getElementById('l-crane').value||0;
+  currentQuote.labour.scissor=+document.getElementById('l-scissor').value||0;
+  currentQuote.labour.other=+document.getElementById('l-other').value||0;
+  currentQuote.labour.otherdesc=document.getElementById('l-otherdesc').value;
+  currentQuote.updatedAt=todayStr();
+}
+function saveQuote(status){
+  readFormToQuote();
+  if(status)currentQuote.status=status;
+  const idx=quotes.findIndex(q=>q.id===currentQuote.id);
+  if(idx>=0)quotes[idx]=currentQuote;else quotes.unshift(currentQuote);
+  persist();showView('dashboard');toast('Quote saved ✓');
+}
+
+// ══════ EQ TABLE ══════
+function renderEqTable(){
+  const tbody=document.getElementById('eq-tbody'),table=document.getElementById('eq-table'),empty=document.getElementById('eq-empty');
+  tbody.innerHTML='';
+  if(!currentQuote.equipment.length){table.style.display='none';empty.style.display='block';document.getElementById('eq-total-cell').textContent='';return;}
+  table.style.display='table';empty.style.display='none';
+  currentQuote.equipment.forEach(e=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><div style="font-weight:700;">${e.name}</div><div class="line-note"><input type="text" placeholder="Add note..." value="${e.note||''}" onchange="updateEqNote('${e.id}',this.value)"/></div></td>
+      <td style="color:var(--slate-400);font-size:11px;">${e.model}</td>
+      <td><input class="w-cost" type="number" min="0" step="0.01" value="${e.cost}" onchange="updateEqCost('${e.id}',this.value)"/></td>
+      <td><input class="w-qty" type="number" min="1" value="${e.qty}" onchange="updateEqQty('${e.id}',this.value)"/></td>
+      <td class="w-total">${fmt(e.total)}</td>
+      <td><button class="icon-btn del" onclick="removeEq('${e.id}')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button></td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('eq-total-cell').textContent=fmt(currentQuote.equipment.reduce((s,i)=>s+(i.total||0),0));
+}
+function updateEqQty(id,v){const e=currentQuote.equipment.find(x=>x.id===id);if(e){e.qty=+v;e.total=e.cost*(+v);}renderEqTable();recalc();}
+function updateEqCost(id,v){const e=currentQuote.equipment.find(x=>x.id===id);if(e){e.cost=+v;e.total=+v*e.qty;}renderEqTable();recalc();}
+function updateEqNote(id,v){const e=currentQuote.equipment.find(x=>x.id===id);if(e)e.note=v;}
+function removeEq(id){currentQuote.equipment=currentQuote.equipment.filter(x=>x.id!==id);renderEqTable();recalc();}
+
+// ══════ MAT TABLE ══════
+function renderMatTable(){
+  const tbody=document.getElementById('mat-tbody'),table=document.getElementById('mat-table'),empty=document.getElementById('mat-empty');
+  tbody.innerHTML='';
+  if(!currentQuote.materials.length){table.style.display='none';empty.style.display='block';document.getElementById('mat-total-cell').textContent='';return;}
+  table.style.display='table';empty.style.display='none';
+  currentQuote.materials.forEach(m=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><input type="text" value="${m.description}" placeholder="Description" onchange="updateMatDesc('${m.id}',this.value)" style="min-width:160px;"/><div class="line-note"><input type="text" placeholder="Add note..." value="${m.note||''}" onchange="updateMatNote('${m.id}',this.value)"/></div></td>
+      <td><input class="w-cost" type="number" min="0" step="0.01" value="${m.cost}" onchange="updateMatCost('${m.id}',this.value)"/></td>
+      <td><input class="w-qty" type="number" min="1" value="${m.qty}" onchange="updateMatQty('${m.id}',this.value)"/></td>
+      <td class="w-total">${fmt(m.total)}</td>
+      <td><button class="icon-btn del" onclick="removeMat('${m.id}')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button></td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('mat-total-cell').textContent=fmt(currentQuote.materials.reduce((s,i)=>s+(i.total||0),0));
+}
+function updateMatDesc(id,v){const m=currentQuote.materials.find(x=>x.id===id);if(m)m.description=v;}
+function updateMatNote(id,v){const m=currentQuote.materials.find(x=>x.id===id);if(m)m.note=v;}
+function updateMatCost(id,v){const m=currentQuote.materials.find(x=>x.id===id);if(m){m.cost=+v;m.total=+v*m.qty;}renderMatTable();recalc();}
+function updateMatQty(id,v){const m=currentQuote.materials.find(x=>x.id===id);if(m){m.qty=+v;m.total=m.cost*(+v);}renderMatTable();recalc();}
+function removeMat(id){currentQuote.materials=currentQuote.materials.filter(x=>x.id!==id);renderMatTable();recalc();}
+function addCustomMaterial(){currentQuote.materials.push({id:uid(),description:'',cost:0,qty:1,total:0,note:''});renderMatTable();}
+
+// ══════ RECALC ══════
+function recalc(){
+  readFormToQuote();
+  const t=calcTotals(currentQuote);
+  const gst=currentQuote.gst||10;
+  ['p-eq','p-mat','p-lab','p-cost','p-sell','p-gst','p-grand'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    const map={'p-eq':t.eq,'p-mat':t.mat,'p-lab':t.lab,'p-cost':t.cost,'p-sell':t.sell,'p-gst':t.gstAmt,'p-grand':t.grand};
+    el.textContent=fmt(map[id]);
+  });
+  const gstLabel=document.getElementById('p-gst-label');if(gstLabel)gstLabel.textContent='GST ('+gst+'%)';
+  refreshSidebars();
+}
+
+// ══════ PREVIEW ══════
+function fillPreview(){
+  readFormToQuote();
+  const q=currentQuote,t=calcTotals(q);
+  document.getElementById('prev-qnum').textContent=q.quoteNumber;
+  document.getElementById('prev-client').textContent=q.client.name||'No client set';
+  document.getElementById('prev-address').textContent=q.client.address||'';
+  document.getElementById('prev-eq').textContent=fmt(t.eq);
+  document.getElementById('prev-mat').textContent=fmt(t.mat);
+  document.getElementById('prev-lab').textContent=fmt(t.lab);
+  document.getElementById('prev-sell').textContent=fmt(t.sell);
+  document.getElementById('prev-gst').textContent=fmt(t.gstAmt);
+  document.getElementById('prev-grand').textContent=fmt(t.grand);
+}
+
+// ══════ PICKER ══════
+function openPicker(target){
+  pickerTarget=target;pickerCat='All';
+  document.getElementById('picker-title').textContent=target==='equipment'?'Add Equipment':'Add Materials';
+  document.getElementById('picker-search-input').value='';
+  buildPickerCats();renderPickerList();
+  document.getElementById('picker-modal').classList.remove('hidden');
+}
+function closePicker(){document.getElementById('picker-modal').classList.add('hidden');}
+function buildPickerCats(){
+  const c=document.getElementById('picker-cats');
+  const cats=['All',...Object.keys(BASE_DB),...customProducts.filter(p=>p.status==='active').map(p=>p.category).filter((v,i,a)=>a.indexOf(v)===i&&!Object.keys(BASE_DB).includes(v))];
+  c.innerHTML='';
+  cats.forEach(cat=>{const b=document.createElement('button');b.className='cat-chip'+(cat===pickerCat?' active':'');b.textContent=cat;b.onclick=()=>{pickerCat=cat;buildPickerCats();renderPickerList();};c.appendChild(b);});
+}
+function renderPickerList(){
+  const q=document.getElementById('picker-search-input').value.toLowerCase();
+  const list=document.getElementById('picker-list');
+  const filtered=allProducts().filter(p=>{
+    const mc=pickerCat==='All'||p.category===pickerCat;
+    const mq=!q||p.name.toLowerCase().includes(q)||p.model.toLowerCase().includes(q)||p.category.toLowerCase().includes(q);
+    return mc&&mq;
+  });
+  list.innerHTML='';
+  if(!filtered.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-text">No products found</div></div>';return;}
+  filtered.forEach(p=>{
+    const div=document.createElement('div');div.className='picker-item';
+    div.innerHTML=`<div style="flex:1;min-width:0;"><div class="picker-item-name">${p.name}${p._custom?'<span style="margin-left:6px;background:var(--teal-50);color:var(--teal);font-size:9px;padding:1px 6px;border-radius:4px;font-weight:700;">CUSTOM</span>':''}</div><div class="picker-item-meta">${p.model} · <span style="color:var(--teal);">${p.category}</span></div></div><span class="picker-item-price">${fmt(p.cost)}</span><button class="picker-add-btn">+</button>`;
+    div.onclick=()=>addFromPicker(p);list.appendChild(div);
+  });
+}
+function addFromPicker(p){
+  if(pickerTarget==='equipment'){
+    currentQuote.equipment.push({id:uid(),name:p.name,model:p.model,cost:p.cost,qty:1,total:p.cost,note:''});
+    renderEqTable();
+  } else {
+    currentQuote.materials.push({id:uid(),description:p.name+(p.model&&p.model!=='—'?' ('+p.model+')':''),cost:p.cost,qty:1,total:p.cost,note:''});
+    renderMatTable();
+  }
+  recalc();closePicker();toast('Added: '+p.name);
+}
+
+// ══════ PDF ══════
+function previewPDF(){readFormToQuote();const html=buildPDFHTML(currentQuote,settings);document.getElementById('pdf-frame').srcdoc=html;document.getElementById('pdf-modal').classList.remove('hidden');}
+function closePDFModal(){document.getElementById('pdf-modal').classList.add('hidden');}
+function printPDF(){readFormToQuote();const html=buildPDFHTML(currentQuote,settings);const w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),600);}
+
+function buildPDFHTML(q,s){
+  const t=calcTotals(q);
+  const eqRows=(q.equipment||[]).map(e=>`<tr><td><strong>${e.name}</strong>${e.note?'<br/><span style="color:#94a3b8;font-size:10px;">'+e.note+'</span>':''}</td><td style="color:#94a3b8;font-size:11px;">${e.model}</td><td style="text-align:right;">${e.qty}</td><td style="text-align:right;">${fmt(e.cost)}</td><td style="text-align:right;font-weight:700;">${fmt(e.total)}</td></tr>`).join('');
+  const matRows=(q.materials||[]).map(m=>`<tr><td>${m.description}${m.note?'<br/><span style="color:#94a3b8;font-size:10px;">'+m.note+'</span>':''}</td><td style="text-align:right;">${m.qty}</td><td style="text-align:right;">${fmt(m.cost)}</td><td style="text-align:right;font-weight:700;">${fmt(m.total)}</td></tr>`).join('');
+  const labRows=[['Installation Labour',q.labour.install],['Electrical Labour',q.labour.electrical],['Crane Hire',q.labour.crane],['Scissor Lift',q.labour.scissor],[(q.labour.otherdesc||'Additional Charges'),q.labour.other]].filter(r=>+r[1]>0).map(r=>`<tr><td>${r[0]}</td><td style="text-align:right;font-weight:700;">${fmt(r[1])}</td></tr>`).join('');
+  const scopeItems=(q.equipment||[]).map(e=>`<li>Supply and installation of ${e.qty>1?e.qty+'x ':''} ${e.name} (${e.model})</li>`).join('');
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Helvetica Neue',Arial,sans-serif;color:#1e293b;background:#fff;font-size:13px;}
+    .page{max-width:760px;margin:0 auto;padding:40px;}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:24px;border-bottom:3px solid #0D7A7A;margin-bottom:28px;}
+    .logo{font-size:26px;font-weight:900;color:#1E1B4B;letter-spacing:-1px;}
+    .logo span{color:#0D7A7A;}
+    .tagline{font-size:10px;color:#94a3b8;letter-spacing:2px;text-transform:uppercase;margin-top:3px;}
+    .co-info{margin-top:8px;font-size:11px;color:#64748b;line-height:1.9;}
+    .q-num{font-size:20px;font-weight:900;color:#1e293b;}
+    .q-date{font-size:11px;color:#94a3b8;margin-top:3px;}
+    .badge-pdf{display:inline-block;background:#d0f0f0;color:#0D7A7A;font-size:10px;font-weight:800;padding:2px 10px;border-radius:999px;margin-top:6px;text-transform:uppercase;letter-spacing:.5px;}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+    .info-card{background:#f8fafc;border-radius:10px;padding:16px;}
+    .info-title{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;margin-bottom:10px;}
+    .info-body{font-size:12px;line-height:1.8;color:#334155;}
+    .sec-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#0D7A7A;margin:22px 0 10px;padding-bottom:5px;border-bottom:2px solid #e2e8f0;}
+    .scope-list{margin:0;padding-left:18px;font-size:12px;line-height:2;color:#334155;}
+    .incl-excl{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;}
+    .incl,.excl{border-radius:8px;padding:14px;}
+    .incl{background:#f0fdf4;}.excl{background:#fff7ed;}
+    .ie-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
+    .incl .ie-title{color:#166534;}.excl .ie-title{color:#9a3412;}
+    .ie-list{margin:0;padding-left:16px;font-size:11px;line-height:1.8;}
+    .incl .ie-list{color:#166534;}.excl .ie-list{color:#9a3412;}
+    table{width:100%;border-collapse:collapse;margin-bottom:18px;}
+    thead tr{background:#1E1B4B;color:white;}
+    th{padding:8px 12px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;text-align:left;}
+    tbody tr{border-bottom:1px solid #f1f5f9;}
+    td{padding:8px 12px;font-size:12px;}
+    tfoot td{background:#f8fafc;border-top:2px solid #e2e8f0;font-weight:800;font-size:12px;padding:9px 12px;}
+    .totals{background:#f8fafc;border-radius:12px;padding:20px;margin-top:12px;}
+    .t-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;}
+    .t-row.sep{border-top:2px solid #e2e8f0;margin-top:6px;padding-top:12px;}
+    .t-row.grand{font-size:18px;font-weight:900;color:#1E1B4B;}
+    .t-label{color:#64748b;}
+    .warranty{background:#f0fdf4;color:#166534;border-radius:10px;padding:16px;margin-top:16px;font-size:11px;line-height:1.7;}
+    .terms{background:#fefce8;color:#713f12;border-radius:10px;padding:16px;margin-top:12px;font-size:11px;line-height:1.7;}
+    .wt-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
+    .sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;}
+    .sig-box{border:1.5px dashed #cbd5e1;border-radius:10px;padding:16px;}
+    .sig-label{font-size:9px;color:#94a3b8;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:36px;}
+    .sig-line{border-top:1px solid #cbd5e1;padding-top:4px;font-size:10px;color:#94a3b8;}
+    .footer{text-align:center;margin-top:32px;padding-top:16px;border-top:1px solid #f1f5f9;font-size:10px;color:#94a3b8;line-height:2;}
+    @media print{.page{padding:28px;}}
+  </style></head><body><div class="page">
+    <div class="header">
+      <div>
+        <div class="logo">REP<span>AIR</span> HVAC SERVICES</div>
+        <div class="tagline">Air Conditioning Specialists</div>
+        <div class="co-info">${s.phone||''} · ${s.email||''}<br/>${s.address||''}<br/>${s.license||''}</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="q-num">${q.quoteNumber}</div>
+        <div class="q-date">Date: ${new Date(q.createdAt).toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'})}</div>
+        <div class="q-date">Valid for 30 days</div>
+        <div class="badge-pdf">Quotation</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="info-card"><div class="info-title">Prepared For</div><div class="info-body"><strong>${q.client.name||'—'}</strong><br/>${q.client.address||''}<br/>${q.client.phone||''}<br/>${q.client.email||''}</div></div>
+      <div class="info-card"><div class="info-title">Job Details</div><div class="info-body"><strong>Site Visit:</strong> ${q.client.siteVisit||'—'}<br/><strong>Prepared by:</strong> ${q.client.salesperson||'—'}<br/><strong>Notes:</strong> ${q.client.notes||'—'}</div></div>
+    </div>
+    <div class="sec-title">Scope of Works</div>
+    <ul class="scope-list">
+      <li>Source selected parts and associated materials from suppliers.</li>
+      <li>Arrive on site, communicate working plans to customer.</li>
+      ${scopeItems}
+      <li>Test and commission all installed systems to manufacturer specifications.</li>
+      <li>Clean up all working areas and remove rubbish from site.</li>
+    </ul>
+    <div class="incl-excl">
+      <div class="incl"><div class="ie-title">Inclusions</div><ul class="ie-list"><li>All works listed in scope of works above</li><li>Supply and installation of nominated equipment</li><li>System commissioning and testing</li><li>Site clean up on completion</li></ul></div>
+      <div class="excl"><div class="ie-title">Exclusions</div><ul class="ie-list"><li>Structural or building modifications</li><li>Electrical switchboard upgrades</li><li>Painting, plastering or cosmetic works</li><li>Council or strata permit approvals</li></ul></div>
+    </div>
+    ${eqRows?`<div class="sec-title">Equipment Supply</div><table><thead><tr><th>Description</th><th>Model</th><th>Qty</th><th>Unit</th><th>Total</th></tr></thead><tbody>${eqRows}</tbody><tfoot><tr><td colspan="4" style="text-align:right;">Equipment Total</td><td style="text-align:right;color:#0D7A7A;">${fmt(t.eq)}</td></tr></tfoot></table>`:''}
+    ${matRows?`<div class="sec-title">Installation Materials</div><table><thead><tr><th>Description</th><th>Qty</th><th>Unit Cost</th><th>Total</th></tr></thead><tbody>${matRows}</tbody><tfoot><tr><td colspan="3" style="text-align:right;">Materials Total</td><td style="text-align:right;color:#0D7A7A;">${fmt(t.mat)}</td></tr></tfoot></table>`:''}
+    ${labRows?`<div class="sec-title">Labour & Services</div><table><thead><tr><th>Service</th><th>Amount</th></tr></thead><tbody>${labRows}</tbody><tfoot><tr><td style="text-align:right;">Labour Total</td><td style="text-align:right;color:#0D7A7A;">${fmt(t.lab)}</td></tr></tfoot></table>`:''}
+    <div class="totals">
+      <div class="t-row"><span class="t-label">Equipment Supply</span><span>${fmt(t.eq)}</span></div>
+      <div class="t-row"><span class="t-label">Installation Materials</span><span>${fmt(t.mat)}</span></div>
+      <div class="t-row"><span class="t-label">Labour & Services</span><span>${fmt(t.lab)}</span></div>
+      <div class="t-row sep"><span class="t-label">Subtotal (ex GST)</span><span>${fmt(t.sell)}</span></div>
+      <div class="t-row"><span class="t-label">GST (${q.gst||10}%)</span><span>${fmt(t.gstAmt)}</span></div>
+      <div class="t-row sep grand"><span>TOTAL (inc GST)</span><span>${fmt(t.grand)}</span></div>
+    </div>
+    <div class="warranty"><div class="wt-title">Warranty</div>Mitsubishi Electric &amp; Daikin equipment carries 5-year manufacturer warranty on parts and labour. All installation workmanship is warranted for 12 months from date of installation. Warranty is void if the system is modified or serviced by unauthorised personnel.</div>
+    <div class="terms"><div class="wt-title">Terms &amp; Conditions</div>
+      1. This quote is valid for 30 days from the date of issue.<br/>
+      2. A 50% deposit is required upon acceptance. Balance due on completion.<br/>
+      3. Additional charges may apply if site conditions differ from information provided.<br/>
+      4. REPAIR HVAC SERVICES reserves the right to vary this quote if access or site conditions differ materially.<br/>
+      5. All prices include GST unless otherwise stated.
+    </div>
+    <div class="sig-grid">
+      <div class="sig-box"><div class="sig-label">Client Acceptance Signature</div><div class="sig-line">Signature &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date: ___________</div></div>
+      <div class="sig-box"><div class="sig-label">Print Full Name</div><div class="sig-line">Name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date: ___________</div></div>
+    </div>
+    <div class="footer">REPAIR HVAC SERVICES · ${s.phone||''} · ${s.email||''} · ${s.address||''} · ${s.website||'repairhvacs.com.au'}</div>
+  </div>
+</div>
+
+<script>
+
+const SUPABASE_URL = 'https://gyhemsaxriyvvggsffjh.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_xd8AMjH-MdnkMpVW6cyIsA_Sm6__Mnq';
+const AUTH_PASSWORD = 'RepAIR2024';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Storage wrapper - use localStorage as fallback, Supabase for sync
+const storage = {
+  async getItem(key) {
+    try {
+      const val = localStorage.getItem(key);
+      return val;
+    } catch (e) {
+      console.error('Storage get error:', e);
+      return null;
+    }
+  },
+  async setItem(key, value) {
+    try {
+      localStorage.setItem(key, value);
+      // Also sync to Supabase if authenticated
+      if(sessionStorage.getItem('qa') === '1') {
+        await sb.from('settings').upsert(
+          { key, value, updated_at: new Date().toISOString() },
+          { onConflict: 'key' }
+        ).catch(e => console.log('Supabase sync:', e));
+      }
+    } catch (e) {
+      console.error('Storage set error:', e);
+    }
+  }
+};
+
+// Auth system
+async function checkAuth() {
+  const pwd = document.getElementById('pwd-gate').value;
+  if(pwd === AUTH_PASSWORD) {
+    sessionStorage.setItem('qa', '1');
+    document.getElementById('auth-gate').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    setTimeout(() => { load(); renderDashboard(); }, 200);
+  } else {
+    alert('Wrong password');
+    document.getElementById('pwd-gate').value = '';
+  }
+}
+
+function handlePwdKeypress(e) {
+  if(e.key === 'Enter') checkAuth();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const pwdInput = document.getElementById('pwd-gate');
+  if(pwdInput) pwdInput.addEventListener('keypress', handlePwdKeypress);
+  
+  if(sessionStorage.getItem('qa') === '1') {
+    document.getElementById('auth-gate').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    setTimeout(() => { load(); renderDashboard(); }, 200);
+  }
+});
+
+
+// ══════ BASE DB ══════
+const BASE_DB = {
+  "Mitsubishi Electric Split Systems":[{id:"me-ss-1",name:"2.5kW Indoor Head",model:"MSZ-AP25VGKD2",cost:299.25},{id:"me-ss-2",name:"2.5kW Split System",model:"MSZ-AP25VGKD2 / MUZ-AP25VD2",cost:738.35},{id:"me-ss-3",name:"3.5kW Split System",model:"MSZ-AP35VGKD2 / MUZ-AP35VD2",cost:970},{id:"me-ss-4",name:"5.0kW Split System",model:"MSZ-AP50VGKD2 / MUZ-AP50VGD2",cost:1203.29},{id:"me-ss-5",name:"6.0kW Split System",model:"MSZ-AP60VGKD2 / MUZ-AP60VGD2",cost:1411.30},{id:"me-ss-6",name:"8.0kW Split System",model:"MSZAP80VGKD2 / MUZ-AP80VGD2",cost:1835.60}],
+  "Daikin Split Systems":[{id:"dk-ss-1",name:"Cora 6.0kW",model:"FTXV60WVMA / RXV60WVMA",cost:1435},{id:"dk-ss-2",name:"Cora 7.1kW",model:"FTXV71WVMA / RXV71WVMA",cost:1453.90}],
+  "Mitsubishi Electric Ducted Systems":[{id:"me-ds-1",name:"12.5kW Ducted",model:"PEA-M125HAA / PUZ-M125VKA",cost:3201.02},{id:"me-ds-2",name:"14kW Single Phase",model:"PUZ-M140VKA",cost:4225},{id:"me-ds-3",name:"14kW 3 Phase",model:"PUZ-ZM140YKA",cost:4950}],
+  "Daikin Ducted Systems":[{id:"dk-ds-1",name:"8.5kW 240V Ducted",model:"FDYAN85AV1 / RXV85C2V1",cost:2661.84},{id:"dk-ds-2",name:"14kW Single Phase Ducted",model:"FDYAN140AV1",cost:4315},{id:"dk-ds-3",name:"14kW 3 Phase Ducted",model:"FDYAN140AV3",cost:4610}],
+  "Airtouch Components":[{id:"at-1",name:"Gateway",model:"AirTouch Gateway",cost:162.73},{id:"at-2",name:"Main Control Module",model:"AirTouch MCM",cost:350.75},{id:"at-3",name:"Console",model:"AirTouch Console",cost:373.75},{id:"at-4",name:"Console Lead Data Cable Blue",model:"AirTouch Data Cable",cost:11.70},{id:"at-5",name:"Transformer 24V",model:"AirTouch Transformer",cost:26}],
+  "Airtouch Accessories":[{id:"ata-1",name:"Wireless Sensor AirTouch 5",model:"AT5-WS",cost:78.20}],
+  "Electrical":[{id:"el-1",name:"1.5mm 3C+E Orange Circular",model:"—",cost:195},{id:"el-2",name:"1.5mm Twin & Earth TPS",model:"—",cost:105},{id:"el-3",name:"4.0mm Twin & Earth TPS",model:"—",cost:315},{id:"el-4",name:"1 Pair Data Cable",model:"—",cost:105},{id:"el-5",name:"Data Cable",model:"—",cost:10},{id:"el-6",name:"Clipsal SP 20A RCBO",model:"—",cost:26},{id:"el-7",name:"Clipsal SP 32A RCBO",model:"—",cost:27},{id:"el-8",name:"Clipsal SP 10A RCBO",model:"—",cost:26},{id:"el-9",name:"1 Pole 20A Isolator",model:"—",cost:12},{id:"el-10",name:"1 Pole 32A Isolator",model:"—",cost:14}],
+  "Conduit":[{id:"co-1",name:"20mm Electrical",model:"—",cost:4.15},{id:"co-2",name:"20mm Coupling",model:"—",cost:0.50},{id:"co-3",name:"20mm Elbow",model:"—",cost:1},{id:"co-4",name:"20mm Tee",model:"—",cost:1.20},{id:"co-5",name:"20mm Corrugated Grey",model:"—",cost:26.55},{id:"co-6",name:"25mm Corrugated Grey",model:"—",cost:36.75},{id:"co-7",name:"20mm Screw Adaptor",model:"—",cost:1},{id:"co-8",name:"25mm Screw Adaptor",model:"—",cost:1.30}],
+  "Drainage":[{id:"dr-1",name:"20mm Pressure Pipe",model:"—",cost:9.50},{id:"dr-2",name:"20mm Pressure Elbow",model:"—",cost:1.55},{id:"dr-3",name:"20mm Pressure Joiner",model:"—",cost:1.25},{id:"dr-4",name:"20mm Pressure Tee",model:"—",cost:2}],
+  "Pair Coil":[{id:"pc-1",name:"1/4 x 3/8 Pair Coil",model:"—",cost:169.25},{id:"pc-2",name:"3/8 x 5/8 Pair Coil",model:"—",cost:341.02},{id:"pc-3",name:"1/4 x 1/2 Pair Coil",model:"—",cost:205},{id:"pc-4",name:"1/4 x 5/8 Pair Coil",model:"—",cost:305.62}],
+  "Duct":[{id:"du-1",name:"10 inch Flex Duct",model:"—",cost:27.22},{id:"du-2",name:"14 inch Flex Duct",model:"—",cost:41.16},{id:"du-3",name:"16 inch Flex Duct",model:"—",cost:46.72}],
+  "Diffusers":[{id:"di-1",name:"10 inch Circular Diffuser",model:"—",cost:14.72}],
+  "Return Air":[{id:"ra-1",name:"RA Egg Crate 900x500",model:"—",cost:58.80},{id:"ra-2",name:"600x400 Return Air + Grille & Filter",model:"—",cost:94.61}],
+  "BDOs":[{id:"bd-1",name:"BDO 14-10-10",model:"—",cost:26},{id:"bd-2",name:"BDO 14-14-10",model:"—",cost:29.50},{id:"bd-3",name:"BDO 16-16-12",model:"—",cost:31}],
+  "Zones":[{id:"zo-1",name:"Polyaire 250mm + Cable",model:"Zone Damper",cost:57.16},{id:"zo-2",name:"Polyaire 350mm + Cable",model:"Zone Damper",cost:57.16}],
+  "Fixings":[{id:"fi-1",name:"100x BP Connectors",model:"—",cost:15.50},{id:"fi-2",name:"100x Ramset Wallmates",model:"—",cost:35},{id:"fi-3",name:"100x Knock Ins",model:"—",cost:10.50},{id:"fi-4",name:"100x Green Plugs",model:"—",cost:8},{id:"fi-5",name:"100x 20mm Half Saddles",model:"—",cost:16},{id:"fi-6",name:"100x 25mm Half Saddles",model:"—",cost:28},{id:"fi-7",name:"100x Timber Screws",model:"—",cost:40},{id:"fi-8",name:"100x Button Heads",model:"—",cost:30}],
+  "Miscellaneous":[{id:"mi-1",name:"Metal Strap",model:"—",cost:10},{id:"mi-2",name:"Adjustable Feet",model:"—",cost:13.50},{id:"mi-3",name:"P Trap",model:"—",cost:25},{id:"mi-4",name:"Black Strap",model:"—",cost:5},{id:"mi-5",name:"Silver Tape 72mm",model:"—",cost:25},{id:"mi-6",name:"3M Electrical Tape",model:"—",cost:1.20},{id:"mi-7",name:"Duct Tape",model:"—",cost:2.50},{id:"mi-8",name:"100x Cable Tie",model:"—",cost:8},{id:"mi-9",name:"PVC Glue",model:"—",cost:8},{id:"mi-10",name:"Top Bull Cream Bracket Small",model:"—",cost:26},{id:"mi-11",name:"Bostik Silicone",model:"—",cost:8},{id:"mi-12",name:"Colourbond Trunking",model:"—",cost:25},{id:"mi-13",name:"Daikin Wall Controller",model:"—",cost:110}],
+  "Trunking":[{id:"tr-1",name:"80mm Aussieduct Ivory 2000/L",model:"—",cost:28.90},{id:"tr-2",name:"80mm Aussieduct Wall Cap",model:"—",cost:13.90},{id:"tr-3",name:"80mm Aussieduct Ceiling Cap",model:"—",cost:13.90},{id:"tr-4",name:"100mm Aussieduct Ivory 2000/L",model:"—",cost:39.42},{id:"tr-5",name:"100mm Aussieduct Wall Cap",model:"—",cost:17.32},{id:"tr-6",name:"100mm Aussieduct Ceiling Cap",model:"—",cost:17.32}]
+};
+
+// ══════ STATE ══════
+let quotes=[],clients=[],customProducts=[],currentQuote=null,currentStep=1,pickerTarget='equipment',filterState='all',searchState='',pickerCat='All',settings={company:'REPAIR HVAC SERVICES',phone:'',email:'',address:'',license:'',website:'',markup:40,gst:10};
+
+function uid(){return Math.random().toString(36).slice(2,9);}
+function qNum(){return 'RPR-'+new Date().getFullYear()+'-'+String(Math.floor(Math.random()*9000)+1000);}
+function todayStr(){return new Date().toISOString().split('T')[0];}
+function fmt(n){return '$'+(+n||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
+function allProducts(){
+  const base=Object.entries(BASE_DB).flatMap(([cat,items])=>items.map(i=>({...i,category:cat,_custom:false})));
+  const custom=customProducts.filter(p=>p.status==='active');
+  return [...base,...custom];
+}
+
+async function load() {
+  const sq=await storage.getItem('rpr_quotes'),ss=await storage.getItem('rpr_settings'),sc=await storage.getItem('rpr_clients'),sp=await storage.getItem('rpr_products');
+  if(sq) quotes=JSON.parse(sq);
+  else{
+    quotes=[
+      {id:uid(),quoteNumber:'RPR-2024-0042',status:'accepted',client:{name:'Sarah Thompson',phone:'0412 345 678',email:'sarah.t@email.com',address:'14 Harbour View Rd, Balmain NSW 2041',notes:'2 storey, existing ducted replacement',siteVisit:'2024-05-15',salesperson:'Zac'},equipment:[{id:uid(),name:'14kW Single Phase Ducted',model:'PUZ-M140VKA',cost:4225,qty:1,total:4225,note:''}],materials:[{id:uid(),description:'4.0mm Twin & Earth TPS',cost:315,qty:2,total:630,note:''},{id:uid(),description:'Polyaire 250mm Zone Damper',cost:57.16,qty:8,total:457.28,note:''}],labour:{install:1200,electrical:800,crane:0,scissor:0,other:0,otherdesc:''},markup:40,gst:10,createdAt:'2024-05-16',updatedAt:'2024-05-16'},
+      {id:uid(),quoteNumber:'RPR-2024-0051',status:'draft',client:{name:'Marcus Chen',phone:'0455 887 221',email:'mchen@business.com',address:'Lot 7, 22 Commerce St, Alexandria NSW 2015',notes:'Commercial office fit-out, 3 zones required',siteVisit:'2024-06-01',salesperson:'Jack'},equipment:[{id:uid(),name:'14kW Single Phase Ducted',model:'FDYAN140AV1',cost:4315,qty:1,total:4315,note:''},{id:uid(),name:'Main Control Module',model:'AirTouch MCM',cost:350.75,qty:1,total:350.75,note:''}],materials:[{id:uid(),description:'3/8 x 5/8 Pair Coil',cost:341.02,qty:1,total:341.02,note:''}],labour:{install:2400,electrical:1200,crane:350,scissor:0,other:0,otherdesc:''},markup:40,gst:10,createdAt:'2024-06-02',updatedAt:'2024-06-02'},
+      {id:uid(),quoteNumber:'RPR-2024-0038',status:'declined',client:{name:'Tony Nguyen',phone:'0401 223 445',email:'tnguyen@email.com',address:'8 Rosebay Cres, Randwick NSW 2031',notes:'Single split system bedroom',siteVisit:'2024-04-20',salesperson:'Zac'},equipment:[{id:uid(),name:'5.0kW Split System',model:'MSZ-AP50VGKD2 / MUZ-AP50VGD2',cost:1203.29,qty:1,total:1203.29,note:''}],materials:[{id:uid(),description:'1/4 x 3/8 Pair Coil',cost:169.25,qty:1,total:169.25,note:''},{id:uid(),description:'20mm Corrugated Grey Conduit',cost:26.55,qty:1,total:26.55,note:''}],labour:{install:380,electrical:200,crane:0,scissor:0,other:0,otherdesc:''},markup:40,gst:10,createdAt:'2024-04-21',updatedAt:'2024-04-21'}
+    ];
+    persist();
+  }
+  if(ss) settings=JSON.parse(ss);
+  if(sc) clients=JSON.parse(sc);
+  if(sp) customProducts=JSON.parse(sp);
+  loadSettingsForm();
+}
+async function persist(){await storage.setItem('rpr_quotes',JSON.stringify(quotes));}
+async function persistSettings(){await storage.setItem('rpr_settings',JSON.stringify(settings));}
+async function persistClients(){await storage.setItem('rpr_clients',JSON.stringify(clients));}
+async function persistProducts(){await storage.setItem('rpr_products',JSON.stringify(customProducts));}
+
+function calcTotals(q){
+  const eq=(q.equipment||[]).reduce((s,i)=>s+(i.total||0),0);
+  const mat=(q.materials||[]).reduce((s,i)=>s+(i.total||0),0);
+  const l=q.labour||{};
+  const lab=(+l.install||0)+(+l.electrical||0)+(+l.crane||0)+(+l.scissor||0)+(+l.other||0);
+  const cost=eq+mat+lab;
+  const mk=(q.markup||40)/100;
+  const sell=cost*(1+mk);
+  const gstR=(q.gst||10)/100;
+  const gstAmt=sell*gstR;
+  const grand=sell+gstAmt;
+  const profit=sell-cost;
+  const margin=sell>0?(profit/sell)*100:0;
+  return{eq,mat,lab,cost,sell,gstAmt,grand,profit,margin};
+}
+
+// ══════ PROFIT SIDEBAR ══════
+function buildProfitSidebar(){
+  if(!currentQuote) return '';
+  readFormToQuote();
+  const t=calcTotals(currentQuote);
+  const mc=t.margin>=40?'green':t.margin>=30?'amber':'red';
+  return `<div class="profit-sidebar">
+    <div class="ps-header">Live Profitability</div>
+    <div class="ps-body">
+      <div class="ps-row"><span class="ps-label">Equipment</span><span class="ps-val">${fmt(t.eq)}</span></div>
+      <div class="ps-row"><span class="ps-label">Materials</span><span class="ps-val">${fmt(t.mat)}</span></div>
+      <div class="ps-row"><span class="ps-label">Labour</span><span class="ps-val">${fmt(t.lab)}</span></div>
+      <div class="ps-row"><span class="ps-label">Cost of Job</span><span class="ps-val">${fmt(t.cost)}</span></div>
+      <div class="ps-row"><span class="ps-label">Sell Price (ex GST)</span><span class="ps-val" style="color:var(--teal);">${fmt(t.sell)}</span></div>
+      <div class="ps-row"><span class="ps-label">GST</span><span class="ps-val">${fmt(t.gstAmt)}</span></div>
+    </div>
+    <div class="ps-grand"><span class="ps-grand-label">Total inc GST</span><span class="ps-grand-val">${fmt(t.grand)}</span></div>
+    <div class="ps-margin ${mc}">
+      <div class="ps-margin-pct">${t.margin.toFixed(1)}%</div>
+      <div class="ps-margin-label">Gross Margin · ${fmt(t.profit)} profit</div>
+    </div>
+  </div>`;
+}
+function refreshSidebars(){
+  ['1','2','3','4','5'].forEach(n=>{
+    const el=document.getElementById('profit-sidebar-'+n);
+    if(el) el.innerHTML=buildProfitSidebar();
+  });
+}
+function sidebarRecalc(){recalc();}
+
+// ══════ VIEWS ══════
+function showView(v){
+  ['dashboard','form','settings','clients'].forEach(x=>document.getElementById('view-'+x).style.display='none');
+  document.getElementById('view-'+v).style.display='block';
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
+  const map={dashboard:0,clients:2,settings:3};
+  if(map[v]!==undefined) document.querySelectorAll('.sb-btn')[map[v]].classList.add('active');
+  if(v==='dashboard') renderDashboard();
+  if(v==='clients') renderClients();
+  if(v==='settings') renderProductTable();
+}
+
+// ══════ DASHBOARD ══════
+function renderDashboard(){
+  document.getElementById('dash-date').textContent=new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const tot=quotes.length;
+  const draft=quotes.filter(q=>['draft','internal-review','ready-to-send'].includes(q.status)).length;
+  const accepted=quotes.filter(q=>q.status==='accepted').length;
+  const declined=quotes.filter(q=>['declined','rejected'].includes(q.status)).length;
+  const pipeline=quotes.filter(q=>!['accepted','declined','rejected','expired'].includes(q.status)).reduce((s,q)=>s+calcTotals(q).grand,0);
+  const revenue=quotes.filter(q=>q.status==='accepted').reduce((s,q)=>s+calcTotals(q).grand,0);
+  document.getElementById('stat-total').textContent=tot;
+  document.getElementById('stat-draft').textContent=draft;
+  document.getElementById('stat-accepted').textContent=accepted;
+  document.getElementById('stat-declined').textContent=declined;
+  document.getElementById('stat-pipeline').textContent=fmt(pipeline);
+  document.getElementById('stat-revenue').textContent=fmt(revenue);
+  renderCharts();
+  renderTable();
+}
+
+function renderCharts(){
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const now=new Date();
+  const last6=[];
+  for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);last6.push({m:d.getMonth(),y:d.getFullYear(),label:months[d.getMonth()]});}
+  const qCounts=last6.map(({m,y})=>quotes.filter(q=>{const d=new Date(q.createdAt);return d.getMonth()===m&&d.getFullYear()===y;}).length);
+  const rTotals=last6.map(({m,y})=>quotes.filter(q=>{const d=new Date(q.createdAt);return d.getMonth()===m&&d.getFullYear()===y&&q.status==='accepted';}).reduce((s,q)=>s+calcTotals(q).grand,0));
+  const maxQ=Math.max(...qCounts,1);
+  const maxR=Math.max(...rTotals,1);
+  const qEl=document.getElementById('chart-quotes');
+  const rEl=document.getElementById('chart-revenue');
+  qEl.innerHTML=last6.map((x,i)=>`<div class="bar-wrap"><div class="bar-val">${qCounts[i]}</div><div class="bar" style="height:${Math.max((qCounts[i]/maxQ)*70,2)}px;background:var(--teal);"></div><div class="bar-label">${x.label}</div></div>`).join('');
+  rEl.innerHTML=last6.map((x,i)=>`<div class="bar-wrap"><div class="bar-val" style="font-size:8px;">${rTotals[i]>0?'$'+Math.round(rTotals[i]/1000)+'k':''}</div><div class="bar" style="height:${Math.max((rTotals[i]/maxR)*70,2)}px;background:var(--navy);"></div><div class="bar-label">${x.label}</div></div>`).join('');
+}
+
+function renderTable(){
+  const tbody=document.getElementById('quotes-tbody');
+  const filtered=quotes.filter(q=>{
+    const ms=filterState==='all'||q.status===filterState||(filterState==='declined'&&q.status==='rejected');
+    const sq=searchState.toLowerCase();
+    const mm=!sq||(q.client.name||'').toLowerCase().includes(sq)||q.quoteNumber.toLowerCase().includes(sq)||(q.client.address||'').toLowerCase().includes(sq);
+    return ms&&mm;
+  });
+  tbody.innerHTML='';
+  const empty=document.getElementById('empty-dash');
+  if(!filtered.length){empty.classList.remove('hidden');return;}
+  empty.classList.add('hidden');
+  filtered.forEach(q=>{
+    const t=calcTotals(q);
+    const mc=t.margin>=40?'var(--green-700)':t.margin>=30?'#92400e':'var(--red)';
+    const tr=document.createElement('tr');
+    const statusLabel={draft:'Draft','internal-review':'In Review','ready-to-send':'Ready to Send',sent:'Sent',accepted:'Accepted',declined:'Declined',rejected:'Declined',expired:'Expired'}[q.status]||q.status;
+    tr.innerHTML=`
+      <td><span class="q-num">${q.quoteNumber}</span></td>
+      <td><div class="q-client">${q.client.name||'—'}</div><div class="q-sub">${q.client.salesperson?'by '+q.client.salesperson:''}</div></td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--slate-500);font-size:12px;">${q.client.address||'—'}</td>
+      <td style="font-weight:800;">${fmt(t.grand)}</td>
+      <td style="font-weight:700;color:${mc};font-size:12px;">${t.margin.toFixed(1)}%</td>
+      <td><span class="badge ${q.status==='rejected'?'declined':q.status}">${statusLabel}</span></td>
+      <td style="color:var(--slate-400);font-size:11px;">${new Date(q.createdAt).toLocaleDateString('en-AU')}</td>
+      <td><div class="row-actions">
+        <button class="icon-btn edit" title="Edit" onclick="editQuote('${q.id}');event.stopPropagation();"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="icon-btn dup" title="Duplicate" onclick="dupQuote('${q.id}');event.stopPropagation();"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
+        <button class="icon-btn del" title="Delete" onclick="delQuote('${q.id}');event.stopPropagation();"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+      </div></td>`;
+    tr.addEventListener('click',()=>editQuote(q.id));
+    tbody.appendChild(tr);
+  });
+}
+function filterQuotes(f,btn){filterState=f;document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTable();}
+function searchQuotes(v){searchState=v;renderTable();}
+function delQuote(id){if(confirm('Delete this quote?')){quotes=quotes.filter(q=>q.id!==id);persist();renderDashboard();toast('Quote deleted');}}
+function dupQuote(id){const o=quotes.find(q=>q.id===id);if(!o)return;const c=JSON.parse(JSON.stringify(o));c.id=uid();c.quoteNumber=qNum();c.status='draft';c.createdAt=todayStr();c.updatedAt=todayStr();quotes.unshift(c);persist();renderDashboard();toast('Quote duplicated');}
+
+// ══════ FORM ══════
+const STEPS=['Client','Equipment','Materials','Labour','Pricing','Preview'];
+function buildStepTabs(){
+  const c=document.getElementById('step-tabs');c.innerHTML='';
+  STEPS.forEach((s,i)=>{const b=document.createElement('button');b.className='step-tab'+(i+1===currentStep?' active':i+1<currentStep?' done':'');b.innerHTML=`<span class="step-num">${i+1<currentStep?'✓':i+1}</span>${s}`;b.onclick=()=>gotoStep(i+1);c.appendChild(b);});
+}
+function gotoStep(n){
+  document.querySelectorAll('.step-content').forEach(el=>el.classList.remove('active'));
+  document.getElementById('step-'+n).classList.add('active');
+  currentStep=n;buildStepTabs();
+  recalc();
+  if(n===6)fillPreview();
+}
+function newQuote(){
+  currentQuote={id:uid(),quoteNumber:qNum(),status:'draft',client:{name:'',phone:'',email:'',address:'',notes:'',siteVisit:todayStr(),salesperson:''},equipment:[],materials:[],labour:{install:0,electrical:0,crane:0,scissor:0,other:0,otherdesc:''},markup:settings.markup||40,gst:settings.gst||10,createdAt:todayStr(),updatedAt:todayStr()};
+  loadFormFromQuote();showView('form');gotoStep(1);
+}
+function editQuote(id){currentQuote=JSON.parse(JSON.stringify(quotes.find(q=>q.id===id)));if(!currentQuote)return;loadFormFromQuote();showView('form');gotoStep(1);}
+function loadFormFromQuote(){
+  const q=currentQuote,c=q.client;
+  document.getElementById('f-name').value=c.name||'';
+  document.getElementById('f-phone').value=c.phone||'';
+  document.getElementById('f-email').value=c.email||'';
+  document.getElementById('f-address').value=c.address||'';
+  document.getElementById('f-sitevisit').value=c.siteVisit||'';
+  document.getElementById('f-salesperson').value=c.salesperson||'';
+  document.getElementById('f-notes').value=c.notes||'';
+  document.getElementById('f-markup').value=q.markup||40;
+  document.getElementById('f-gst').value=q.gst||10;
+  document.getElementById('f-status').value=q.status||'draft';
+  document.getElementById('l-install').value=q.labour.install||0;
+  document.getElementById('l-electrical').value=q.labour.electrical||0;
+  document.getElementById('l-crane').value=q.labour.crane||0;
+  document.getElementById('l-scissor').value=q.labour.scissor||0;
+  document.getElementById('l-other').value=q.labour.other||0;
+  document.getElementById('l-otherdesc').value=q.labour.otherdesc||'';
+  populateClientSelect();
+  renderEqTable();renderMatTable();refreshSidebars();
+}
+function readFormToQuote(){
+  if(!currentQuote)return;
+  currentQuote.client.name=document.getElementById('f-name').value;
+  currentQuote.client.phone=document.getElementById('f-phone').value;
+  currentQuote.client.email=document.getElementById('f-email').value;
+  currentQuote.client.address=document.getElementById('f-address').value;
+  currentQuote.client.siteVisit=document.getElementById('f-sitevisit').value;
+  currentQuote.client.salesperson=document.getElementById('f-salesperson').value;
+  currentQuote.client.notes=document.getElementById('f-notes').value;
+  currentQuote.markup=+document.getElementById('f-markup').value||40;
+  currentQuote.gst=+document.getElementById('f-gst').value||10;
+  currentQuote.status=document.getElementById('f-status').value;
+  currentQuote.labour.install=+document.getElementById('l-install').value||0;
+  currentQuote.labour.electrical=+document.getElementById('l-electrical').value||0;
+  currentQuote.labour.crane=+document.getElementById('l-crane').value||0;
+  currentQuote.labour.scissor=+document.getElementById('l-scissor').value||0;
+  currentQuote.labour.other=+document.getElementById('l-other').value||0;
+  currentQuote.labour.otherdesc=document.getElementById('l-otherdesc').value;
+  currentQuote.updatedAt=todayStr();
+}
+function saveQuote(status){
+  readFormToQuote();
+  if(status)currentQuote.status=status;
+  const idx=quotes.findIndex(q=>q.id===currentQuote.id);
+  if(idx>=0)quotes[idx]=currentQuote;else quotes.unshift(currentQuote);
+  persist();showView('dashboard');toast('Quote saved ✓');
+}
+
+// ══════ EQ TABLE ══════
+function renderEqTable(){
+  const tbody=document.getElementById('eq-tbody'),table=document.getElementById('eq-table'),empty=document.getElementById('eq-empty');
+  tbody.innerHTML='';
+  if(!currentQuote.equipment.length){table.style.display='none';empty.style.display='block';document.getElementById('eq-total-cell').textContent='';return;}
+  table.style.display='table';empty.style.display='none';
+  currentQuote.equipment.forEach(e=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><div style="font-weight:700;">${e.name}</div><div class="line-note"><input type="text" placeholder="Add note..." value="${e.note||''}" onchange="updateEqNote('${e.id}',this.value)"/></div></td>
+      <td style="color:var(--slate-400);font-size:11px;">${e.model}</td>
+      <td><input class="w-cost" type="number" min="0" step="0.01" value="${e.cost}" onchange="updateEqCost('${e.id}',this.value)"/></td>
+      <td><input class="w-qty" type="number" min="1" value="${e.qty}" onchange="updateEqQty('${e.id}',this.value)"/></td>
+      <td class="w-total">${fmt(e.total)}</td>
+      <td><button class="icon-btn del" onclick="removeEq('${e.id}')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button></td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('eq-total-cell').textContent=fmt(currentQuote.equipment.reduce((s,i)=>s+(i.total||0),0));
+}
+function updateEqQty(id,v){const e=currentQuote.equipment.find(x=>x.id===id);if(e){e.qty=+v;e.total=e.cost*(+v);}renderEqTable();recalc();}
+function updateEqCost(id,v){const e=currentQuote.equipment.find(x=>x.id===id);if(e){e.cost=+v;e.total=+v*e.qty;}renderEqTable();recalc();}
+function updateEqNote(id,v){const e=currentQuote.equipment.find(x=>x.id===id);if(e)e.note=v;}
+function removeEq(id){currentQuote.equipment=currentQuote.equipment.filter(x=>x.id!==id);renderEqTable();recalc();}
+
+// ══════ MAT TABLE ══════
+function renderMatTable(){
+  const tbody=document.getElementById('mat-tbody'),table=document.getElementById('mat-table'),empty=document.getElementById('mat-empty');
+  tbody.innerHTML='';
+  if(!currentQuote.materials.length){table.style.display='none';empty.style.display='block';document.getElementById('mat-total-cell').textContent='';return;}
+  table.style.display='table';empty.style.display='none';
+  currentQuote.materials.forEach(m=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><input type="text" value="${m.description}" placeholder="Description" onchange="updateMatDesc('${m.id}',this.value)" style="min-width:160px;"/><div class="line-note"><input type="text" placeholder="Add note..." value="${m.note||''}" onchange="updateMatNote('${m.id}',this.value)"/></div></td>
+      <td><input class="w-cost" type="number" min="0" step="0.01" value="${m.cost}" onchange="updateMatCost('${m.id}',this.value)"/></td>
+      <td><input class="w-qty" type="number" min="1" value="${m.qty}" onchange="updateMatQty('${m.id}',this.value)"/></td>
+      <td class="w-total">${fmt(m.total)}</td>
+      <td><button class="icon-btn del" onclick="removeMat('${m.id}')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button></td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('mat-total-cell').textContent=fmt(currentQuote.materials.reduce((s,i)=>s+(i.total||0),0));
+}
+function updateMatDesc(id,v){const m=currentQuote.materials.find(x=>x.id===id);if(m)m.description=v;}
+function updateMatNote(id,v){const m=currentQuote.materials.find(x=>x.id===id);if(m)m.note=v;}
+function updateMatCost(id,v){const m=currentQuote.materials.find(x=>x.id===id);if(m){m.cost=+v;m.total=+v*m.qty;}renderMatTable();recalc();}
+function updateMatQty(id,v){const m=currentQuote.materials.find(x=>x.id===id);if(m){m.qty=+v;m.total=m.cost*(+v);}renderMatTable();recalc();}
+function removeMat(id){currentQuote.materials=currentQuote.materials.filter(x=>x.id!==id);renderMatTable();recalc();}
+function addCustomMaterial(){currentQuote.materials.push({id:uid(),description:'',cost:0,qty:1,total:0,note:''});renderMatTable();}
+
+// ══════ RECALC ══════
+function recalc(){
+  readFormToQuote();
+  const t=calcTotals(currentQuote);
+  const gst=currentQuote.gst||10;
+  ['p-eq','p-mat','p-lab','p-cost','p-sell','p-gst','p-grand'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    const map={'p-eq':t.eq,'p-mat':t.mat,'p-lab':t.lab,'p-cost':t.cost,'p-sell':t.sell,'p-gst':t.gstAmt,'p-grand':t.grand};
+    el.textContent=fmt(map[id]);
+  });
+  const gstLabel=document.getElementById('p-gst-label');if(gstLabel)gstLabel.textContent='GST ('+gst+'%)';
+  refreshSidebars();
+}
+
+// ══════ PREVIEW ══════
+function fillPreview(){
+  readFormToQuote();
+  const q=currentQuote,t=calcTotals(q);
+  document.getElementById('prev-qnum').textContent=q.quoteNumber;
+  document.getElementById('prev-client').textContent=q.client.name||'No client set';
+  document.getElementById('prev-address').textContent=q.client.address||'';
+  document.getElementById('prev-eq').textContent=fmt(t.eq);
+  document.getElementById('prev-mat').textContent=fmt(t.mat);
+  document.getElementById('prev-lab').textContent=fmt(t.lab);
+  document.getElementById('prev-sell').textContent=fmt(t.sell);
+  document.getElementById('prev-gst').textContent=fmt(t.gstAmt);
+  document.getElementById('prev-grand').textContent=fmt(t.grand);
+}
+
+// ══════ PICKER ══════
+function openPicker(target){
+  pickerTarget=target;pickerCat='All';
+  document.getElementById('picker-title').textContent=target==='equipment'?'Add Equipment':'Add Materials';
+  document.getElementById('picker-search-input').value='';
+  buildPickerCats();renderPickerList();
+  document.getElementById('picker-modal').classList.remove('hidden');
+}
+function closePicker(){document.getElementById('picker-modal').classList.add('hidden');}
+function buildPickerCats(){
+  const c=document.getElementById('picker-cats');
+  const cats=['All',...Object.keys(BASE_DB),...customProducts.filter(p=>p.status==='active').map(p=>p.category).filter((v,i,a)=>a.indexOf(v)===i&&!Object.keys(BASE_DB).includes(v))];
+  c.innerHTML='';
+  cats.forEach(cat=>{const b=document.createElement('button');b.className='cat-chip'+(cat===pickerCat?' active':'');b.textContent=cat;b.onclick=()=>{pickerCat=cat;buildPickerCats();renderPickerList();};c.appendChild(b);});
+}
+function renderPickerList(){
+  const q=document.getElementById('picker-search-input').value.toLowerCase();
+  const list=document.getElementById('picker-list');
+  const filtered=allProducts().filter(p=>{
+    const mc=pickerCat==='All'||p.category===pickerCat;
+    const mq=!q||p.name.toLowerCase().includes(q)||p.model.toLowerCase().includes(q)||p.category.toLowerCase().includes(q);
+    return mc&&mq;
+  });
+  list.innerHTML='';
+  if(!filtered.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-text">No products found</div></div>';return;}
+  filtered.forEach(p=>{
+    const div=document.createElement('div');div.className='picker-item';
+    div.innerHTML=`<div style="flex:1;min-width:0;"><div class="picker-item-name">${p.name}${p._custom?'<span style="margin-left:6px;background:var(--teal-50);color:var(--teal);font-size:9px;padding:1px 6px;border-radius:4px;font-weight:700;">CUSTOM</span>':''}</div><div class="picker-item-meta">${p.model} · <span style="color:var(--teal);">${p.category}</span></div></div><span class="picker-item-price">${fmt(p.cost)}</span><button class="picker-add-btn">+</button>`;
+    div.onclick=()=>addFromPicker(p);list.appendChild(div);
+  });
+}
+function addFromPicker(p){
+  if(pickerTarget==='equipment'){
+    currentQuote.equipment.push({id:uid(),name:p.name,model:p.model,cost:p.cost,qty:1,total:p.cost,note:''});
+    renderEqTable();
+  } else {
+    currentQuote.materials.push({id:uid(),description:p.name+(p.model&&p.model!=='—'?' ('+p.model+')':''),cost:p.cost,qty:1,total:p.cost,note:''});
+    renderMatTable();
+  }
+  recalc();closePicker();toast('Added: '+p.name);
+}
+
+// ══════ PDF ══════
+function previewPDF(){readFormToQuote();const html=buildPDFHTML(currentQuote,settings);document.getElementById('pdf-frame').srcdoc=html;document.getElementById('pdf-modal').classList.remove('hidden');}
+function closePDFModal(){document.getElementById('pdf-modal').classList.add('hidden');}
+function printPDF(){readFormToQuote();const html=buildPDFHTML(currentQuote,settings);const w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),600);}
+
+function buildPDFHTML(q,s){
+  const t=calcTotals(q);
+  const eqRows=(q.equipment||[]).map(e=>`<tr><td><strong>${e.name}</strong>${e.note?'<br/><span style="color:#94a3b8;font-size:10px;">'+e.note+'</span>':''}</td><td style="color:#94a3b8;font-size:11px;">${e.model}</td><td style="text-align:right;">${e.qty}</td><td style="text-align:right;">${fmt(e.cost)}</td><td style="text-align:right;font-weight:700;">${fmt(e.total)}</td></tr>`).join('');
+  const matRows=(q.materials||[]).map(m=>`<tr><td>${m.description}${m.note?'<br/><span style="color:#94a3b8;font-size:10px;">'+m.note+'</span>':''}</td><td style="text-align:right;">${m.qty}</td><td style="text-align:right;">${fmt(m.cost)}</td><td style="text-align:right;font-weight:700;">${fmt(m.total)}</td></tr>`).join('');
+  const labRows=[['Installation Labour',q.labour.install],['Electrical Labour',q.labour.electrical],['Crane Hire',q.labour.crane],['Scissor Lift',q.labour.scissor],[(q.labour.otherdesc||'Additional Charges'),q.labour.other]].filter(r=>+r[1]>0).map(r=>`<tr><td>${r[0]}</td><td style="text-align:right;font-weight:700;">${fmt(r[1])}</td></tr>`).join('');
+  const scopeItems=(q.equipment||[]).map(e=>`<li>Supply and installation of ${e.qty>1?e.qty+'x ':''} ${e.name} (${e.model})</li>`).join('');
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Helvetica Neue',Arial,sans-serif;color:#1e293b;background:#fff;font-size:13px;}
+    .page{max-width:760px;margin:0 auto;padding:40px;}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:24px;border-bottom:3px solid #0D7A7A;margin-bottom:28px;}
+    .logo{font-size:26px;font-weight:900;color:#1E1B4B;letter-spacing:-1px;}
+    .logo span{color:#0D7A7A;}
+    .tagline{font-size:10px;color:#94a3b8;letter-spacing:2px;text-transform:uppercase;margin-top:3px;}
+    .co-info{margin-top:8px;font-size:11px;color:#64748b;line-height:1.9;}
+    .q-num{font-size:20px;font-weight:900;color:#1e293b;}
+    .q-date{font-size:11px;color:#94a3b8;margin-top:3px;}
+    .badge-pdf{display:inline-block;background:#d0f0f0;color:#0D7A7A;font-size:10px;font-weight:800;padding:2px 10px;border-radius:999px;margin-top:6px;text-transform:uppercase;letter-spacing:.5px;}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+    .info-card{background:#f8fafc;border-radius:10px;padding:16px;}
+    .info-title{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;margin-bottom:10px;}
+    .info-body{font-size:12px;line-height:1.8;color:#334155;}
+    .sec-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#0D7A7A;margin:22px 0 10px;padding-bottom:5px;border-bottom:2px solid #e2e8f0;}
+    .scope-list{margin:0;padding-left:18px;font-size:12px;line-height:2;color:#334155;}
+    .incl-excl{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;}
+    .incl,.excl{border-radius:8px;padding:14px;}
+    .incl{background:#f0fdf4;}.excl{background:#fff7ed;}
+    .ie-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
+    .incl .ie-title{color:#166534;}.excl .ie-title{color:#9a3412;}
+    .ie-list{margin:0;padding-left:16px;font-size:11px;line-height:1.8;}
+    .incl .ie-list{color:#166534;}.excl .ie-list{color:#9a3412;}
+    table{width:100%;border-collapse:collapse;margin-bottom:18px;}
+    thead tr{background:#1E1B4B;color:white;}
+    th{padding:8px 12px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;text-align:left;}
+    tbody tr{border-bottom:1px solid #f1f5f9;}
+    td{padding:8px 12px;font-size:12px;}
+    tfoot td{background:#f8fafc;border-top:2px solid #e2e8f0;font-weight:800;font-size:12px;padding:9px 12px;}
+    .totals{background:#f8fafc;border-radius:12px;padding:20px;margin-top:12px;}
+    .t-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;}
+    .t-row.sep{border-top:2px solid #e2e8f0;margin-top:6px;padding-top:12px;}
+    .t-row.grand{font-size:18px;font-weight:900;color:#1E1B4B;}
+    .t-label{color:#64748b;}
+    .warranty{background:#f0fdf4;color:#166534;border-radius:10px;padding:16px;margin-top:16px;font-size:11px;line-height:1.7;}
+    .terms{background:#fefce8;color:#713f12;border-radius:10px;padding:16px;margin-top:12px;font-size:11px;line-height:1.7;}
+    .wt-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
+    .sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;}
+    .sig-box{border:1.5px dashed #cbd5e1;border-radius:10px;padding:16px;}
+    .sig-label{font-size:9px;color:#94a3b8;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:36px;}
+    .sig-line{border-top:1px solid #cbd5e1;padding-top:4px;font-size:10px;color:#94a3b8;}
+    .footer{text-align:center;margin-top:32px;padding-top:16px;border-top:1px solid #f1f5f9;font-size:10px;color:#94a3b8;line-height:2;}
+    @media print{.page{padding:28px;}}
+  </style></head><body><div class="page">
+    <div class="header">
+      <div>
+        <div class="logo">REP<span>AIR</span> HVAC SERVICES</div>
+        <div class="tagline">Air Conditioning Specialists</div>
+        <div class="co-info">${s.phone||''} · ${s.email||''}<br/>${s.address||''}<br/>${s.license||''}</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="q-num">${q.quoteNumber}</div>
+        <div class="q-date">Date: ${new Date(q.createdAt).toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'})}</div>
+        <div class="q-date">Valid for 30 days</div>
+        <div class="badge-pdf">Quotation</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="info-card"><div class="info-title">Prepared For</div><div class="info-body"><strong>${q.client.name||'—'}</strong><br/>${q.client.address||''}<br/>${q.client.phone||''}<br/>${q.client.email||''}</div></div>
+      <div class="info-card"><div class="info-title">Job Details</div><div class="info-body"><strong>Site Visit:</strong> ${q.client.siteVisit||'—'}<br/><strong>Prepared by:</strong> ${q.client.salesperson||'—'}<br/><strong>Notes:</strong> ${q.client.notes||'—'}</div></div>
+    </div>
+    <div class="sec-title">Scope of Works</div>
+    <ul class="scope-list">
+      <li>Source selected parts and associated materials from suppliers.</li>
+      <li>Arrive on site, communicate working plans to customer.</li>
+      ${scopeItems}
+      <li>Test and commission all installed systems to manufacturer specifications.</li>
+      <li>Clean up all working areas and remove rubbish from site.</li>
+    </ul>
+    <div class="incl-excl">
+      <div class="incl"><div class="ie-title">Inclusions</div><ul class="ie-list"><li>All works listed in scope of works above</li><li>Supply and installation of nominated equipment</li><li>System commissioning and testing</li><li>Site clean up on completion</li></ul></div>
+      <div class="excl"><div class="ie-title">Exclusions</div><ul class="ie-list"><li>Structural or building modifications</li><li>Electrical switchboard upgrades</li><li>Painting, plastering or cosmetic works</li><li>Council or strata permit approvals</li></ul></div>
+    </div>
+    ${eqRows?`<div class="sec-title">Equipment Supply</div><table><thead><tr><th>Description</th><th>Model</th><th>Qty</th><th>Unit</th><th>Total</th></tr></thead><tbody>${eqRows}</tbody><tfoot><tr><td colspan="4" style="text-align:right;">Equipment Total</td><td style="text-align:right;color:#0D7A7A;">${fmt(t.eq)}</td></tr></tfoot></table>`:''}
+    ${matRows?`<div class="sec-title">Installation Materials</div><table><thead><tr><th>Description</th><th>Qty</th><th>Unit Cost</th><th>Total</th></tr></thead><tbody>${matRows}</tbody><tfoot><tr><td colspan="3" style="text-align:right;">Materials Total</td><td style="text-align:right;color:#0D7A7A;">${fmt(t.mat)}</td></tr></tfoot></table>`:''}
+    ${labRows?`<div class="sec-title">Labour & Services</div><table><thead><tr><th>Service</th><th>Amount</th></tr></thead><tbody>${labRows}</tbody><tfoot><tr><td style="text-align:right;">Labour Total</td><td style="text-align:right;color:#0D7A7A;">${fmt(t.lab)}</td></tr></tfoot></table>`:''}
+    <div class="totals">
+      <div class="t-row"><span class="t-label">Equipment Supply</span><span>${fmt(t.eq)}</span></div>
+      <div class="t-row"><span class="t-label">Installation Materials</span><span>${fmt(t.mat)}</span></div>
+      <div class="t-row"><span class="t-label">Labour & Services</span><span>${fmt(t.lab)}</span></div>
+      <div class="t-row sep"><span class="t-label">Subtotal (ex GST)</span><span>${fmt(t.sell)}</span></div>
+      <div class="t-row"><span class="t-label">GST (${q.gst||10}%)</span><span>${fmt(t.gstAmt)}</span></div>
+      <div class="t-row sep grand"><span>TOTAL (inc GST)</span><span>${fmt(t.grand)}</span></div>
+    </div>
+    <div class="warranty"><div class="wt-title">Warranty</div>Mitsubishi Electric &amp; Daikin equipment carries 5-year manufacturer warranty on parts and labour. All installation workmanship is warranted for 12 months from date of installation. Warranty is void if the system is modified or serviced by unauthorised personnel.</div>
+    <div class="terms"><div class="wt-title">Terms &amp; Conditions</div>
+      1. This quote is valid for 30 days from the date of issue.<br/>
+      2. A 50% deposit is required upon acceptance. Balance due on completion.<br/>
+      3. Additional charges may apply if site conditions differ from information provided.<br/>
+      4. REPAIR HVAC SERVICES reserves the right to vary this quote if access or site conditions differ materially.<br/>
+      5. All prices include GST unless otherwise stated.
+    </div>
+    <div class="sig-grid">
+      <div class="sig-box"><div class="sig-label">Client Acceptance Signature</div><div class="sig-line">Signature &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date: ___________</div></div>
+      <div class="sig-box"><div class="sig-label">Print Full Name</div><div class="sig-line">Name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date: ___________</div></div>
+    </div>
+    <div class="footer">REPAIR HVAC SERVICES · ${s.phone||''} · ${s.email||''} · ${s.address||''} · ${s.website||'repairhvacs.com.au'}</div>
+  </div></body></html>`;
+}
+
+// ══════ CLIENTS ══════
+function renderClients(){
+  const grid=document.getElementById('client-grid'),empty=document.getElementById('empty-clients');
+  grid.innerHTML='';
+  if(!clients.length){empty.classList.remove('hidden');return;}
+  empty.classList.add('hidden');
+  clients.forEach(c=>{
+    const div=document.createElement('div');div.className='client-card';
+    div.innerHTML=`<div class="client-name">${c.name}</div><div class="client-detail">${c.phone||''}<br/>${c.email||''}<br/>${c.address||''}</div><div style="margin-top:10px;display:flex;gap:6px;"><button class="btn-secondary" style="font-size:11px;padding:5px 10px;" onclick="useClientInQuote('${c.id}');event.stopPropagation();">Use in Quote</button><button class="icon-btn edit" onclick="openClientModal('${c.id}');event.stopPropagation();" style="opacity:1;"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="icon-btn del" onclick="deleteClient('${c.id}');event.stopPropagation();" style="opacity:1;"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button></div>`;
+    grid.appendChild(div);
+  });
+}
+function openClientModal(id){
+  const c=id?clients.find(x=>x.id===id):null;
+  document.getElementById('client-modal-title').textContent=c?'Edit Client':'Add Client';
+  document.getElementById('cm-id').value=c?c.id:'';
+  document.getElementById('cm-name').value=c?c.name:'';
+  document.getElementById('cm-phone').value=c?c.phone:'';
+  document.getElementById('cm-email').value=c?c.email:'';
+  document.getElementById('cm-address').value=c?c.address:'';
+  document.getElementById('cm-notes').value=c?c.notes||'':'';
+  document.getElementById('client-modal').classList.remove('hidden');
+}
+function closeClientModal(){document.getElementById('client-modal').classList.add('hidden');}
+function saveClientFromModal(){
+  const id=document.getElementById('cm-id').value;
+  const c={id:id||uid(),name:document.getElementById('cm-name').value,phone:document.getElementById('cm-phone').value,email:document.getElementById('cm-email').value,address:document.getElementById('cm-address').value,notes:document.getElementById('cm-notes').value};
+  if(id){const idx=clients.findIndex(x=>x.id===id);if(idx>=0)clients[idx]=c;else clients.push(c);}else clients.push(c);
+  persistClients();closeClientModal();renderClients();populateClientSelect();toast('Client saved ✓');
+}
+function deleteClient(id){if(confirm('Delete this client?')){clients=clients.filter(c=>c.id!==id);persistClients();renderClients();}}
+function populateClientSelect(){
+  const sel=document.getElementById('f-client-select');if(!sel)return;
+  sel.innerHTML='<option value="">— Select saved client or fill in below —</option>';
+  clients.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.name+(c.address?' · '+c.address:'');sel.appendChild(o);});
+}
+function loadClientFromSelect(id){
+  if(!id)return;
+  const c=clients.find(x=>x.id===id);if(!c)return;
+  document.getElementById('f-name').value=c.name||'';
+  document.getElementById('f-phone').value=c.phone||'';
+  document.getElementById('f-email').value=c.email||'';
+  document.getElementById('f-address').value=c.address||'';
+  document.getElementById('f-notes').value=c.notes||'';
+  recalc();toast('Client loaded');
+}
+function saveCurrentClientFromForm(){
+  const name=document.getElementById('f-name').value;
+  if(!name){toast('Enter a client name first');return;}
+  const exists=clients.find(c=>c.name===name&&c.phone===document.getElementById('f-phone').value);
+  if(exists){toast('Client already saved');return;}
+  clients.push({id:uid(),name,phone:document.getElementById('f-phone').value,email:document.getElementById('f-email').value,address:document.getElementById('f-address').value,notes:document.getElementById('f-notes').value});
+  persistClients();populateClientSelect();toast('Client saved to directory ✓');
+}
+function useClientInQuote(id){
+  newQuote();
+  loadClientFromSelect(id);
+  const sel=document.getElementById('f-client-select');if(sel)sel.value=id;
+  toast('Client loaded — continue building quote');
+}
+
+// ══════ SETTINGS ══════
+function switchSettingsTab(tab,btn){
+  document.querySelectorAll('.settings-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.stab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('stab-'+tab).classList.add('active');
+  btn.classList.add('active');
+  if(tab==='products')renderProductTable();
+}
+function loadSettingsForm(){
+  document.getElementById('s-company').value=settings.company||'REPAIR HVAC SERVICES';
+  document.getElementById('s-phone').value=settings.phone||'';
+  document.getElementById('s-email').value=settings.email||'';
+  document.getElementById('s-address').value=settings.address||'';
+  document.getElementById('s-license').value=settings.license||'';
+  document.getElementById('s-website').value=settings.website||'';
+  document.getElementById('s-markup').value=settings.markup||40;
+  document.getElementById('s-gst').value=settings.gst||10;
+}
+function saveSettings(){
+  settings.company=document.getElementById('s-company').value;
+  settings.phone=document.getElementById('s-phone').value;
+  settings.email=document.getElementById('s-email').value;
+  settings.address=document.getElementById('s-address').value;
+  settings.license=document.getElementById('s-license').value;
+  settings.website=document.getElementById('s-website').value;
+  settings.markup=+document.getElementById('s-markup').value||40;
+  settings.gst=+document.getElementById('s-gst').value||10;
+  persistSettings();toast('Settings saved ✓');
+}
+
+// ══════ PRODUCT MANAGER ══════
+function renderProductTable(){
+  const tbody=document.getElementById('pm-tbody');tbody.innerHTML='';
+  const allCustom=customProducts;
+  if(!allCustom.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--slate-400);">No custom products added yet. Base database has '+Object.values(BASE_DB).flat().length+' products.</td></tr>';return;}
+  allCustom.forEach(p=>{
+    const tr=document.createElement('tr');
+    tr.className=p.status==='inactive'?'pm-inactive':'';
+    tr.innerHTML=`
+      <td style="font-weight:700;">${p.name}</td>
+      <td style="color:var(--slate-500);font-size:12px;">${p.category||'—'}</td>
+      <td style="color:var(--slate-400);font-size:12px;">${p.model||'—'}</td>
+      <td style="font-weight:700;">${fmt(p.cost)}</td>
+      <td><span class="status-dot ${p.status}"></span>${p.status==='active'?'Active':'Inactive'}</td>
+      <td><div style="display:flex;gap:4px;">
+        <button class="icon-btn edit" onclick="openProductModal('${p.id}')" style="opacity:1;" title="Edit"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="icon-btn" onclick="toggleProductStatus('${p.id}')" style="opacity:1;" title="${p.status==='active'?'Deactivate':'Activate'}"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/>${p.status==='active'?'<line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>':'<polyline points="20 6 9 17 4 12"/>'}</svg></button>
+        <button class="icon-btn del" onclick="deleteProduct('${p.id}')" style="opacity:1;" title="Delete"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+      </div></td>`;
+    tbody.appendChild(tr);
+  });
+}
+function openProductModal(id){
+  const p=id?customProducts.find(x=>x.id===id):null;
+  document.getElementById('pm-modal-title').textContent=p?'Edit Product':'Add Product';
+  document.getElementById('pmod-id').value=p?p.id:'';
+  document.getElementById('pmod-name').value=p?p.name:'';
+  document.getElementById('pmod-cat').value=p?p.category:'';
+  document.getElementById('pmod-model').value=p?p.model:'';
+  document.getElementById('pmod-cost').value=p?p.cost:'';
+  document.getElementById('pmod-notes').value=p?p.notes||'':'';
+  document.getElementById('pmod-status').value=p?p.status:'active';
+  document.getElementById('product-modal').classList.remove('hidden');
+}
+function closeProductModal(){document.getElementById('product-modal').classList.add('hidden');}
+function saveProductFromModal(){
+  const id=document.getElementById('pmod-id').value;
+  const p={id:id||uid(),name:document.getElementById('pmod-name').value,category:document.getElementById('pmod-cat').value,model:document.getElementById('pmod-model').value,cost:+document.getElementById('pmod-cost').value||0,notes:document.getElementById('pmod-notes').value,status:document.getElementById('pmod-status').value,_custom:true};
+  if(!p.name){toast('Product name required');return;}
+  if(id){const idx=customProducts.findIndex(x=>x.id===id);if(idx>=0)customProducts[idx]=p;else customProducts.push(p);}else customProducts.push(p);
+  persistProducts();closeProductModal();renderProductTable();toast('Product saved ✓');
+}
+function toggleProductStatus(id){const p=customProducts.find(x=>x.id===id);if(p){p.status=p.status==='active'?'inactive':'active';persistProducts();renderProductTable();toast('Status updated');}}
+function deleteProduct(id){if(confirm('Delete this product?')){customProducts=customProducts.filter(x=>x.id!==id);persistProducts();renderProductTable();}}
+
+// ══════ TOAST ══════
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+// ══════ INIT ══════
+load();renderDashboard();
+
+</script>
+
+</body>
+</html>
