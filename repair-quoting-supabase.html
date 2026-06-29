@@ -3,91 +3,20 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>REPAIR HVAC SERVICES — Quoting System</title>
+<title>REPAIR — Quoting System</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
-#auth-gate {
-  position: fixed;
-  inset: 0;
-  background: #f0f0f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-
-.gate-box {
-  background: white;
-  padding: 40px;
-  border-radius: 16px;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  width: 100%;
-  max-width: 400px;
-}
-
-.gate-logo {
-  font-size: 28px;
-  font-weight: 900;
-  margin-bottom: 8px;
-  font-family: 'DM Sans', sans-serif;
-}
-
-.gate-sub {
-  font-size: 12px;
-  color: #888;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 30px;
-}
-
-.gate-input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 14px;
-  font-family: 'DM Sans', sans-serif;
-  margin-bottom: 20px;
-}
-
-.gate-input:focus {
-  outline: none;
-  border-color: #0D7A7A;
-}
-
-.gate-btn {
-  width: 100%;
-  padding: 12px;
-  background: #0D7A7A;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  transition: background 0.15s;
-}
-
-.gate-btn:hover {
-  background: #0a5d5d;
-}
-
-.gate-note {
-  font-size: 11px;
-  color: #999;
-  margin-top: 16px;
-}
-
-#app-wrapper {
-  display: none;
-}
-
-#app-wrapper.unlocked {
-  display: block;
-}
-
+body {margin:0;padding:0;font-family:'DM Sans',sans-serif;}
+#auth {position:fixed;inset:0;background:#f0f0f0;display:flex;align-items:center;justify-content:center;z-index:10000;}
+#auth.gone {display:none;}
+.box {background:white;padding:40px;border-radius:16px;text-align:center;width:100%;max-width:400px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.logo {font-size:28px;font-weight:900;margin-bottom:8px;}
+.sub {font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:30px;}
+input {width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:'DM Sans';margin-bottom:20px;box-sizing:border-box;}
+input:focus {outline:none;border-color:#0D7A7A;}
+button {width:100%;padding:12px;background:#0D7A7A;color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans';}
+button:hover {background:#0a5d5d;}
+.note {font-size:11px;color:#999;margin-top:16px;}
 
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -327,17 +256,17 @@ textarea{resize:vertical;}
 </head>
 <body>
 
-<div id="auth-gate">
-  <div class="gate-box">
-    <div class="gate-logo">REPAIR<span style="color:#0D7A7A;">.</span></div>
-    <div class="gate-sub">Quoting System</div>
-    <input type="password" id="pwd-gate" class="gate-input" placeholder="Password" autocomplete="off"/>
-    <button class="gate-btn" id="auth-btn">Access System</button>
-    <div class="gate-note">Internal use only</div>
+<div id="auth">
+  <div class="box">
+    <div class="logo">REPAIR<span style="color:#0D7A7A;">.</span></div>
+    <div class="sub">Quoting System</div>
+    <input type="password" id="pwd" placeholder="Password"/>
+    <button onclick="check()">Access System</button>
+    <div class="note">Internal use only</div>
   </div>
 </div>
 
-<div id="app-wrapper">
+<div id="main">
 
 <div id="app">
 <div id="sidebar">
@@ -1208,30 +1137,23 @@ function buildPDFHTML(q,s){
 </div>
 
 <script>
-// Simple auth wrapper
-const AUTH_PASSWORD = 'RepAIR2024';
-
-document.getElementById('auth-btn').addEventListener('click', function() {
-  const pwd = document.getElementById('pwd-gate').value;
-  if(pwd === AUTH_PASSWORD) {
-    document.getElementById('auth-gate').style.display = 'none';
-    document.getElementById('app-wrapper').classList.add('unlocked');
+function check() {
+  var p = document.getElementById('pwd').value;
+  if(p == 'RepAIR2024') {
+    document.getElementById('auth').classList.add('gone');
+    sessionStorage.setItem('auth','1');
   } else {
     alert('Wrong password');
-    document.getElementById('pwd-gate').value = '';
+    document.getElementById('pwd').value = '';
   }
+}
+
+document.getElementById('pwd').addEventListener('keypress', function(e) {
+  if(e.key == 'Enter') check();
 });
 
-document.getElementById('pwd-gate').addEventListener('keypress', function(e) {
-  if(e.key === 'Enter') {
-    document.getElementById('auth-btn').click();
-  }
-});
-
-// Check if already authed
-if(sessionStorage.getItem('qa') === '1') {
-  document.getElementById('auth-gate').style.display = 'none';
-  document.getElementById('app-wrapper').classList.add('unlocked');
+if(sessionStorage.getItem('auth') == '1') {
+  document.getElementById('auth').classList.add('gone');
 }
 </script>
 
