@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Quote Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'DM Sans', sans-serif; background: #f5f5f5; padding: 20px; }
+.container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+h1 { font-size: 24px; margin-bottom: 30px; color: #1E1B4B; }
+.header-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+.form-group { display: flex; flex-direction: column; }
+label { font-size: 12px; text-transform: uppercase; color: #666; margin-bottom: 6px; font-weight: 600; }
+input, select { padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-family: 'DM Sans'; font-size: 14px; }
+input:focus, select:focus { outline: none; border-color: #0D7A7A; }
+.add-section { display: grid; grid-template-columns: 2fr 1fr 1fr auto auto; gap: 12px; margin-bottom: 20px; align-items: flex-end; }
+.add-section select { padding: 10px; }
+.add-btn { background: #0D7A7A; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+.add-btn:hover { background: #0a5d5d; }
+.quote-table { width: 100%; border-collapse: collapse; margin: 30px 0; }
+.quote-table th { background: #1E1B4B; color: white; padding: 12px; text-align: left; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+.quote-table td { padding: 12px; border-bottom: 1px solid #eee; }
+.quote-table input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; }
+.quote-table tr:hover { background: #f9f9f9; }
+.delete-btn { background: #dc2626; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+.delete-btn:hover { background: #b91c1c; }
+.product-info { font-size: 12px; color: #666; }
+.totals-section { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin: 30px 0; }
+.total-box { background: #f5f5f5; padding: 16px; border-radius: 8px; text-align: center; }
+.total-box .label { font-size: 11px; color: #666; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
+.total-box .value { font-size: 24px; font-weight: 700; color: #1E1B4B; }
+.actions { display: flex; gap: 10px; margin-top: 30px; flex-wrap: wrap; }
+button { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-family: 'DM Sans'; font-size: 14px; transition: 0.15s; }
+.btn-primary { background: #0D7A7A; color: white; }
+.btn-primary:hover { background: #0a5d5d; }
+.btn-secondary { background: #e5e7eb; color: #333; }
+.btn-secondary:hover { background: #d1d5db; }
+.btn-danger { background: #dc2626; color: white; }
+.btn-danger:hover { background: #b91c1c; }
+#saved-msg { margin-top: 10px; padding: 10px; background: #d1fae5; color: #065f46; border-radius: 4px; display: none; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Quote Builder</h1>
+  
+  <div class="header-section">
+    <div class="form-group">
+      <label>Client Name</label>
+      <input type="text" id="clientName" placeholder="e.g. John Smith"/>
+    </div>
+    <div class="form-group">
+      <label>Date</label>
+      <input type="date" id="quoteDate"/>
+    </div>
+    <div class="form-group">
+      <label>Quote Number</label>
+      <input type="text" id="quoteNum" placeholder="e.g. QT-001"/>
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <input type="text" id="description" placeholder="e.g. AC Installation"/>
+    </div>
+  </div>
+
+  <div class="add-section">
+    <div class="form-group" style="grid-column: 1;">
+      <label>Add from Catalog</label>
+      <select id="productSelect" onchange="selectProduct()">
+        <option value="">— Select Product —</option>
+      </select>
+      <div class="product-info" id="productInfo"></div>
+    </div>
+    <div class="form-group">
+      <label>Qty</label>
+      <input type="number" id="productQty" value="1" min="1"/>
+    </div>
+    <div class="form-group">
+      <label>Price ($)</label>
+      <input type="number" id="productPrice" step="0.01" placeholder="0.00"/>
+    </div>
+    <button class="add-btn" onclick="addFromCatalog()" style="align-self: flex-end;">+ Add Item</button>
+    <button class="btn-secondary" onclick="addBlankLine()" style="align-self: flex-end;">+ Blank</button>
+  </div>
+
+  <table class="quote-table">
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th style="width:90px;">Qty</th>
+        <th style="width:100px;">Cost ($)</th>
+        <th style="width:100px;">Price ($)</th>
+        <th style="width:80px;">Margin %</th>
+        <th style="width:100px;">Total ($)</th>
+        <th style="width:60px;">Action</th>
+      </tr>
+    </thead>
+    <tbody id="lines"></tbody>
+  </table>
+
+  <div class="totals-section">
+    <div class="total-box">
+      <div class="label">Total Cost</div>
+      <div class="value" id="totalCost">$0.00</div>
+    </div>
+    <div class="total-box">
+      <div class="label">Total Price</div>
+      <div class="value" id="totalPrice">$0.00</div>
+    </div>
+    <div class="total-box">
+      <div class="label">Total Margin</div>
+      <div class="value" id="totalMargin">$0.00</div>
+    </div>
+    <div class="total-box">
+      <div class="label">Margin %</div>
+      <div class="value" id="marginPct">0%</div>
+    </div>
+  </div>
+
+  <div id="saved-msg">Quote saved to browser</div>
+
+  <div class="actions">
+    <button class="btn-primary" onclick="saveQuote()">💾 Save to Browser</button>
+    <button class="btn-primary" onclick="exportPDF()">📄 Export as PDF</button>
+    <button class="btn-secondary" onclick="downloadJSON()">⬇️ Save to Desktop</button>
+    <button class="btn-danger" onclick="clearAll()">Clear All</button>
+  </div>
+</div>
+
+<script>
+const BASE_DB = {
+  "Mitsubishi Electric Split Systems":[{id:"me-ss-1",name:"2.5kW Indoor Head",model:"MSZ-AP25VGKD2",cost:299.25},{id:"me-ss-2",name:"2.5kW Split System",model:"MSZ-AP25VGKD2 / MUZ-AP25VD2",cost:738.35},{id:"me-ss-3",name:"3.5kW Split System",model:"MSZ-AP35VGKD2 / MUZ-AP35VD2",cost:970},{id:"me-ss-4",name:"5.0kW Split System",model:"MSZ-AP50VGKD2 / MUZ-AP50VGD2",cost:1203.29},{id:"me-ss-5",name:"6.0kW Split System",model:"MSZ-AP60VGKD2 / MUZ-AP60VGD2",cost:1411.30},{id:"me-ss-6",name:"8.0kW Split System",model:"MSZAP80VGKD2 / MUZ-AP80VGD2",cost:1835.60}],
+  "Daikin Split Systems":[{id:"dk-ss-1",name:"Cora 6.0kW",model:"FTXV60WVMA / RXV60WVMA",cost:1435},{id:"dk-ss-2",name:"Cora 7.1kW",model:"FTXV71WVMA / RXV71WVMA",cost:1453.90}],
+  "Mitsubishi Electric Ducted Systems":[{id:"me-ds-1",name:"12.5kW Ducted",model:"PEA-M125HAA / PUZ-M125VKA",cost:3201.02},{id:"me-ds-2",name:"14kW Single Phase",model:"PUZ-M140VKA",cost:4225},{id:"me-ds-3",name:"14kW 3 Phase",model:"PUZ-ZM140YKA",cost:4950}],
+  "Daikin Ducted Systems":[{id:"dk-ds-1",name:"8.5kW 240V Ducted",model:"FDYAN85AV1 / RXV85C2V1",cost:2661.84},{id:"dk-ds-2",name:"14kW Single Phase Ducted",model:"FDYAN140AV1",cost:4315},{id:"dk-ds-3",name:"14kW 3 Phase Ducted",model:"FDYAN140AV3",cost:4610}],
+  "Airtouch Components":[{id:"at-1",name:"Gateway",model:"AirTouch Gateway",cost:162.73},{id:"at-2",name:"Main Control Module",model:"AirTouch MCM",cost:350.75},{id:"at-3",name:"Console",model:"AirTouch Console",cost:373.75},{id:"at-4",name:"Console Lead Data Cable Blue",model:"AirTouch Data Cable",cost:11.70},{id:"at-5",name:"Transformer 24V",model:"AirTouch Transformer",cost:26}],
+  "Airtouch Accessories":[{id:"ata-1",name:"Wireless Sensor AirTouch 5",model:"AT5-WS",cost:78.20}],
+  "Electrical":[{id:"el-1",name:"1.5mm 3C+E Orange Circular",model:"—",cost:195},{id:"el-2",name:"1.5mm Twin & Earth TPS",model:"—",cost:105},{id:"el-3",name:"4.0mm Twin & Earth TPS",model:"—",cost:315},{id:"el-4",name:"1 Pair Data Cable",model:"—",cost:105},{id:"el-5",name:"Data Cable",model:"—",cost:10},{id:"el-6",name:"Clipsal SP 20A RCBO",model:"—",cost:26},{id:"el-7",name:"Clipsal SP 32A RCBO",model:"—",cost:27},{id:"el-8",name:"Clipsal SP 10A RCBO",model:"—",cost:26},{id:"el-9",name:"1 Pole 20A Isolator",model:"—",cost:12},{id:"el-10",name:"1 Pole 32A Isolator",model:"—",cost:14}],
+  "Conduit":[{id:"co-1",name:"20mm Electrical",model:"—",cost:4.15},{id:"co-2",name:"20mm Coupling",model:"—",cost:0.50},{id:"co-3",name:"20mm Elbow",model:"—",cost:1},{id:"co-4",name:"20mm Tee",model:"—",cost:1.20},{id:"co-5",name:"20mm Corrugated Grey",model:"—",cost:26.55},{id:"co-6",name:"25mm Corrugated Grey",model:"—",cost:36.75},{id:"co-7",name:"20mm Screw Adaptor",model:"—",cost:1},{id:"co-8",name:"25mm Screw Adaptor",model:"—",cost:1.30}],
+  "Drainage":[{id:"dr-1",name:"20mm Pressure Pipe",model:"—",cost:9.50},{id:"dr-2",name:"20mm Pressure Elbow",model:"—",cost:1.55},{id:"dr-3",name:"20mm Pressure Joiner",model:"—",cost:1.25},{id:"dr-4",name:"20mm Pressure Tee",model:"—",cost:2}],
+  "Pair Coil":[{id:"pc-1",name:"1/4 x 3/8 Pair Coil",model:"—",cost:169.25},{id:"pc-2",name:"3/8 x 5/8 Pair Coil",model:"—",cost:341.02},{id:"pc-3",name:"1/4 x 1/2 Pair Coil",model:"—",cost:205},{id:"pc-4",name:"1/4 x 5/8 Pair Coil",model:"—",cost:305.62}],
+  "Duct":[{id:"du-1",name:"10 inch Flex Duct",model:"—",cost:27.22},{id:"du-2",name:"14 inch Flex Duct",model:"—",cost:41.16},{id:"du-3",name:"16 inch Flex Duct",model:"—",cost:46.72}],
+  "Diffusers":[{id:"di-1",name:"10 inch Circular Diffuser",model:"—",cost:14.72}],
+  "Return Air":[{id:"ra-1",name:"RA Egg Crate 900x500",model:"—",cost:58.80},{id:"ra-2",name:"600x400 Return Air + Grille & Filter",model:"—",cost:94.61}],
+  "BDOs":[{id:"bd-1",name:"BDO 14-10-10",model:"—",cost:26},{id:"bd-2",name:"BDO 14-14-10",model:"—",cost:29.50},{id:"bd-3",name:"BDO 16-16-12",model:"—",cost:31}],
+  "Zones":[{id:"zo-1",name:"Polyaire 250mm + Cable",model:"Zone Damper",cost:57.16},{id:"zo-2",name:"Polyaire 350mm + Cable",model:"Zone Damper",cost:57.16}],
+  "Fixings":[{id:"fi-1",name:"100x BP Connectors",model:"—",cost:15.50},{id:"fi-2",name:"100x Ramset Wallmates",model:"—",cost:35},{id:"fi-3",name:"100x Knock Ins",model:"—",cost:10.50},{id:"fi-4",name:"100x Green Plugs",model:"—",cost:8},{id:"fi-5",name:"100x 20mm Half Saddles",model:"—",cost:16},{id:"fi-6",name:"100x 25mm Half Saddles",model:"—",cost:28},{id:"fi-7",name:"100x Timber Screws",model:"—",cost:40},{id:"fi-8",name:"100x Button Heads",model:"—",cost:30}],
+  "Miscellaneous":[{id:"mi-1",name:"Metal Strap",model:"—",cost:10},{id:"mi-2",name:"Adjustable Feet",model:"—",cost:13.50},{id:"mi-3",name:"P Trap",model:"—",cost:25},{id:"mi-4",name:"Black Strap",model:"—",cost:5},{id:"mi-5",name:"Silver Tape 72mm",model:"—",cost:25},{id:"mi-6",name:"3M Electrical Tape",model:"—",cost:1.20},{id:"mi-7",name:"Duct Tape",model:"—",cost:2.50},{id:"mi-8",name:"100x Cable Tie",model:"—",cost:8},{id:"mi-9",name:"PVC Glue",model:"—",cost:8},{id:"mi-10",name:"Top Bull Cream Bracket Small",model:"—",cost:26},{id:"mi-11",name:"Bostik Silicone",model:"—",cost:8},{id:"mi-12",name:"Colourbond Trunking",model:"—",cost:25},{id:"mi-13",name:"Daikin Wall Controller",model:"—",cost:110}],
+  "Trunking":[{id:"tr-1",name:"80mm Aussieduct Ivory 2000/L",model:"—",cost:28.90},{id:"tr-2",name:"80mm Aussieduct Wall Cap",model:"—",cost:13.90},{id:"tr-3",name:"80mm Aussieduct Ceiling Cap",model:"—",cost:13.90},{id:"tr-4",name:"100mm Aussieduct Ivory 2000/L",model:"—",cost:39.42},{id:"tr-5",name:"100mm Aussieduct Wall Cap",model:"—",cost:17.32},{id:"tr-6",name:"100mm Aussieduct Ceiling Cap",model:"—",cost:17.32}]
+};
+
+let lines = [];
+let allProducts = [];
+
+// Build product list
+function buildProductList() {
+  allProducts = [];
+  Object.entries(BASE_DB).forEach(([category, items]) => {
+    items.forEach(item => {
+      allProducts.push({...item, category});
+    });
+  });
+  
+  const select = document.getElementById('productSelect');
+  const grouped = {};
+  allProducts.forEach(p => {
+    if(!grouped[p.category]) grouped[p.category] = [];
+    grouped[p.category].push(p);
+  });
+  
+  select.innerHTML = '<option value="">— Select Product —</option>';
+  Object.entries(grouped).forEach(([cat, items]) => {
+    const group = document.createElement('optgroup');
+    group.label = cat;
+    items.forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item.id;
+      opt.textContent = `${item.name} (Cost: $${item.cost.toFixed(2)})`;
+      group.appendChild(opt);
+    });
+    select.appendChild(group);
+  });
+}
+
+function selectProduct() {
+  const pid = document.getElementById('productSelect').value;
+  const prod = allProducts.find(p => p.id === pid);
+  if(prod) {
+    document.getElementById('productInfo').textContent = `Model: ${prod.model} | Cost: $${prod.cost.toFixed(2)}`;
+    document.getElementById('productPrice').value = (prod.cost * 1.4).toFixed(2); // 40% markup default
+  } else {
+    document.getElementById('productInfo').textContent = '';
+    document.getElementById('productPrice').value = '';
+  }
+}
+
+function addFromCatalog() {
+  const pid = document.getElementById('productSelect').value;
+  if(!pid) { alert('Select a product'); return; }
+  const prod = allProducts.find(p => p.id === pid);
+  const qty = parseFloat(document.getElementById('productQty').value) || 1;
+  const price = parseFloat(document.getElementById('productPrice').value) || 0;
+  
+  lines.push({
+    desc: prod.name,
+    qty: qty,
+    cost: prod.cost,
+    price: price
+  });
+  
+  document.getElementById('productSelect').value = '';
+  document.getElementById('productQty').value = '1';
+  document.getElementById('productPrice').value = '';
+  document.getElementById('productInfo').textContent = '';
+  renderLines();
+  calc();
+}
+
+function addBlankLine() {
+  lines.push({ desc: '', qty: 1, cost: 0, price: 0 });
+  renderLines();
+}
+
+function renderLines() {
+  const tbody = document.getElementById('lines');
+  tbody.innerHTML = '';
+  lines.forEach((line, idx) => {
+    const total = line.qty * line.price;
+    const margin = line.price > 0 ? Math.round(((line.price - line.cost) / line.price) * 100) : 0;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input type="text" value="${line.desc}" onchange="lines[${idx}].desc=this.value; calc();"/></td>
+      <td><input type="number" value="${line.qty}" min="1" onchange="lines[${idx}].qty=parseFloat(this.value)||0; calc();"/></td>
+      <td><input type="number" value="${line.cost}" step="0.01" onchange="lines[${idx}].cost=parseFloat(this.value)||0; calc();"/></td>
+      <td><input type="number" value="${line.price}" step="0.01" onchange="lines[${idx}].price=parseFloat(this.value)||0; calc();"/></td>
+      <td style="text-align:center; font-weight:600;">${margin}%</td>
+      <td style="text-align:right; font-weight:600;">$${total.toFixed(2)}</td>
+      <td><button class="delete-btn" onclick="lines.splice(${idx},1); renderLines(); calc();">Delete</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function calc() {
+  let totalCost = 0, totalPrice = 0;
+  lines.forEach(line => {
+    totalCost += line.qty * line.cost;
+    totalPrice += line.qty * line.price;
+  });
+  const totalMargin = totalPrice - totalCost;
+  const marginPct = totalPrice > 0 ? Math.round((totalMargin / totalPrice) * 100) : 0;
+  
+  document.getElementById('totalCost').textContent = '$' + totalCost.toFixed(2);
+  document.getElementById('totalPrice').textContent = '$' + totalPrice.toFixed(2);
+  document.getElementById('totalMargin').textContent = '$' + totalMargin.toFixed(2);
+  document.getElementById('marginPct').textContent = marginPct + '%';
+}
+
+function saveQuote() {
+  const data = {
+    clientName: document.getElementById('clientName').value,
+    quoteDate: document.getElementById('quoteDate').value,
+    quoteNum: document.getElementById('quoteNum').value,
+    description: document.getElementById('description').value,
+    lines: lines
+  };
+  localStorage.setItem('quoteData', JSON.stringify(data));
+  const msg = document.getElementById('saved-msg');
+  msg.style.display = 'block';
+  setTimeout(() => msg.style.display = 'none', 3000);
+}
+
+function loadQuote() {
+  const data = JSON.parse(localStorage.getItem('quoteData'));
+  if(data) {
+    document.getElementById('clientName').value = data.clientName || '';
+    document.getElementById('quoteDate').value = data.quoteDate || '';
+    document.getElementById('quoteNum').value = data.quoteNum || '';
+    document.getElementById('description').value = data.description || '';
+    lines = data.lines || [];
+    renderLines();
+    calc();
+  }
+}
+
+function exportPDF() {
+  const element = document.querySelector('.container');
+  const opt = {
+    margin: 10,
+    filename: `Quote-${document.getElementById('quoteNum').value || 'draft'}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+  };
+  html2pdf().set(opt).from(element).save();
+}
+
+function downloadJSON() {
+  const data = {
+    clientName: document.getElementById('clientName').value,
+    quoteDate: document.getElementById('quoteDate').value,
+    quoteNum: document.getElementById('quoteNum').value,
+    description: document.getElementById('description').value,
+    lines: lines
+  };
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Quote-${data.quoteNum || 'draft'}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function clearAll() {
+  if(confirm('Clear all data?')) {
+    lines = [];
+    document.getElementById('clientName').value = '';
+    document.getElementById('quoteNum').value = '';
+    document.getElementById('description').value = '';
+    renderLines();
+    calc();
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('quoteDate').valueAsDate = new Date();
+  buildProductList();
+  loadQuote();
+  if(!lines.length) addBlankLine();
+  calc();
+});
+</script>
+
+</body>
+</html>
