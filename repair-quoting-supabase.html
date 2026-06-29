@@ -5,18 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>REPAIR — Quoting</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-<style>
-body {margin:0;padding:0;}
-#lock {position:fixed;top:0;left:0;width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;z-index:99999;}
-#lock.open {display:none;}
-.gate {background:white;padding:40px;border-radius:16px;text-align:center;width:100%;max-width:400px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
-.gate .logo {font-size:28px;font-weight:900;margin-bottom:8px;}
-.gate .sub {font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:30px;}
-.gate input {width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:'DM Sans';margin-bottom:20px;box-sizing:border-box;}
-.gate input:focus {outline:0;border-color:#0D7A7A;}
-.gate button {width:100%;padding:12px;background:#0D7A7A;color:white;border:0;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans';transition:0.2s;}
-.gate button:active {background:#0a5d5d;}
-.gate .note {font-size:11px;color:#999;margin-top:16px;}
 
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -252,21 +240,92 @@ textarea{resize:vertical;}
 .hidden{display:none!important;}
 </style>
 
+<style>
+body {margin:0;padding:0;}
+#auth-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+}
+#auth-screen.unlocked {
+  display: none;
+}
+#auth-box {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+#auth-box .logo {
+  font-size: 28px;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+#auth-box .sub {
+  font-size: 12px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 30px;
+}
+#auth-box input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}
+#auth-box input:focus {
+  outline: none;
+  border-color: #0D7A7A;
+}
+#auth-box button {
+  width: 100%;
+  padding: 12px;
+  background: #0D7A7A;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+#auth-box button:hover {
+  background: #0a5d5d;
+}
+#auth-box .note {
+  font-size: 11px;
+  color: #999;
+  margin-top: 16px;
+}
 </style>
 </head>
 <body>
 
-<div id="lock">
-  <div class="gate">
+<div id="auth-screen">
+  <div id="auth-box">
     <div class="logo">REPAIR<span style="color:#0D7A7A;">.</span></div>
     <div class="sub">Quoting System</div>
-    <input type="password" id="pwdinput" placeholder="Password"/>
-    <button id="btn">Access System</button>
+    <input type="password" id="pwd" placeholder="Password" autocomplete="off"/>
+    <button type="button" id="submit">Access System</button>
     <div class="note">Internal use only</div>
   </div>
 </div>
 
-<div id="app" style="display:none;">
 
 <div id="app">
 <div id="sidebar">
@@ -1134,23 +1193,40 @@ function buildPDFHTML(q,s){
     </div>
     <div class="footer">REPAIR HVAC SERVICES · ${s.phone||''} · ${s.email||''} · ${s.address||''} · ${s.website||'repairhvacs.com.au'}</div>
   </div>
-</div>
 
 <script>
-document.getElementById('btn').onclick = function() {
-  var pwd = document.getElementById('pwdinput').value;
-  if(pwd === 'RepAIR2024') {
-    document.getElementById('lock').classList.add('open');
-    document.getElementById('app').style.display = 'block';
-  } else {
-    alert('Wrong password');
-    document.getElementById('pwdinput').value = '';
-  }
-};
+var authPassed = false;
 
-document.getElementById('pwdinput').onkeypress = function(e) {
-  if(e.key === 'Enter') document.getElementById('btn').click();
-};
+document.getElementById('submit').addEventListener('click', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  var pwd = document.getElementById('pwd').value.trim();
+  console.log('Password entered:', pwd.length, 'chars');
+  if(pwd === 'RepAIR2024') {
+    console.log('Password correct');
+    authPassed = true;
+    document.getElementById('auth-screen').classList.add('unlocked');
+    sessionStorage.setItem('auth', '1');
+  } else {
+    console.log('Password wrong');
+    alert('Wrong password');
+    document.getElementById('pwd').value = '';
+  }
+});
+
+document.getElementById('pwd').addEventListener('keypress', function(e) {
+  if(e.key === 'Enter') {
+    e.preventDefault();
+    document.getElementById('submit').click();
+  }
+});
+
+if(sessionStorage.getItem('auth') === '1') {
+  authPassed = true;
+  document.getElementById('auth-screen').classList.add('unlocked');
+}
+
+console.log('Auth page loaded');
 </script>
 
 <script>
