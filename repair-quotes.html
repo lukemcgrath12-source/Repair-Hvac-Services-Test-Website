@@ -6,6 +6,88 @@
 <title>REPAIR HVAC SERVICES — Quoting System</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
+#auth-gate {
+  position: fixed;
+  inset: 0;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.gate-box {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.gate-logo {
+  font-size: 28px;
+  font-weight: 900;
+  margin-bottom: 8px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.gate-sub {
+  font-size: 12px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 30px;
+}
+
+.gate-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  margin-bottom: 20px;
+}
+
+.gate-input:focus {
+  outline: none;
+  border-color: #0D7A7A;
+}
+
+.gate-btn {
+  width: 100%;
+  padding: 12px;
+  background: #0D7A7A;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s;
+}
+
+.gate-btn:hover {
+  background: #0a5d5d;
+}
+
+.gate-note {
+  font-size: 11px;
+  color: #999;
+  margin-top: 16px;
+}
+
+#app-wrapper {
+  display: none;
+}
+
+#app-wrapper.unlocked {
+  display: block;
+}
+
 :root{
   --navy:#1E1B4B;--teal:#0D7A7A;--teal-l:#0fa8a8;--teal-50:#e6f7f7;--teal-100:#d0f0f0;--teal-200:#a0e0e0;
   --slate-800:#1e293b;--slate-700:#334155;--slate-600:#475569;--slate-500:#64748b;--slate-400:#94a3b8;
@@ -236,6 +318,19 @@ textarea{resize:vertical;}
 </style>
 </head>
 <body>
+
+<div id="auth-gate">
+  <div class="gate-box">
+    <div class="gate-logo">REPAIR<span style="color:#0D7A7A;">.</span></div>
+    <div class="gate-sub">Quoting System</div>
+    <input type="password" id="pwd-gate" class="gate-input" placeholder="Password" autocomplete="off"/>
+    <button class="gate-btn" id="auth-btn">Access System</button>
+    <div class="gate-note">Internal use only</div>
+  </div>
+</div>
+
+<div id="app-wrapper">
+
 <div id="app">
 <div id="sidebar">
   <div class="sb-logo">
@@ -362,7 +457,6 @@ textarea{resize:vertical;}
           <button class="btn-primary" onclick="openPicker('equipment')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add Equipment</button>
         </div>
         <div class="card">
-          <div style="padding:10px 14px;border-bottom:1px solid var(--slate-100);font-size:11px;color:var(--slate-400);">Enter supplier cost ex GST. Markup is applied once at Step 5, not per line.</div>
           <div id="eq-empty" class="empty-state"><div class="empty-icon">⚡</div><div class="empty-text">No equipment added</div><div class="empty-sub">Search the product database</div></div>
           <table class="item-table" id="eq-table" style="display:none;">
             <thead><tr><th>Product</th><th>Model</th><th class="w-cost">Unit Cost</th><th class="w-qty">Qty</th><th class="w-total">Total</th><th class="w-del"></th></tr></thead>
@@ -388,7 +482,6 @@ textarea{resize:vertical;}
           </div>
         </div>
         <div class="card">
-          <div style="padding:10px 14px;border-bottom:1px solid var(--slate-100);font-size:11px;color:var(--slate-400);">Enter supplier cost ex GST. Markup is applied once at Step 5, not per line.</div>
           <div id="mat-empty" class="empty-state"><div class="empty-icon">🔧</div><div class="empty-text">No materials added</div></div>
           <table class="item-table" id="mat-table" style="display:none;">
             <thead><tr><th>Description</th><th class="w-cost">Unit Cost</th><th class="w-qty">Qty</th><th class="w-total">Total</th><th class="w-del"></th></tr></thead>
@@ -621,6 +714,36 @@ textarea{resize:vertical;}
 <div id="toast"></div>
 
 <script>
+// Simple auth wrapper
+const AUTH_PASSWORD = 'RepAIR2024';
+
+document.getElementById('auth-btn').addEventListener('click', function() {
+  const pwd = document.getElementById('pwd-gate').value;
+  if(pwd === AUTH_PASSWORD) {
+    sessionStorage.setItem('qa','1');
+    document.getElementById('auth-gate').style.display = 'none';
+    document.getElementById('app-wrapper').classList.add('unlocked');
+  } else {
+    alert('Wrong password');
+    document.getElementById('pwd-gate').value = '';
+  }
+});
+
+document.getElementById('pwd-gate').addEventListener('keypress', function(e) {
+  if(e.key === 'Enter') {
+    document.getElementById('auth-btn').click();
+  }
+});
+
+// Check if already authed
+if(sessionStorage.getItem('qa') === '1') {
+  document.getElementById('auth-gate').style.display = 'none';
+  document.getElementById('app-wrapper').classList.add('unlocked');
+}
+</script>
+
+<script>
+
 // ══════ BASE DB ══════
 const BASE_DB = {
   "Mitsubishi Electric Split Systems":[{id:"me-ss-1",name:"2.5kW Indoor Head",model:"MSZ-AP25VGKD2",cost:299.25},{id:"me-ss-2",name:"2.5kW Split System",model:"MSZ-AP25VGKD2 / MUZ-AP25VD2",cost:738.35},{id:"me-ss-3",name:"3.5kW Split System",model:"MSZ-AP35VGKD2 / MUZ-AP35VD2",cost:970},{id:"me-ss-4",name:"5.0kW Split System",model:"MSZ-AP50VGKD2 / MUZ-AP50VGD2",cost:1203.29},{id:"me-ss-5",name:"6.0kW Split System",model:"MSZ-AP60VGKD2 / MUZ-AP60VGD2",cost:1411.30},{id:"me-ss-6",name:"8.0kW Split System",model:"MSZAP80VGKD2 / MUZ-AP80VGD2",cost:1835.60}],
@@ -937,10 +1060,7 @@ function recalc(){
   });
   const gstLabel=document.getElementById('p-gst-label');if(gstLabel)gstLabel.textContent='GST ('+gst+'%)';
   const mh=document.getElementById('f-markup-help');
-  if(mh){
-    const mk=currentQuote.markup||40;
-    mh.textContent='Applied once to total job cost = '+(mk/(100+mk)*100).toFixed(1)+'% gross margin';
-  }
+  if(mh){const mk=currentQuote.markup||40;mh.textContent='Applied once to total job cost = '+(mk/(100+mk)*100).toFixed(1)+'% gross margin';}
   refreshSidebars();
 }
 
@@ -1191,13 +1311,8 @@ function loadSettingsForm(){
   document.getElementById('s-license').value=settings.license||'';
   document.getElementById('s-website').value=settings.website||'';
   document.getElementById('s-markup').value=settings.markup||40;
-  document.getElementById('s-gst').value=settings.gst||10;
   updateSettingsMarkupHelp();
-}
-function updateSettingsMarkupHelp(){
-  const el=document.getElementById('s-markup-help');if(!el)return;
-  const mk=+document.getElementById('s-markup').value||0;
-  el.textContent=mk>0?'Applied once to total job cost = '+(mk/(100+mk)*100).toFixed(1)+'% gross margin':'Applied once to total job cost';
+  document.getElementById('s-gst').value=settings.gst||10;
 }
 function saveSettings(){
   settings.company=document.getElementById('s-company').value;
@@ -1234,39 +1349,37 @@ function renderProductTable(){
   });
 }
 function allCategories(){
-  const base=Object.keys(BASE_DB);
   const custom=customProducts.map(p=>p.category).filter(Boolean);
-  return [...new Set([...base,...custom])].sort((a,b)=>a.localeCompare(b));
+  return [...new Set([...Object.keys(BASE_DB),...custom])].sort((a,b)=>a.localeCompare(b));
 }
 function populateCatSelect(current){
   const sel=document.getElementById('pmod-cat-select');
+  const cats=allCategories();
   sel.innerHTML='';
   const blank=document.createElement('option');
-  blank.value='';blank.textContent='Select a category...';
-  sel.appendChild(blank);
-  allCategories().forEach(c=>{
-    const o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o);
-  });
+  blank.value='';blank.textContent='Select a category...';sel.appendChild(blank);
+  cats.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o);});
   const nw=document.createElement('option');
-  nw.value='__new__';nw.textContent='+ Add new category...';
-  sel.appendChild(nw);
-  const newInput=document.getElementById('pmod-cat-new');
-  if(current&&!allCategories().includes(current)){
-    sel.value='__new__';newInput.style.display='block';newInput.value=current;
-  }else{
-    sel.value=current||'';newInput.style.display='none';newInput.value='';
-  }
+  nw.value='__new__';nw.textContent='+ Add new category...';sel.appendChild(nw);
+  const ni=document.getElementById('pmod-cat-new');
+  if(current&&!cats.includes(current)){sel.value='__new__';ni.style.display='block';ni.value=current;}
+  else{sel.value=current||'';ni.style.display='none';ni.value='';}
 }
 function onCatSelectChange(){
   const sel=document.getElementById('pmod-cat-select');
-  const newInput=document.getElementById('pmod-cat-new');
-  if(sel.value==='__new__'){newInput.style.display='block';newInput.focus();}
-  else{newInput.style.display='none';newInput.value='';}
+  const ni=document.getElementById('pmod-cat-new');
+  if(sel.value==='__new__'){ni.style.display='block';ni.focus();}
+  else{ni.style.display='none';ni.value='';}
 }
 function getCatValue(){
   const sel=document.getElementById('pmod-cat-select');
   if(sel.value==='__new__')return document.getElementById('pmod-cat-new').value.trim();
   return sel.value;
+}
+function updateSettingsMarkupHelp(){
+  const el=document.getElementById('s-markup-help');if(!el)return;
+  const mk=+document.getElementById('s-markup').value||0;
+  el.textContent=mk>0?'Applied once to total job cost = '+(mk/(100+mk)*100).toFixed(1)+'% gross margin':'Applied once to total job cost';
 }
 function openProductModal(id){
   const p=id?customProducts.find(x=>x.id===id):null;
@@ -1297,6 +1410,8 @@ function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t
 
 // ══════ INIT ══════
 load();renderDashboard();
+
 </script>
+
 </body>
 </html>
