@@ -344,6 +344,9 @@ textarea{resize:vertical;}
     <button class="sb-btn" onclick="showView('dashboard')">
       <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>All Quotes
     </button>
+    <button class="sb-btn" onclick="showView('products')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>Products
+    </button>
     <button class="sb-btn" onclick="showView('clients')">
       <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Clients
     </button>
@@ -396,6 +399,48 @@ textarea{resize:vertical;}
     <table><thead><tr><th>Quote #</th><th>Client</th><th>Address</th><th>Total (inc GST)</th><th>Margin</th><th>Status</th><th>Date</th><th></th></tr></thead>
     <tbody id="quotes-tbody"></tbody></table>
     <div id="empty-dash" class="empty-state hidden"><div class="empty-icon">📋</div><div class="empty-text">No quotes found</div><div class="empty-sub">Create a new quote to get started</div></div>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<div id="view-products">
+  <div class="page-header">
+    <div><div class="page-title">Product Database</div><div class="page-sub" id="prod-sub">Supplier costs used to build every quote</div></div>
+    <div class="flex gap8">
+      <button class="btn-secondary" onclick="openBulkModal()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Bulk Price Update</button>
+      <button class="btn-primary" onclick="openProductModal(null)"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add Product</button>
+    </div>
+  </div>
+
+  <div class="stat-grid" style="grid-template-columns:repeat(4,1fr);">
+    <div class="stat-card"><div class="stat-label">Total Products</div><div class="stat-val teal" id="pstat-total">0</div></div>
+    <div class="stat-card"><div class="stat-label">Categories</div><div class="stat-val" style="color:var(--navy);" id="pstat-cats">0</div></div>
+    <div class="stat-card"><div class="stat-label">Price Edited</div><div class="stat-val amber" id="pstat-edited">0</div></div>
+    <div class="stat-card"><div class="stat-label">Inactive</div><div class="stat-val" style="color:var(--slate-400);" id="pstat-inactive">0</div></div>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-header">
+      <div class="flex gap8 items-center" style="flex-wrap:wrap;">
+        <select id="prod-cat-filter" onchange="renderProductTable()" style="min-width:210px;padding:7px 10px;font-size:12px;"></select>
+        <button class="ftab active" id="pf-all" onclick="setProdFilter('all',this)">All</button>
+        <button class="ftab" id="pf-edited" onclick="setProdFilter('edited',this)">Edited</button>
+        <button class="ftab" id="pf-custom" onclick="setProdFilter('custom',this)">Custom</button>
+        <button class="ftab" id="pf-inactive" onclick="setProdFilter('inactive',this)">Inactive</button>
+      </div>
+      <div class="search-wrap">
+        <svg class="search-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="prod-search" placeholder="Search name or model..." oninput="renderProductTable()"/>
+      </div>
+    </div>
+    <table class="pm-table" id="pm-table">
+      <thead><tr><th>Name</th><th>Category</th><th>Model</th><th style="text-align:right;">Supplier Cost</th><th>Last Updated</th><th>Status</th><th></th></tr></thead>
+      <tbody id="pm-tbody"></tbody>
+    </table>
+    <div id="empty-products" class="empty-state hidden"><div class="empty-icon">\U0001F4E6</div><div class="empty-text">No products match</div><div class="empty-sub">Try a different category or search term</div></div>
+  </div>
+  <div style="font-size:11px;color:var(--slate-400);margin-top:12px;line-height:1.6;">
+    Editing a cost here changes what appears in the product picker from now on. Quotes already saved keep the cost that applied on the day they were built, so historical quotes and margins are never rewritten.
   </div>
 </div>
 
@@ -595,7 +640,6 @@ textarea{resize:vertical;}
   <div class="settings-tabs">
     <button class="stab active" onclick="switchSettingsTab('company',this)">Company</button>
     <button class="stab" onclick="switchSettingsTab('pricing',this)">Pricing</button>
-    <button class="stab" onclick="switchSettingsTab('products',this)">Products</button>
   </div>
   <!-- Company tab -->
   <div class="settings-panel active" id="stab-company" style="max-width:600px;">
@@ -622,19 +666,6 @@ textarea{resize:vertical;}
       </div>
     </div>
     <button class="btn-primary" onclick="saveSettings()" style="width:100%;justify-content:center;padding:12px;">Save</button>
-  </div>
-  <!-- Products tab -->
-  <div class="settings-panel" id="stab-products">
-    <div class="flex justify-between items-center mb16">
-      <div style="font-size:13px;color:var(--slate-500);">Manage your product database</div>
-      <button class="btn-primary" onclick="openProductModal(null)"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add Product</button>
-    </div>
-    <div class="table-wrap">
-      <table class="pm-table" id="pm-table">
-        <thead><tr><th>Name</th><th>Category</th><th>Model</th><th>Cost</th><th>Status</th><th></th></tr></thead>
-        <tbody id="pm-tbody"></tbody>
-      </table>
-    </div>
   </div>
 </div>
 
@@ -687,6 +718,26 @@ textarea{resize:vertical;}
 </div>
 
 <!-- PRODUCT MODAL -->
+<!-- BULK PRICE MODAL -->
+<div class="modal-overlay hidden" id="bulk-modal">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header"><div class="modal-title">Bulk Price Update</div><button class="modal-close" onclick="closeBulkModal()"><svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body" style="padding:16px;">
+      <div style="font-size:12px;color:var(--slate-500);margin-bottom:14px;line-height:1.6;">Apply a percentage change across a whole category. Use this when a supplier sends through an annual price rise.</div>
+      <div class="form-grid cols2">
+        <div class="full"><label>Category</label><select id="bulk-cat"></select></div>
+        <div><label>Change %</label><div class="input-prefix"><span>%</span><input type="number" id="bulk-pct" step="0.1" placeholder="e.g. 4 or -2.5" oninput="renderBulkPreview()"/></div></div>
+        <div><label>Rounding</label><select id="bulk-round" onchange="renderBulkPreview()"><option value="2">Nearest cent</option><option value="0">Nearest dollar</option></select></div>
+      </div>
+      <div id="bulk-preview" style="margin-top:14px;max-height:230px;overflow:auto;border:1px solid var(--slate-200);border-radius:8px;"></div>
+      <div class="flex gap8" style="margin-top:16px;justify-content:flex-end;">
+        <button class="btn-secondary" onclick="closeBulkModal()">Cancel</button>
+        <button class="btn-primary" onclick="applyBulk()">Apply Update</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay hidden" id="product-modal">
   <div class="modal" style="max-width:560px;">
     <div class="modal-header"><div class="modal-title" id="pm-modal-title">Add Product</div><button class="modal-close" onclick="closeProductModal()"><svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
@@ -703,9 +754,13 @@ textarea{resize:vertical;}
         <div class="full"><label>Description / Notes</label><textarea id="pmod-notes" rows="2"></textarea></div>
         <div><label>Status</label><select id="pmod-status"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
       </div>
-      <div class="flex gap8" style="margin-top:16px;justify-content:flex-end;">
-        <button class="btn-secondary" onclick="closeProductModal()">Cancel</button>
-        <button class="btn-primary" onclick="saveProductFromModal()">Save Product</button>
+      <div id="pmod-origline" style="display:none;font-size:11px;color:var(--slate-400);margin-top:12px;"></div>
+      <div class="flex gap8" style="margin-top:16px;justify-content:space-between;align-items:center;">
+        <button class="btn-ghost" id="pmod-reset" style="display:none;" onclick="resetProductToOriginal()">Reset to original</button>
+        <div class="flex gap8" style="margin-left:auto;">
+          <button class="btn-secondary" onclick="closeProductModal()">Cancel</button>
+          <button class="btn-primary" onclick="saveProductFromModal()">Save Product</button>
+        </div>
       </div>
     </div>
   </div>
@@ -767,17 +822,43 @@ const BASE_DB = {
 };
 
 // ══════ STATE ══════
-let quotes=[],clients=[],customProducts=[],currentQuote=null,currentStep=1,pickerTarget='equipment',filterState='all',searchState='',pickerCat='All',settings={company:'REPAIR HVAC SERVICES',phone:'',email:'',address:'',license:'',website:'',markup:40,gst:10};
+let quotes=[],clients=[],customProducts=[],productOverrides={},prodFilter='all',currentQuote=null,currentStep=1,pickerTarget='equipment',filterState='all',searchState='',pickerCat='All',settings={company:'REPAIR HVAC SERVICES',phone:'',email:'',address:'',license:'',website:'',markup:40,gst:10};
 
 function uid(){return Math.random().toString(36).slice(2,9);}
 function qNum(){return 'RPR-'+new Date().getFullYear()+'-'+String(Math.floor(Math.random()*9000)+1000);}
 function todayStr(){return new Date().toISOString().split('T')[0];}
 function fmt(n){return '$'+(+n||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
-function allProducts(){
-  const base=Object.entries(BASE_DB).flatMap(([cat,items])=>items.map(i=>({...i,category:cat,_custom:false})));
-  const custom=customProducts.filter(p=>p.status==='active');
+// Base catalogue merged with any saved edits. Overrides live in localStorage,
+// keyed by product id, so the shipped BASE_DB is never mutated and can always
+// be restored per-product.
+function catalogue(){
+  const base=Object.entries(BASE_DB).flatMap(([cat,items])=>items.map(i=>{
+    const o=productOverrides[i.id];
+    const rec={...i,category:cat,_custom:false,status:'active',_edited:false,_updatedAt:''};
+    if(o){
+      if(o.name!==undefined) rec.name=o.name;
+      if(o.model!==undefined) rec.model=o.model;
+      if(o.cost!==undefined) rec.cost=+o.cost;
+      if(o.category!==undefined) rec.category=o.category;
+      if(o.notes!==undefined) rec.notes=o.notes;
+      if(o.status!==undefined) rec.status=o.status;
+      rec._edited=true; rec._updatedAt=o.updatedAt||'';
+      rec._origCost=i.cost; rec._origName=i.name; rec._origModel=i.model;
+    }
+    return rec;
+  }));
+  const custom=customProducts.map(p=>({...p,_custom:true,_edited:false,_updatedAt:p.updatedAt||''}));
   return [...base,...custom];
 }
+function findProduct(id){return catalogue().find(p=>p.id===id);}
+function originalOf(id){
+  for(const [cat,items] of Object.entries(BASE_DB)){
+    const m=items.find(i=>i.id===id);
+    if(m) return {...m,category:cat};
+  }
+  return null;
+}
+function allProducts(){return catalogue().filter(p=>p.status!=='inactive');}
 
 function load(){
   const sq=localStorage.getItem('rpr_quotes'),ss=localStorage.getItem('rpr_settings'),sc=localStorage.getItem('rpr_clients'),sp=localStorage.getItem('rpr_products');
@@ -793,12 +874,15 @@ function load(){
   if(ss) settings=JSON.parse(ss);
   if(sc) clients=JSON.parse(sc);
   if(sp) customProducts=JSON.parse(sp);
+  const so=localStorage.getItem('rpr_overrides');
+  if(so) productOverrides=JSON.parse(so);
   loadSettingsForm();
 }
 function persist(){localStorage.setItem('rpr_quotes',JSON.stringify(quotes));}
 function persistSettings(){localStorage.setItem('rpr_settings',JSON.stringify(settings));}
 function persistClients(){localStorage.setItem('rpr_clients',JSON.stringify(clients));}
 function persistProducts(){localStorage.setItem('rpr_products',JSON.stringify(customProducts));}
+function persistOverrides(){localStorage.setItem('rpr_overrides',JSON.stringify(productOverrides));}
 
 function calcTotals(q){
   const eq=(q.equipment||[]).reduce((s,i)=>s+(i.total||0),0);
@@ -849,14 +933,14 @@ function sidebarRecalc(){recalc();}
 
 // ══════ VIEWS ══════
 function showView(v){
-  ['dashboard','form','settings','clients'].forEach(x=>document.getElementById('view-'+x).style.display='none');
+  ['dashboard','form','settings','clients','products'].forEach(x=>{const n=document.getElementById('view-'+x);if(n)n.style.display='none';});
   document.getElementById('view-'+v).style.display='block';
   document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
-  const map={dashboard:0,clients:2,settings:3};
+  const map={dashboard:0,products:2,clients:3,settings:4};
   if(map[v]!==undefined) document.querySelectorAll('.sb-btn')[map[v]].classList.add('active');
   if(v==='dashboard') renderDashboard();
   if(v==='clients') renderClients();
-  if(v==='settings') renderProductTable();
+  if(v==='products') renderProductTable();
 }
 
 // ══════ DASHBOARD ══════
@@ -1090,7 +1174,7 @@ function openPicker(target){
 function closePicker(){document.getElementById('picker-modal').classList.add('hidden');}
 function buildPickerCats(){
   const c=document.getElementById('picker-cats');
-  const cats=['All',...Object.keys(BASE_DB),...customProducts.filter(p=>p.status==='active').map(p=>p.category).filter((v,i,a)=>a.indexOf(v)===i&&!Object.keys(BASE_DB).includes(v))];
+  const cats=['All',...[...new Set(allProducts().map(p=>p.category).filter(Boolean))]];
   c.innerHTML='';
   cats.forEach(cat=>{const b=document.createElement('button');b.className='cat-chip'+(cat===pickerCat?' active':'');b.textContent=cat;b.onclick=()=>{pickerCat=cat;buildPickerCats();renderPickerList();};c.appendChild(b);});
 }
@@ -1099,14 +1183,14 @@ function renderPickerList(){
   const list=document.getElementById('picker-list');
   const filtered=allProducts().filter(p=>{
     const mc=pickerCat==='All'||p.category===pickerCat;
-    const mq=!q||p.name.toLowerCase().includes(q)||p.model.toLowerCase().includes(q)||p.category.toLowerCase().includes(q);
+    const mq=!q||(p.name||'').toLowerCase().includes(q)||(p.model||'').toLowerCase().includes(q)||(p.category||'').toLowerCase().includes(q);
     return mc&&mq;
   });
   list.innerHTML='';
   if(!filtered.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-text">No products found</div></div>';return;}
   filtered.forEach(p=>{
     const div=document.createElement('div');div.className='picker-item';
-    div.innerHTML=`<div style="flex:1;min-width:0;"><div class="picker-item-name">${p.name}${p._custom?'<span style="margin-left:6px;background:var(--teal-50);color:var(--teal);font-size:9px;padding:1px 6px;border-radius:4px;font-weight:700;">CUSTOM</span>':''}</div><div class="picker-item-meta">${p.model} · <span style="color:var(--teal);">${p.category}</span></div></div><span class="picker-item-price">${fmt(p.cost)}</span><button class="picker-add-btn">+</button>`;
+    div.innerHTML=`<div style="flex:1;min-width:0;"><div class="picker-item-name">${p.name}${p._custom?'<span style="margin-left:6px;background:var(--teal-50);color:var(--teal);font-size:9px;padding:1px 6px;border-radius:4px;font-weight:700;">CUSTOM</span>':''}</div><div class="picker-item-meta">${p.model||'—'} · <span style="color:var(--teal);">${p.category}</span></div></div><span class="picker-item-price">${fmt(p.cost)}</span><button class="picker-add-btn">+</button>`;
     div.onclick=()=>addFromPicker(p);list.appendChild(div);
   });
 }
@@ -1327,30 +1411,79 @@ function saveSettings(){
 }
 
 // ══════ PRODUCT MANAGER ══════
+function setProdFilter(f,btn){
+  prodFilter=f;
+  ['pf-all','pf-edited','pf-custom','pf-inactive'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  btn.classList.add('active');
+  renderProductTable();
+}
+function populateCatFilter(){
+  const sel=document.getElementById('prod-cat-filter');
+  if(!sel) return;
+  const keep=sel.value||'__all__';
+  const cats=[...new Set(catalogue().map(p=>p.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  sel.innerHTML='<option value="__all__">All categories</option>'+cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+  sel.value=cats.includes(keep)?keep:'__all__';
+}
 function renderProductTable(){
-  const tbody=document.getElementById('pm-tbody');tbody.innerHTML='';
-  const allCustom=customProducts;
-  if(!allCustom.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--slate-400);">No custom products added yet. Base database has '+Object.values(BASE_DB).flat().length+' products.</td></tr>';return;}
-  allCustom.forEach(p=>{
+  const tbody=document.getElementById('pm-tbody');
+  if(!tbody) return;
+  populateCatFilter();
+  const all=catalogue();
+  const cat=(document.getElementById('prod-cat-filter')||{}).value||'__all__';
+  const q=((document.getElementById('prod-search')||{}).value||'').toLowerCase();
+
+  document.getElementById('pstat-total').textContent=all.filter(p=>p.status!=='inactive').length;
+  document.getElementById('pstat-cats').textContent=new Set(all.map(p=>p.category)).size;
+  document.getElementById('pstat-edited').textContent=all.filter(p=>p._edited).length;
+  document.getElementById('pstat-inactive').textContent=all.filter(p=>p.status==='inactive').length;
+
+  const rows=all.filter(p=>{
+    if(cat!=='__all__'&&p.category!==cat) return false;
+    if(prodFilter==='edited'&&!p._edited) return false;
+    if(prodFilter==='custom'&&!p._custom) return false;
+    if(prodFilter==='inactive'&&p.status!=='inactive') return false;
+    if(q){
+      const hay=((p.name||'')+' '+(p.model||'')+' '+(p.category||'')).toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  }).sort((a,b)=>(a.category||'').localeCompare(b.category||'')||(a.name||'').localeCompare(b.name||''));
+
+  const empty=document.getElementById('empty-products');
+  tbody.innerHTML='';
+  if(!rows.length){ if(empty) empty.classList.remove('hidden'); return; }
+  if(empty) empty.classList.add('hidden');
+
+  rows.forEach(p=>{
     const tr=document.createElement('tr');
-    tr.className=p.status==='inactive'?'pm-inactive':'';
+    if(p.status==='inactive') tr.className='pm-inactive';
+    const tag = p._custom
+      ? '<span style="margin-left:6px;background:var(--teal-50);color:var(--teal);font-size:9px;padding:1px 6px;border-radius:4px;font-weight:700;">CUSTOM</span>'
+      : (p._edited?'<span style="margin-left:6px;background:#fef3c7;color:#92400e;font-size:9px;padding:1px 6px;border-radius:4px;font-weight:700;">EDITED</span>':'');
+    let costCell=`<span style="font-weight:700;">${fmt(p.cost)}</span>`;
+    if(p._edited&&p._origCost!==undefined&&+p._origCost!==+p.cost){
+      const diff=((p.cost-p._origCost)/p._origCost*100);
+      const col=diff>0?'var(--red)':'var(--green-700)';
+      costCell+=`<div style="font-size:10px;color:var(--slate-400);margin-top:2px;">was ${fmt(p._origCost)} <span style="color:${col};font-weight:700;">${diff>0?'+':''}${diff.toFixed(1)}%</span></div>`;
+    }
     tr.innerHTML=`
-      <td style="font-weight:700;">${p.name}</td>
+      <td style="font-weight:700;">${p.name}${tag}</td>
       <td style="color:var(--slate-500);font-size:12px;">${p.category||'—'}</td>
       <td style="color:var(--slate-400);font-size:12px;">${p.model||'—'}</td>
-      <td style="font-weight:700;">${fmt(p.cost)}</td>
+      <td style="text-align:right;">${costCell}</td>
+      <td style="color:var(--slate-400);font-size:11px;">${p._updatedAt?p._updatedAt:'—'}</td>
       <td><span class="status-dot ${p.status}"></span>${p.status==='active'?'Active':'Inactive'}</td>
-      <td><div style="display:flex;gap:4px;">
+      <td><div style="display:flex;gap:4px;justify-content:flex-end;">
         <button class="icon-btn edit" onclick="openProductModal('${p.id}')" style="opacity:1;" title="Edit"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
         <button class="icon-btn" onclick="toggleProductStatus('${p.id}')" style="opacity:1;" title="${p.status==='active'?'Deactivate':'Activate'}"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/>${p.status==='active'?'<line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>':'<polyline points="20 6 9 17 4 12"/>'}</svg></button>
-        <button class="icon-btn del" onclick="deleteProduct('${p.id}')" style="opacity:1;" title="Delete"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+        ${p._custom?`<button class="icon-btn del" onclick="deleteProduct('${p.id}')" style="opacity:1;" title="Delete"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>`:''}
       </div></td>`;
     tbody.appendChild(tr);
   });
 }
 function allCategories(){
-  const custom=customProducts.map(p=>p.category).filter(Boolean);
-  return [...new Set([...Object.keys(BASE_DB),...custom])].sort((a,b)=>a.localeCompare(b));
+  return [...new Set(catalogue().map(p=>p.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
 }
 function populateCatSelect(current){
   const sel=document.getElementById('pmod-cat-select');
@@ -1382,28 +1515,133 @@ function updateSettingsMarkupHelp(){
   el.textContent=mk>0?'Applied once to total job cost = '+(mk/(100+mk)*100).toFixed(1)+'% gross margin':'Applied once to total job cost';
 }
 function openProductModal(id){
-  const p=id?customProducts.find(x=>x.id===id):null;
+  const p=id?findProduct(id):null;
   document.getElementById('pm-modal-title').textContent=p?'Edit Product':'Add Product';
   document.getElementById('pmod-id').value=p?p.id:'';
   document.getElementById('pmod-name').value=p?p.name:'';
   populateCatSelect(p?p.category:'');
-  document.getElementById('pmod-model').value=p?p.model:'';
+  document.getElementById('pmod-model').value=p?(p.model||''):'';
   document.getElementById('pmod-cost').value=p?p.cost:'';
-  document.getElementById('pmod-notes').value=p?p.notes||'':'';
+  document.getElementById('pmod-notes').value=p?(p.notes||''):'';
   document.getElementById('pmod-status').value=p?p.status:'active';
+  const resetBtn=document.getElementById('pmod-reset');
+  const origLine=document.getElementById('pmod-origline');
+  if(p&&!p._custom){
+    const o=originalOf(p.id);
+    origLine.style.display='block';
+    origLine.textContent='Base catalogue item. Original supplier cost '+fmt(o.cost)+'.';
+    resetBtn.style.display=p._edited?'inline-flex':'none';
+    resetBtn.dataset.pid=p.id;
+  } else {
+    origLine.style.display='none';
+    resetBtn.style.display='none';
+  }
   document.getElementById('product-modal').classList.remove('hidden');
 }
 function closeProductModal(){document.getElementById('product-modal').classList.add('hidden');}
 function saveProductFromModal(){
   const id=document.getElementById('pmod-id').value;
-  const p={id:id||uid(),name:document.getElementById('pmod-name').value,category:getCatValue(),model:document.getElementById('pmod-model').value,cost:+document.getElementById('pmod-cost').value||0,notes:document.getElementById('pmod-notes').value,status:document.getElementById('pmod-status').value,_custom:true};
-  if(!p.name){toast('Product name required');return;}
-  if(!p.category){toast('Category required');return;}
-  if(id){const idx=customProducts.findIndex(x=>x.id===id);if(idx>=0)customProducts[idx]=p;else customProducts.push(p);}else customProducts.push(p);
-  persistProducts();closeProductModal();renderProductTable();toast('Product saved ✓');
+  const name=document.getElementById('pmod-name').value.trim();
+  const cat=getCatValue();
+  const model=document.getElementById('pmod-model').value.trim();
+  const cost=+document.getElementById('pmod-cost').value||0;
+  const notes=document.getElementById('pmod-notes').value;
+  const status=document.getElementById('pmod-status').value;
+  if(!name){toast('Product name required');return;}
+  if(!cat){toast('Category required');return;}
+
+  const orig=id?originalOf(id):null;
+  if(orig){
+    // Base catalogue item: write an override rather than mutating BASE_DB
+    productOverrides[id]={name,category:cat,model,cost,notes,status,updatedAt:todayStr()};
+    persistOverrides();
+  } else {
+    const prod={id:id||uid(),name,category:cat,model,cost,notes,status,updatedAt:todayStr(),_custom:true};
+    const idx=customProducts.findIndex(x=>x.id===id);
+    if(id&&idx>=0) customProducts[idx]=prod; else customProducts.push(prod);
+    persistProducts();
+  }
+  closeProductModal();renderProductTable();toast('Product saved ✓');
 }
-function toggleProductStatus(id){const p=customProducts.find(x=>x.id===id);if(p){p.status=p.status==='active'?'inactive':'active';persistProducts();renderProductTable();toast('Status updated');}}
-function deleteProduct(id){if(confirm('Delete this product?')){customProducts=customProducts.filter(x=>x.id!==id);persistProducts();renderProductTable();}}
+function resetProductToOriginal(){
+  const id=document.getElementById('pmod-reset').dataset.pid;
+  if(!id) return;
+  if(!confirm('Restore this product to its original catalogue cost and details?')) return;
+  delete productOverrides[id];
+  persistOverrides();closeProductModal();renderProductTable();toast('Reset to original ✓');
+}
+function toggleProductStatus(id){
+  const orig=originalOf(id);
+  if(orig){
+    const cur=findProduct(id);
+    const next=cur.status==='active'?'inactive':'active';
+    const o=productOverrides[id]||{};
+    productOverrides[id]={...o,status:next,updatedAt:o.updatedAt||todayStr()};
+    if(next==='active'&&Object.keys(productOverrides[id]).filter(k=>!['status','updatedAt'].includes(k)).length===0){
+      delete productOverrides[id];
+    }
+    persistOverrides();
+  } else {
+    const p=customProducts.find(x=>x.id===id);
+    if(p){p.status=p.status==='active'?'inactive':'active';persistProducts();}
+  }
+  renderProductTable();toast('Status updated');
+}
+function deleteProduct(id){
+  if(!originalOf(id)&&confirm('Delete this product?')){
+    customProducts=customProducts.filter(x=>x.id!==id);
+    persistProducts();renderProductTable();
+  }
+}
+
+// ══════ BULK PRICE UPDATE ══════
+function openBulkModal(){
+  const sel=document.getElementById('bulk-cat');
+  sel.innerHTML=allCategories().map(c=>`<option value="${c}">${c}</option>`).join('');
+  sel.onchange=renderBulkPreview;
+  document.getElementById('bulk-pct').value='';
+  document.getElementById('bulk-preview').innerHTML='';
+  document.getElementById('bulk-modal').classList.remove('hidden');
+}
+function closeBulkModal(){document.getElementById('bulk-modal').classList.add('hidden');}
+function bulkTargets(){
+  const cat=document.getElementById('bulk-cat').value;
+  return catalogue().filter(p=>p.category===cat&&p.status!=='inactive');
+}
+function bulkNewCost(cost){
+  const pct=+document.getElementById('bulk-pct').value||0;
+  const dp=+document.getElementById('bulk-round').value;
+  const v=cost*(1+pct/100);
+  return dp===0?Math.round(v):Math.round(v*100)/100;
+}
+function renderBulkPreview(){
+  const box=document.getElementById('bulk-preview');
+  const pct=+document.getElementById('bulk-pct').value;
+  const items=bulkTargets();
+  if(!pct||!items.length){box.innerHTML='<div style="padding:14px;font-size:12px;color:var(--slate-400);">Enter a percentage to preview the change.</div>';return;}
+  box.innerHTML='<table style="width:100%;font-size:11px;"><thead><tr><th style="text-align:left;padding:7px 10px;">Product</th><th style="text-align:right;padding:7px 10px;">Now</th><th style="text-align:right;padding:7px 10px;">New</th></tr></thead><tbody>'+
+    items.map(p=>`<tr><td style="padding:6px 10px;">${p.name}</td><td style="text-align:right;padding:6px 10px;color:var(--slate-400);">${fmt(p.cost)}</td><td style="text-align:right;padding:6px 10px;font-weight:700;">${fmt(bulkNewCost(p.cost))}</td></tr>`).join('')+
+    `</tbody></table><div style="padding:8px 10px;font-size:11px;color:var(--slate-500);border-top:1px solid var(--slate-200);">${items.length} product${items.length===1?'':'s'} will be updated.</div>`;
+}
+function applyBulk(){
+  const pct=+document.getElementById('bulk-pct').value;
+  if(!pct){toast('Enter a percentage');return;}
+  const items=bulkTargets();
+  if(!items.length){toast('No products in that category');return;}
+  if(!confirm(`Apply ${pct>0?'+':''}${pct}% to ${items.length} product${items.length===1?'':'s'}?`)) return;
+  items.forEach(p=>{
+    const nc=bulkNewCost(p.cost);
+    if(p._custom){
+      const t=customProducts.find(x=>x.id===p.id);
+      if(t){t.cost=nc;t.updatedAt=todayStr();}
+    } else {
+      const o=productOverrides[p.id]||{};
+      productOverrides[p.id]={...o,name:p.name,category:p.category,model:p.model,cost:nc,status:p.status,updatedAt:todayStr()};
+    }
+  });
+  persistProducts();persistOverrides();closeBulkModal();renderProductTable();
+  toast(items.length+' products updated ✓');
+}
 
 // ══════ TOAST ══════
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
