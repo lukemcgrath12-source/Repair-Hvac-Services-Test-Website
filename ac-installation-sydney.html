@@ -38,9 +38,9 @@
   "@context": "https://schema.org",
   "@type": "HVACBusiness",
   "name": "REPAIR HVAC SERVICES",
-  "url": "https://repairhvacs.com.au",
+  "url": "https://www.repairhvacs.com.au",
   "telephone": "+61466825476",
-  "email": "hello@repairhvac.com.au",
+  "email": "info@repairhvacs.com.au",
   "address": {
     "@type": "PostalAddress",
     "addressLocality": "Sydney",
@@ -65,11 +65,11 @@
   <meta property="og:title" content="AC Installation Sydney | Mitsubishi Electric &amp; Daikin | REPAIR HVAC" />
   <meta property="og:description" content="Professional air conditioning installation across Greater Sydney. Authorised Mitsubishi Electric and Daikin installers. Free quotes, clean installs, manufacturer warranty." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://repairhvacs.com.au/ac-installation-sydney" />
+  <meta property="og:url" content="https://www.repairhvacs.com.au/ac-installation-sydney" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="AC Installation Sydney | Mitsubishi Electric &amp; Daikin | REPAIR HVAC" />
   <meta name="twitter:description" content="Professional air conditioning installation across Greater Sydney. Authorised Mitsubishi Electric and Daikin installers." />
-  <link rel="canonical" href="https://repairhvacs.com.au/ac-installation-sydney" />
+  <link rel="canonical" href="https://www.repairhvacs.com.au/ac-installation-sydney" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
@@ -1365,7 +1365,7 @@
         fetch(f.action, { method: 'POST', body: new FormData(f), headers: { 'Accept': 'application/json' } })
           .then(function (r) { return r.json(); })
           .then(function (d) {
-            if (d && String(d.success) === 'true') { window.location.href = '/thank-you.html'; return; }
+            if (d && String(d.success) === 'true') { window.location.href = '/thank-you'; return; }
             throw new Error('failed');
           })
           .catch(function () {

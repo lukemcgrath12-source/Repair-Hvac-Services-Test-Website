@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /repair-quotes
+Disallow: /thank-you
 
 User-agent: facebookexternalhit
 Disallow:
