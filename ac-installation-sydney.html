@@ -1229,14 +1229,20 @@
         </div>
       </div>
 
-      <div class="contact-form">
+      <form class="contact-form" id="enquiryForm" action="https://formsubmit.co/ajax/luke.mcgrath12@gmail.com" method="POST" novalidate>
+        <input type="hidden" name="_subject" value="New website enquiry, REPAIR HVAC Services" />
+        <input type="hidden" name="_cc" value="info@repairhvacs.com.au" />
+        <input type="hidden" name="_template" value="table" />
+        <input type="hidden" name="_captcha" value="false" />
+        <input type="hidden" name="page" value="AC installation page" />
+        <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;" />
         <div class="form-row">
-          <input type="text" placeholder="First Name" />
-          <input type="text" placeholder="Last Name" />
+          <input type="text" name="first_name" placeholder="First Name" autocomplete="given-name" required />
+          <input type="text" name="last_name" placeholder="Last Name" autocomplete="family-name" />
         </div>
-        <input type="email" placeholder="Email Address" />
-        <input type="tel" placeholder="Phone Number" />
-        <select>
+        <input type="email" name="email" placeholder="Email Address" autocomplete="email" required />
+        <input type="tel" name="phone" placeholder="Phone Number" autocomplete="tel" required />
+        <select name="service">
           <option value="" disabled selected>Service Required</option>
           <option selected>A/C Installation</option>
           <option>A/C Repair / Diagnostics</option>
@@ -1245,11 +1251,12 @@
           <option>Commercial A/C Project</option>
           <option>Other</option>
         </select>
-        <textarea placeholder="Tell us about your project — room size, number of rooms, existing system…"></textarea>
-        <button type="submit" class="btn-primary" style="width: 100%; cursor: pointer; border: none; font-family: 'DM Sans', sans-serif;">
+        <textarea name="message" placeholder="Tell us about your project — room size, number of rooms, existing system…"></textarea>
+        <button type="submit" id="enquirySend" class="btn-primary" style="width: 100%; cursor: pointer; border: none; font-family: 'DM Sans', sans-serif;">
           Send Enquiry
         </button>
-      </div>
+      <p id="enquiryError" role="alert" style="display:none;margin-top:12px;font-size:14px;color:#c0392b;line-height:1.5;"></p>
+      </form>
     </div>
   </section>
 
@@ -1339,6 +1346,33 @@
             btn.setAttribute('aria-expanded', 'true');
           }
         });
+      });
+    })();
+  </script>
+  <script>
+    /* enquiry form: send to Formspree, then go to the thank you page */
+    (function () {
+      var f = document.getElementById('enquiryForm');
+      if (!f || !window.fetch) return;
+      var btn = document.getElementById('enquirySend');
+      var err = document.getElementById('enquiryError');
+      var label = btn ? btn.textContent : 'Send Enquiry';
+      f.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!f.checkValidity()) { f.reportValidity(); return; }
+        err.style.display = 'none';
+        if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+        fetch(f.action, { method: 'POST', body: new FormData(f), headers: { 'Accept': 'application/json' } })
+          .then(function (r) { return r.json(); })
+          .then(function (d) {
+            if (d && String(d.success) === 'true') { window.location.href = '/thank-you.html'; return; }
+            throw new Error('failed');
+          })
+          .catch(function () {
+            if (btn) { btn.disabled = false; btn.textContent = label; }
+            err.textContent = "That didn't send. Give it another go, or call us on 0466 825 476.";
+            err.style.display = 'block';
+          });
       });
     })();
   </script>
