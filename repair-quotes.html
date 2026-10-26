@@ -317,6 +317,48 @@ textarea{resize:vertical;}
 .status-dot.inactive{background:var(--slate-300);}
 .hidden{display:none!important;}
 
+
+/* search icon no longer overlaps the text */
+.search-wrap input[type=text]{padding-left:32px;}
+#tabbar{display:none;}
+@media(max-width:860px){
+  /* bottom tab bar replaces the Menu button */
+  #mt-menu{display:none !important;}
+  #tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:110;background:#0d0b2e;padding:6px 6px calc(6px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.08);}
+  #tabbar button{background:none;border:none;color:var(--slate-400);font:600 10.5px 'DM Sans',sans-serif;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;border-radius:10px;cursor:pointer;}
+  #tabbar button.on{color:#fff;}
+  #tabbar button.on svg{color:var(--teal);}
+  #tabbar .tb-new svg,#tabbar .tb-new.on svg{color:#fff !important;}
+  #quotes-tbody .row-actions{opacity:1 !important;visibility:visible !important;justify-content:flex-start;margin-top:6px;}
+  #quotes-tbody .icon-btn{width:38px;height:38px;}
+  #tabbar button:focus-visible{outline:2px solid var(--teal);outline-offset:-2px;}
+  #tabbar .tb-new span.dot{width:42px;height:42px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;margin-top:-18px;box-shadow:0 6px 16px rgba(13,122,122,.45);}
+  #main{padding-bottom:96px;}
+  .search-wrap,.search-wrap input[type=text]{width:100%;}
+  /* quote list as cards */
+  #view-dashboard .table-wrap{overflow:visible;}
+  #view-dashboard table{min-width:0 !important;}
+  #view-dashboard thead{display:none;}
+  #view-dashboard table,#view-dashboard tbody{display:block;width:100%;}
+  #quotes-tbody tr{display:grid;grid-template-columns:1fr auto;grid-template-areas:"num status" "client client" "addr addr" "total meta" "act act";gap:4px 10px;padding:14px 16px;border-bottom:1px solid var(--slate-100);}
+  #quotes-tbody td{display:block;padding:0 !important;border:none !important;max-width:none !important;}
+  #quotes-tbody td:nth-child(1){grid-area:num;}
+  #quotes-tbody td:nth-child(2){grid-area:client;}
+  #quotes-tbody td:nth-child(3){grid-area:addr;white-space:normal !important;}
+  #quotes-tbody td:nth-child(4){grid-area:total;font-size:16px;}
+  #quotes-tbody td:nth-child(5){grid-area:meta;justify-self:end;align-self:center;}
+  #quotes-tbody td:nth-child(6){grid-area:status;justify-self:end;}
+  #quotes-tbody td:nth-child(7){display:none;}
+  #quotes-tbody td:nth-child(8){grid-area:act;}
+  #quotes-tbody td:nth-child(5)::before{content:"Margin ";color:var(--slate-400);font-weight:600;}
+  /* quote builder header: steps scroll sideways, buttons wrap */
+  .form-topbar{margin:-18px -14px 20px;padding:0 14px;}
+  .form-topbar-inner{flex-direction:column;align-items:stretch;gap:10px;}
+  .step-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;white-space:nowrap;}
+  .step-tabs::-webkit-scrollbar{display:none;}
+  .topbar-right{flex-wrap:wrap;}
+  .topbar-right>*{flex:1 1 auto;}
+}
 /* MOBILE: sidebar becomes a slide-out menu */
 #mtop,#sb-scrim{display:none;}
 @media(max-width:860px){
@@ -355,6 +397,13 @@ textarea{resize:vertical;}
 <div id="app-wrapper">
 
 <div id="mtop"><div class="mt-logo">REP<span>AIR</span> HVAC</div><button type="button" id="mt-menu" aria-controls="sidebar" aria-expanded="false" onclick="toggleSb()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Menu</button></div>
+<nav id="tabbar" aria-label="Main">
+<button type="button" data-v="dashboard" class="on" onclick="showView('dashboard')"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Quotes</button>
+<button type="button" data-v="products" onclick="showView('products')"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>Products</button>
+<button type="button" class="tb-new" data-v="form" onclick="newQuote()"><span class="dot"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>New</button>
+<button type="button" data-v="clients" onclick="showView('clients')"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients</button>
+<button type="button" data-v="settings" onclick="showView('settings')"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>Settings</button>
+</nav>
 <div id="sb-scrim" onclick="toggleSb(false)"></div>
 <div id="app">
 <div id="sidebar">
@@ -940,6 +989,8 @@ document.addEventListener('click',e=>{if(e.target.closest('#sidebar .sb-btn,#sid
 function showView(v){
   ['dashboard','form','settings','clients','products'].forEach(x=>{const n=document.getElementById('view-'+x);if(n)n.style.display='none';});
   document.getElementById('view-'+v).style.display='block';
+  document.querySelectorAll('#tabbar button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  window.scrollTo(0,0);
   document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
   const map={dashboard:0,products:2,clients:3,settings:4};
   if(map[v]!==undefined) document.querySelectorAll('.sb-btn')[map[v]].classList.add('active');
