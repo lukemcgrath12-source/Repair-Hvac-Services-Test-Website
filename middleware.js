@@ -2,8 +2,8 @@
 // Only a salted SHA-256 hash of the password is stored here, never the password itself.
 export const config = { matcher: ['/repair-quotes', '/repair-quotes.html'] };
 
-const SALT = 'ebac0656b14c2dad';
-const HASH = 'f8c037193544fe296a0b266f4056d85c3b95e8d68effebcb077177d176098ea0';
+const SALT = '0cee984a2ca6a17b';
+const HASH = '64273794a4d95f1bf7bb2c3930b45e5093eea6c5ba5b1b636c3eb21631271347';
 
 async function sha256(text) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
