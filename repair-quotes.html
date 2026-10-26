@@ -316,6 +316,28 @@ textarea{resize:vertical;}
 .status-dot.active{background:var(--green);}
 .status-dot.inactive{background:var(--slate-300);}
 .hidden{display:none!important;}
+
+/* MOBILE: sidebar becomes a slide-out menu */
+#mtop,#sb-scrim{display:none;}
+@media(max-width:860px){
+  #mtop{display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:90;background:#0d0b2e;color:#fff;padding:12px 16px;}
+  #mtop .mt-logo{font-size:16px;font-weight:900;letter-spacing:-.4px;}#mtop .mt-logo span{color:var(--teal);}
+  #mtop button{background:none;border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:8px;padding:7px 11px;font:600 13px 'DM Sans',sans-serif;display:flex;align-items:center;gap:7px;cursor:pointer;}
+  #mtop button:focus-visible{outline:2px solid var(--teal);outline-offset:2px;}
+  #sidebar{width:260px;transform:translateX(-100%);transition:transform .25s ease;box-shadow:0 0 40px rgba(0,0,0,.35);}
+  body.sb-open #sidebar{transform:translateX(0);}
+  #sb-scrim{display:block;position:fixed;inset:0;background:rgba(13,11,46,.45);z-index:95;opacity:0;pointer-events:none;transition:opacity .25s ease;}
+  body.sb-open #sb-scrim{opacity:1;pointer-events:auto;}
+  #main{margin-left:0;padding:18px 14px;min-width:0;}
+  .stat-grid,.stat-grid[style]{grid-template-columns:1fr 1fr !important;}
+  .rev-strip,.charts-strip,.pricing-grid,.form-grid.cols2,.form-grid.cols3,.client-grid,.form-with-sidebar{grid-template-columns:1fr !important;}
+  .profit-sidebar{position:static;}
+  .page-header{flex-wrap:wrap;gap:12px;}
+  .table-header{flex-direction:column;align-items:stretch;gap:10px;}
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .table-wrap table{min-width:720px;}
+}
+@media(prefers-reduced-motion:reduce){#sidebar,#sb-scrim{transition:none;}}
 </style>
 </head>
 <body>
@@ -332,6 +354,8 @@ textarea{resize:vertical;}
 
 <div id="app-wrapper">
 
+<div id="mtop"><div class="mt-logo">REP<span>AIR</span> HVAC</div><button type="button" id="mt-menu" aria-controls="sidebar" aria-expanded="false" onclick="toggleSb()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Menu</button></div>
+<div id="sb-scrim" onclick="toggleSb(false)"></div>
 <div id="app">
 <div id="sidebar">
   <div class="sb-logo">
@@ -910,6 +934,9 @@ function refreshSidebars(){
 function sidebarRecalc(){recalc();}
 
 // ══════ VIEWS ══════
+function toggleSb(force){const open=typeof force==='boolean'?force:!document.body.classList.contains('sb-open');document.body.classList.toggle('sb-open',open);const b=document.getElementById('mt-menu');if(b)b.setAttribute('aria-expanded',open);}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')toggleSb(false);});
+document.addEventListener('click',e=>{if(e.target.closest('#sidebar .sb-btn,#sidebar .sb-new'))toggleSb(false);});
 function showView(v){
   ['dashboard','form','settings','clients','products'].forEach(x=>{const n=document.getElementById('view-'+x);if(n)n.style.display='none';});
   document.getElementById('view-'+v).style.display='block';
