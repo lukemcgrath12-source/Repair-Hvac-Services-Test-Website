@@ -1,6 +1,6 @@
 // Server-side login for the internal quoting tool.
 // Only a salted SHA-256 hash of the password is stored here, never the password itself.
-export const config = { matcher: ['/repair-quotes', '/repair-quotes.html'] };
+export const config = { matcher: ['/repair-quotes', '/repair-quotes.html', '/api/data'] };
 
 const USERNAME = 'repair';
 const SALT = '0cee984a2ca6a17b';

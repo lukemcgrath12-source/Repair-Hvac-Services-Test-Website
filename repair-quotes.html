@@ -318,6 +318,11 @@ textarea{resize:vertical;}
 .hidden{display:none!important;}
 
 
+/* sync status */
+.sync-state{font-size:11px;font-weight:600;color:var(--slate-400);display:inline-flex;align-items:center;gap:6px;}
+.sync-state::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--slate-400);}
+.sync-state[data-s=ok]::before{background:#22c55e;}.sync-state[data-s=off]::before{background:#f59e0b;}
+.sb-sync{margin:0 20px 12px;}
 /* search icon no longer overlaps the text */
 .search-wrap input[type=text]{padding-left:32px;}
 #tabbar{display:none;}
@@ -397,7 +402,7 @@ textarea{resize:vertical;}
 
 <div id="app-wrapper">
 
-<div id="mtop"><div class="mt-logo">REP<span>AIR</span> HVAC</div><button type="button" id="mt-menu" aria-controls="sidebar" aria-expanded="false" onclick="toggleSb()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Menu</button></div>
+<div id="mtop"><div class="mt-logo">REP<span>AIR</span> HVAC</div><span class="sync-state" data-s="busy">Connecting…</span><button type="button" id="mt-menu" aria-controls="sidebar" aria-expanded="false" onclick="toggleSb()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Menu</button></div>
 <nav id="tabbar" aria-label="Main">
 <button type="button" data-v="dashboard" class="on" onclick="showView('dashboard')"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Quotes</button>
 <button type="button" data-v="products" onclick="showView('products')"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>Products</button>
@@ -429,6 +434,7 @@ textarea{resize:vertical;}
       <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings
     </button>
   </div>
+  <div class="sync-state sb-sync" data-s="busy">Connecting…</div>
   <button class="sb-new" onclick="newQuote()">+ New Quote</button>
 </div>
 
@@ -732,7 +738,7 @@ textarea{resize:vertical;}
     <button class="btn-primary" onclick="saveSettings()" style="width:100%;justify-content:center;padding:12px;">Save</button>
     <div class="card card-pad" style="margin-top:20px;">
       <div class="section-title">Backup</div>
-      <p style="font-size:13px;color:var(--slate-500);line-height:1.6;margin-bottom:14px;">Quotes are saved on this device only. Download a backup regularly, and restore it on another phone or computer to bring your quotes across. Restoring adds to what's here and keeps the newest version of each quote.</p>
+      <p style="font-size:13px;color:var(--slate-500);line-height:1.6;margin-bottom:14px;">Quotes are shared across every phone and computer you log in on. A backup is a copy you keep yourself, just in case. Restoring adds to what's here and keeps the newest version of each quote.</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <button class="btn-primary" type="button" onclick="downloadBackup()">Download backup</button>
         <label class="btn-secondary" style="cursor:pointer;">Restore from backup<input type="file" accept="application/json,.json" onchange="restoreBackup(this)" style="display:none;"/></label>
@@ -935,8 +941,51 @@ function load(){
   const so=localStorage.getItem('rpr_overrides');
   if(so) productOverrides=JSON.parse(so);
   loadSettingsForm();
+  seenSnapshot();
 }
-function persist(){localStorage.setItem('rpr_quotes',JSON.stringify(quotes));}
+// ══════ SHARED SYNC ══════
+// Every change is saved on this device straight away, then merged into the shared
+// copy so the whole team sees the same quotes on any phone or computer.
+let rprDeleted={},rprSeen={},rprOverridesTs=0,syncTimer=null,syncBusy=false,syncAgain=false;
+try{rprDeleted=JSON.parse(localStorage.getItem('rpr_deleted')||'{}');rprOverridesTs=+localStorage.getItem('rpr_overrides_ts')||0;}catch(e){}
+const recKey=o=>{const c=Object.assign({},o);delete c._ts;return JSON.stringify(c);};
+function seenSnapshot(){rprSeen={};[['q',quotes],['c',clients],['p',customProducts]].forEach(([k,arr])=>(arr||[]).forEach(x=>{if(x&&x.id)rprSeen[k+':'+x.id]=recKey(x);}));}
+function stamp(kind,arr){
+  const now=Date.now(),ids=new Set();
+  (arr||[]).forEach(x=>{if(!x||!x.id)return;ids.add(x.id);const k=kind+':'+x.id,h=recKey(x);if(rprSeen[k]!==h){x._ts=now;rprSeen[k]=recKey(x);}});
+  Object.keys(rprSeen).forEach(k=>{if(k.startsWith(kind+':')){const id=k.slice(kind.length+1);if(!ids.has(id)){rprDeleted[id]=now;delete rprSeen[k];}}});
+  localStorage.setItem('rpr_deleted',JSON.stringify(rprDeleted));
+}
+function setSync(state,msg){document.querySelectorAll('.sync-state').forEach(el=>{el.dataset.s=state;el.textContent=msg;});}
+function scheduleSync(delay){clearTimeout(syncTimer);syncTimer=setTimeout(syncNow,delay==null?1200:delay);}
+async function syncNow(){
+  if(syncBusy){syncAgain=true;return;}syncBusy=true;setSync('busy','Saving…');
+  try{
+    const body={quotes,clients,customProducts,deleted:rprDeleted,settings,productOverrides,overridesTs:rprOverridesTs};
+    const r=await fetch('/api/data',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!r.ok)throw new Error('http '+r.status);
+    const d=await r.json();
+    quotes=d.quotes||[];clients=d.clients||[];customProducts=d.customProducts||[];rprDeleted=d.deleted||{};
+    if(d.settings)settings=d.settings;
+    if((+d.overridesTs||0)>=rprOverridesTs){productOverrides=d.productOverrides||{};rprOverridesTs=+d.overridesTs||0;}
+    localStorage.setItem('rpr_quotes',JSON.stringify(quotes));localStorage.setItem('rpr_clients',JSON.stringify(clients));
+    localStorage.setItem('rpr_products',JSON.stringify(customProducts));localStorage.setItem('rpr_settings',JSON.stringify(settings));
+    localStorage.setItem('rpr_overrides',JSON.stringify(productOverrides));localStorage.setItem('rpr_overrides_ts',rprOverridesTs);
+    localStorage.setItem('rpr_deleted',JSON.stringify(rprDeleted));
+    seenSnapshot();refreshVisible();
+    setSync('ok','Synced '+new Date().toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'}));
+  }catch(e){setSync('off','Saved on this device only');}
+  finally{syncBusy=false;if(syncAgain){syncAgain=false;scheduleSync(300);}}
+}
+function refreshVisible(){
+  const vis=v=>{const n=document.getElementById('view-'+v);return n&&n.style.display!=='none'&&getComputedStyle(n).display!=='none';};
+  if(vis('dashboard'))renderDashboard();
+  if(vis('clients')&&typeof renderClients==='function')renderClients();
+  if(vis('products')&&typeof renderProductTable==='function')renderProductTable();
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')scheduleSync(0);});
+setInterval(()=>{if(document.visibilityState==='visible')scheduleSync(0);},60000);
+function persist(){stamp('q',quotes);localStorage.setItem('rpr_quotes',JSON.stringify(quotes));scheduleSync();}
 function downloadBackup(){
   const data={app:'repair-quotes',version:1,exportedAt:new Date().toISOString(),quotes,clients,settings,customProducts,productOverrides};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
@@ -962,10 +1011,10 @@ function restoreBackup(input){
   };
   r.readAsText(f);
 }
-function persistSettings(){localStorage.setItem('rpr_settings',JSON.stringify(settings));}
-function persistClients(){localStorage.setItem('rpr_clients',JSON.stringify(clients));}
-function persistProducts(){localStorage.setItem('rpr_products',JSON.stringify(customProducts));}
-function persistOverrides(){localStorage.setItem('rpr_overrides',JSON.stringify(productOverrides));}
+function persistSettings(){settings._ts=Date.now();localStorage.setItem('rpr_settings',JSON.stringify(settings));scheduleSync();}
+function persistClients(){stamp('c',clients);localStorage.setItem('rpr_clients',JSON.stringify(clients));scheduleSync();}
+function persistProducts(){stamp('p',customProducts);localStorage.setItem('rpr_products',JSON.stringify(customProducts));scheduleSync();}
+function persistOverrides(){rprOverridesTs=Date.now();localStorage.setItem('rpr_overrides',JSON.stringify(productOverrides));localStorage.setItem('rpr_overrides_ts',rprOverridesTs);scheduleSync();}
 
 function calcTotals(q){
   const eq=(q.equipment||[]).reduce((s,i)=>s+(i.total||0),0);
@@ -1735,7 +1784,7 @@ function applyBulk(){
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
 // ══════ INIT ══════
-load();renderDashboard();showBackupLast();
+load();renderDashboard();showBackupLast();syncNow();
 
 </script>
 
