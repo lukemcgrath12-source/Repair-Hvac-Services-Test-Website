@@ -189,7 +189,7 @@ tbody tr:hover .row-actions{opacity:1;}
 .btn-ghost:hover{background:var(--teal-100);}
 .btn-danger{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;background:var(--red-100);color:var(--red);border:1px solid #fecaca;border-radius:9px;font-weight:600;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;}
 /* FORM */
-#view-form{display:none;}#view-settings{display:none;}#view-dashboard{display:block;}#view-clients{display:none;}
+#view-form{display:none;}#view-settings{display:none;}#view-dashboard{display:block;}#view-clients{display:none;}#view-products{display:none;}
 .form-topbar{background:white;border-bottom:1px solid var(--slate-200);position:sticky;top:0;z-index:50;margin:-32px -32px 32px;padding:0 32px;}
 .form-topbar-inner{display:flex;align-items:center;justify-content:space-between;padding:12px 0;}
 .back-btn{display:flex;align-items:center;gap:6px;color:var(--slate-500);border:none;background:none;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
@@ -334,6 +334,7 @@ textarea{resize:vertical;}
   #tabbar button:focus-visible{outline:2px solid var(--teal);outline-offset:-2px;}
   #tabbar .tb-new span.dot{width:42px;height:42px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;margin-top:-18px;box-shadow:0 6px 16px rgba(13,122,122,.45);}
   #main{padding-bottom:96px;}
+  #toast,.toast{bottom:calc(84px + env(safe-area-inset-bottom)) !important;}
   .search-wrap,.search-wrap input[type=text]{width:100%;}
   /* quote list as cards */
   #view-dashboard .table-wrap{overflow:visible;}
@@ -729,6 +730,15 @@ textarea{resize:vertical;}
       </div>
     </div>
     <button class="btn-primary" onclick="saveSettings()" style="width:100%;justify-content:center;padding:12px;">Save</button>
+    <div class="card card-pad" style="margin-top:20px;">
+      <div class="section-title">Backup</div>
+      <p style="font-size:13px;color:var(--slate-500);line-height:1.6;margin-bottom:14px;">Quotes are saved on this device only. Download a backup regularly, and restore it on another phone or computer to bring your quotes across. Restoring adds to what's here and keeps the newest version of each quote.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn-primary" type="button" onclick="downloadBackup()">Download backup</button>
+        <label class="btn-secondary" style="cursor:pointer;">Restore from backup<input type="file" accept="application/json,.json" onchange="restoreBackup(this)" style="display:none;"/></label>
+      </div>
+      <div id="backup-last" style="font-size:11px;color:var(--slate-400);margin-top:10px;"></div>
+    </div>
   </div>
   <!-- Pricing tab -->
   <div class="settings-panel" id="stab-pricing" style="max-width:400px;">
@@ -876,7 +886,7 @@ const BASE_DB = {
 let quotes=[],clients=[],customProducts=[],productOverrides={},prodFilter='all',currentQuote=null,currentStep=1,pickerTarget='equipment',filterState='all',searchState='',pickerCat='All',settings={company:'REPAIR HVAC SERVICES',phone:'',email:'',address:'',license:'',website:'',markup:40,gst:10};
 
 function uid(){return Math.random().toString(36).slice(2,9);}
-function qNum(){return 'RPR-'+new Date().getFullYear()+'-'+String(Math.floor(Math.random()*9000)+1000);}
+function qNum(){const y=new Date().getFullYear(),pre='RPR-'+y+'-';let max=0;(quotes||[]).forEach(q=>{const m=String(q.quoteNumber||'').match(/^RPR-(\d{4})-(\d+)$/);if(m&&+m[1]===y)max=Math.max(max,+m[2]);});return pre+String(max+1).padStart(4,'0');}
 function todayStr(){return new Date().toISOString().split('T')[0];}
 function fmt(n){return '$'+(+n||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
 // Base catalogue merged with any saved edits. Overrides live in localStorage,
@@ -913,15 +923,12 @@ function allProducts(){return catalogue().filter(p=>p.status!=='inactive');}
 
 function load(){
   const sq=localStorage.getItem('rpr_quotes'),ss=localStorage.getItem('rpr_settings'),sc=localStorage.getItem('rpr_clients'),sp=localStorage.getItem('rpr_products');
-  if(sq) quotes=JSON.parse(sq);
-  else{
-    quotes=[
-      {id:uid(),quoteNumber:'RPR-2024-0042',status:'accepted',client:{name:'Sarah Thompson',phone:'0412 345 678',email:'sarah.t@email.com',address:'14 Harbour View Rd, Balmain NSW 2041',notes:'2 storey, existing ducted replacement',siteVisit:'2024-05-15',salesperson:'Zac'},equipment:[{id:uid(),name:'14kW Single Phase Ducted',model:'PUZ-M140VKA',cost:4225,qty:1,total:4225,note:''}],materials:[{id:uid(),description:'4.0mm Twin & Earth TPS',cost:315,qty:2,total:630,note:''},{id:uid(),description:'Polyaire 250mm Zone Damper',cost:57.16,qty:8,total:457.28,note:''}],labour:{install:1200,electrical:800,crane:0,scissor:0,other:0,otherdesc:''},markup:40,gst:10,createdAt:'2024-05-16',updatedAt:'2024-05-16'},
-      {id:uid(),quoteNumber:'RPR-2024-0051',status:'draft',client:{name:'Marcus Chen',phone:'0455 887 221',email:'mchen@business.com',address:'Lot 7, 22 Commerce St, Alexandria NSW 2015',notes:'Commercial office fit-out, 3 zones required',siteVisit:'2024-06-01',salesperson:'Jack'},equipment:[{id:uid(),name:'14kW Single Phase Ducted',model:'FDYAN140AV1',cost:4315,qty:1,total:4315,note:''},{id:uid(),name:'Main Control Module',model:'AirTouch MCM',cost:350.75,qty:1,total:350.75,note:''}],materials:[{id:uid(),description:'3/8 x 5/8 Pair Coil',cost:341.02,qty:1,total:341.02,note:''}],labour:{install:2400,electrical:1200,crane:350,scissor:0,other:0,otherdesc:''},markup:40,gst:10,createdAt:'2024-06-02',updatedAt:'2024-06-02'},
-      {id:uid(),quoteNumber:'RPR-2024-0038',status:'declined',client:{name:'Tony Nguyen',phone:'0401 223 445',email:'tnguyen@email.com',address:'8 Rosebay Cres, Randwick NSW 2031',notes:'Single split system bedroom',siteVisit:'2024-04-20',salesperson:'Zac'},equipment:[{id:uid(),name:'5.0kW Split System',model:'MSZ-AP50VGKD2 / MUZ-AP50VGD2',cost:1203.29,qty:1,total:1203.29,note:''}],materials:[{id:uid(),description:'1/4 x 3/8 Pair Coil',cost:169.25,qty:1,total:169.25,note:''},{id:uid(),description:'20mm Corrugated Grey Conduit',cost:26.55,qty:1,total:26.55,note:''}],labour:{install:380,electrical:200,crane:0,scissor:0,other:0,otherdesc:''},markup:40,gst:10,createdAt:'2024-04-21',updatedAt:'2024-04-21'}
-    ];
-    persist();
-  }
+  quotes=sq?JSON.parse(sq):[];
+  // remove the three sample quotes the tool shipped with
+  const DEMO={'RPR-2024-0042':'Sarah Thompson','RPR-2024-0051':'Marcus Chen','RPR-2024-0038':'Tony Nguyen'};
+  const before=quotes.length;
+  quotes=quotes.filter(q=>!(DEMO[q.quoteNumber]&&q.client&&q.client.name===DEMO[q.quoteNumber]&&String(q.createdAt||'').startsWith('2024')));
+  if(quotes.length!==before||!sq) persist();
   if(ss) settings=JSON.parse(ss);
   if(sc) clients=JSON.parse(sc);
   if(sp) customProducts=JSON.parse(sp);
@@ -930,6 +937,31 @@ function load(){
   loadSettingsForm();
 }
 function persist(){localStorage.setItem('rpr_quotes',JSON.stringify(quotes));}
+function downloadBackup(){
+  const data={app:'repair-quotes',version:1,exportedAt:new Date().toISOString(),quotes,clients,settings,customProducts,productOverrides};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='REPAIR-quotes-backup-'+todayStr()+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+  try{localStorage.setItem('rpr_last_backup',new Date().toISOString());}catch(e){}
+  showBackupLast();toast('Backup downloaded');
+}
+function showBackupLast(){const el=document.getElementById('backup-last');if(!el)return;const t=localStorage.getItem('rpr_last_backup');el.textContent=t?'Last backup on this device: '+new Date(t).toLocaleString('en-AU'):'No backup downloaded on this device yet.';}
+function restoreBackup(input){
+  const f=input.files&&input.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    let d;try{d=JSON.parse(r.result);}catch(e){toast('That file is not a REPAIR quotes backup');input.value='';return;}
+    if(!d||d.app!=='repair-quotes'||!Array.isArray(d.quotes)){toast('That file is not a REPAIR quotes backup');input.value='';return;}
+    const byId=new Map(quotes.map(q=>[q.id,q]));let added=0,updated=0;
+    d.quotes.forEach(q=>{const cur=byId.get(q.id);if(!cur){byId.set(q.id,q);added++;}else if(String(q.updatedAt||'')>String(cur.updatedAt||'')){byId.set(q.id,q);updated++;}});
+    quotes=[...byId.values()];
+    if(Array.isArray(d.clients)){const cm=new Map(clients.map(c=>[c.id,c]));d.clients.forEach(c=>{if(!cm.has(c.id))cm.set(c.id,c);});clients=[...cm.values()];persistClients();}
+    if(Array.isArray(d.customProducts)){const pm=new Map(customProducts.map(x=>[x.id,x]));d.customProducts.forEach(x=>{if(!pm.has(x.id))pm.set(x.id,x);});customProducts=[...pm.values()];persistProducts();}
+    if(d.productOverrides&&typeof d.productOverrides==='object'){productOverrides=Object.assign({},d.productOverrides,productOverrides);persistOverrides();}
+    persist();input.value='';renderDashboard();
+    toast('Restored: '+added+' new, '+updated+' updated');
+  };
+  r.readAsText(f);
+}
 function persistSettings(){localStorage.setItem('rpr_settings',JSON.stringify(settings));}
 function persistClients(){localStorage.setItem('rpr_clients',JSON.stringify(clients));}
 function persistProducts(){localStorage.setItem('rpr_products',JSON.stringify(customProducts));}
@@ -1703,7 +1735,7 @@ function applyBulk(){
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
 // ══════ INIT ══════
-load();renderDashboard();
+load();renderDashboard();showBackupLast();
 
 </script>
 
