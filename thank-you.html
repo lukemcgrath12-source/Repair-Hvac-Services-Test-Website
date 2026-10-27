@@ -38,6 +38,9 @@
     a.btn:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }
     .primary { background: var(--teal); color: #fff; }
     .ghost { border: 1.5px solid rgba(30,27,75,0.2); color: var(--navy); }
+    .legal-foot { margin-top: 56px; font-size: 13px; display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+    .legal-foot a { color: var(--teal); font-weight: 500; }
+    .legal-foot a:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
   </style>
 </head>
 <body>
@@ -48,6 +51,10 @@
     <a class="btn primary" href="tel:+61466825476">Call 0466 825 476</a>
     <a class="btn ghost" href="/">Back to the website</a>
   </div>
+  <footer class="legal-foot">
+    <a href="/terms">Terms and Conditions</a>
+    <a href="/privacy">Privacy Policy</a>
+  </footer>
   <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

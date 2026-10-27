@@ -789,6 +789,10 @@
       text-align: center;
     }
 
+    .footer-legal { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; }
+    .footer-legal a { color: rgba(242,237,230,0.6); text-decoration: none; transition: color 0.2s; }
+    .footer-legal a:hover, .footer-legal a:focus-visible { color: #ffffff; }
+
     /* ── Mobile nav drawer ── */
     .nav-drawer {
       display: none;
@@ -1293,6 +1297,7 @@
     <div class="footer-bottom">
       <p class="footer-copy">© 2026 REPAIR HVAC Services. All rights reserved.</p>
       <p class="footer-copy" style="letter-spacing: 0.08em;">ABN 41 694 442 521 | RTA AU068831 | LIC 492196C</p>
+      <p class="footer-copy footer-legal"><a href="/terms">Terms and Conditions</a><a href="/privacy">Privacy Policy</a></p>
       <p class="footer-copy">Website by <a href="https://www.latitude-marketing.com/" target="_blank" rel="noopener noreferrer" style="color:rgba(242,237,230,0.4);text-decoration:none;border-bottom:1px solid rgba(242,237,230,0.2);padding-bottom:1px;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='rgba(242,237,230,0.8)';this.style.borderColor='rgba(242,237,230,0.5)';" onmouseout="this.style.color='rgba(242,237,230,0.4)';this.style.borderColor='rgba(242,237,230,0.2)';">Latitude Marketing</a></p>
     </div>
   </footer>

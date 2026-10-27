@@ -27,6 +27,8 @@
     a { color: var(--teal); font-weight: 600; }
     a:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
     .back { display: inline-block; margin-top: 44px; }
+    .legal-foot { border-top: 1px solid rgba(30,27,75,0.08); padding: 20px; text-align: center; font-size: 13px; color: rgba(30,27,75,0.6); }
+    .legal-foot a { font-weight: 500; margin: 0 8px; }
   </style>
 </head>
 <body>
@@ -62,6 +64,10 @@
 
     <a class="back" href="/">Back to the website</a>
   </main>
+  <footer class="legal-foot">
+    <a href="/terms">Terms and Conditions</a>
+    <a href="/privacy">Privacy Policy</a>
+  </footer>
   <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
